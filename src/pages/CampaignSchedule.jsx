@@ -1,0 +1,394 @@
+import { useState, useEffect, useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import PageLayout from '../components/layout/PageLayout'
+
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+// Sheet harus di-set "Anyone with the link can view" agar fetch bisa berjalan.
+const SHEET_ID = '17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ'
+const GID      = '0'
+const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`
+
+// Mapping nama kolom header di Google Sheets → field internal.
+// Jika nama kolom di sheet kamu berbeda, ubah di sini.
+const COL_MAP = {
+  namaAset:     ['Nama Aset', 'nama aset', 'Nama', 'nama', 'Display Name'],
+  platform:     ['Platform', 'platform'],
+  mockupType:   ['Tipe', 'tipe', 'Mockup Type', 'Type', 'type'],
+  kampanye:     ['Kampanye', 'kampanye', 'Campaign', 'campaign'],
+  periodeStart: ['Periode Mulai', 'periode mulai', 'Mulai', 'mulai', 'Start', 'start', 'Tanggal Mulai'],
+  periodeEnd:   ['Periode Selesai', 'periode selesai', 'Selesai', 'selesai', 'End', 'end', 'Tanggal Selesai'],
+  jamTayang:    ['Jam Tayang', 'jam tayang', 'Jam', 'jam', 'Time', 'time'],
+  linkFile:     ['Link File', 'link file', 'Link', 'link', 'File', 'Drive Link', 'drive link'],
+  catatan:      ['Catatan', 'catatan', 'Notes', 'notes', 'Keterangan', 'keterangan'],
+}
+
+// ─── SEED (fallback jika sheet kosong / belum public) ────────────────────────
+const SEED_DATA = [
+  {
+    id: 'seed-1',
+    namaAset: 'Preview [Shopee] Snickers Mingyu BaU',
+    platform: 'Shopee Live',
+    mockupType: 'BaU',
+    kampanye: 'Business as Usual – Juni',
+    periodeStart: '2026-06-07',
+    periodeEnd: '2026-06-24',
+    jamTayang: '09:00 – 10:00',
+    linkFile: '',
+    catatan: 'Kolaborasi Mingyu ENHYPEN',
+  },
+  {
+    id: 'seed-2',
+    namaAset: 'BG Sweety Festive PayDay',
+    platform: 'Shopee Live',
+    mockupType: 'PayDay',
+    kampanye: 'PayDay Juni',
+    periodeStart: '2026-06-25',
+    periodeEnd: '2026-06-30',
+    jamTayang: '20:00 – 22:00',
+    linkFile: '',
+    catatan: '',
+  },
+  {
+    id: 'seed-3',
+    namaAset: 'Preview [TikTok] L-MEN Period Pack',
+    platform: 'TikTok Shop',
+    mockupType: 'Period',
+    kampanye: 'BaU – Multiple Period',
+    periodeStart: '2026-06-01',
+    periodeEnd: '2026-07-15',
+    jamTayang: 'Sepanjang hari',
+    linkFile: '',
+    catatan: 'LVL 4 – multiple usage date',
+  },
+]
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/)
+  if (lines.length < 2) return []
+
+  // Parse satu baris CSV (handle quoted commas)
+  function parseLine(line) {
+    const cells = []
+    let cur = ''
+    let inQ = false
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i]
+      if (c === '"') {
+        if (inQ && line[i + 1] === '"') { cur += '"'; i++ }
+        else inQ = !inQ
+      } else if (c === ',' && !inQ) {
+        cells.push(cur.trim()); cur = ''
+      } else {
+        cur += c
+      }
+    }
+    cells.push(cur.trim())
+    return cells
+  }
+
+  const headers = parseLine(lines[0])
+
+  // Resolve header → field name
+  function resolveField(header) {
+    for (const [field, aliases] of Object.entries(COL_MAP)) {
+      if (aliases.some(a => a.toLowerCase() === header.toLowerCase())) return field
+    }
+    return null
+  }
+
+  const fieldMap = headers.map(h => resolveField(h))
+
+  return lines.slice(1).map((line, idx) => {
+    const cells = parseLine(line)
+    const row = { id: `sheet-${idx + 1}` }
+    fieldMap.forEach((field, i) => {
+      if (field) row[field] = cells[i] ?? ''
+    })
+    return row
+  }).filter(r => r.namaAset) // skip baris kosong
+}
+
+// Normalisasi format tanggal dari sheet (DD/MM/YYYY atau YYYY-MM-DD) → YYYY-MM-DD
+function normalizeDate(str) {
+  if (!str) return ''
+  // DD/MM/YYYY
+  const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`
+  return str
+}
+
+function getStatus(periodeStart, periodeEnd) {
+  const today = new Date()
+  today.setHours(12, 0, 0, 0)
+  const start = new Date(normalizeDate(periodeStart))
+  const end   = new Date(normalizeDate(periodeEnd))
+  end.setHours(23, 59, 59)
+  if (today < start) return 'akan-datang'
+  if (today > end)   return 'kedaluwarsa'
+  return 'aktif'
+}
+
+function formatDate(dateStr) {
+  const d = new Date(normalizeDate(dateStr))
+  if (isNaN(d)) return dateStr
+  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+// ─── STATUS CONFIG ────────────────────────────────────────────────────────────
+const STATUS_CONFIG = {
+  aktif:        { label: 'Aktif',        dot: '🟢', badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
+  'akan-datang':{ label: 'Akan Datang',  dot: '🟡', badge: 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-300' },
+  kedaluwarsa:  { label: 'Kedaluwarsa', dot: '🔴', badge: 'bg-red-100 text-red-800 ring-1 ring-red-300' },
+}
+
+// ─── COMPONENT ───────────────────────────────────────────────────────────────
+export default function CampaignSchedule() {
+  const [rawData, setRawData]       = useState(null)   // null = loading
+  const [fetchError, setFetchError] = useState(null)
+  const [filterPlatform, setFilterPlatform] = useState('semua')
+  const [filterStatus,   setFilterStatus]   = useState('semua')
+
+  useEffect(() => {
+    let cancelled = false
+    fetch(CSV_URL)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.text()
+      })
+      .then(text => {
+        if (cancelled) return
+        const rows = parseCSV(text)
+        setRawData(rows.length > 0 ? rows : null)
+        if (rows.length === 0) setFetchError('sheet-empty')
+      })
+      .catch(err => {
+        if (cancelled) return
+        setFetchError(err.message)
+        setRawData(null)
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  const isLoading  = rawData === null && fetchError === null
+  const isLive     = rawData !== null && rawData.length > 0
+  const displayData = isLive ? rawData : SEED_DATA
+
+  const enriched = useMemo(
+    () => displayData.map(row => ({ ...row, status: getStatus(row.periodeStart, row.periodeEnd) })),
+    [displayData],
+  )
+
+  const filtered = useMemo(
+    () => enriched.filter(row => {
+      const matchP = filterPlatform === 'semua' || row.platform === filterPlatform
+      const matchS = filterStatus   === 'semua' || row.status   === filterStatus
+      return matchP && matchS
+    }),
+    [enriched, filterPlatform, filterStatus],
+  )
+
+  const platforms = ['semua', ...Array.from(new Set(displayData.map(r => r.platform).filter(Boolean)))]
+
+  const counts = useMemo(() => {
+    const c = { aktif: 0, 'akan-datang': 0, kedaluwarsa: 0 }
+    enriched.forEach(r => c[r.status]++)
+    return c
+  }, [enriched])
+
+  return (
+    <PageLayout>
+      {/* Header */}
+      <div className="pt-8 pb-6 border-b border-slate-200 mb-8">
+        <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-4">
+          <Link to="/" className="hover:text-brand-600">Home</Link>
+          <span>/</span>
+          <span>Jadwal Kampanye</span>
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <p className="eyebrow mb-1">/ Komponen 08 · Campaign Usage Management</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Jadwal Penggunaan Mockup</h1>
+            <p className="text-sm text-slate-500 max-w-xl">
+              Daftar aset motion graphic yang sedang aktif, akan datang, dan sudah kedaluwarsa.
+              Data dikelola Motion Designer Lead via Google Sheets. Operator: cek status dan buka file.
+            </p>
+          </div>
+          <Link
+            to="/framework/campaign-usage-management"
+            className="shrink-0 text-xs text-brand-600 hover:text-brand-800 font-medium border border-brand-200 bg-brand-50 rounded px-3 py-2 whitespace-nowrap"
+          >
+            Dokumentasi Campaign Usage Management →
+          </Link>
+        </div>
+      </div>
+
+      {/* Status bar */}
+      {isLoading && (
+        <div className="flex items-center gap-2 border border-slate-200 rounded px-4 py-2.5 mb-6 text-xs text-slate-500 font-mono">
+          <span className="animate-spin">⏳</span> Memuat data dari Google Sheets…
+        </div>
+      )}
+      {!isLoading && isLive && (
+        <div className="flex items-center gap-2 border border-green-200 bg-green-50 rounded px-4 py-2.5 mb-6 text-xs text-green-800 font-mono">
+          🟢 <strong>Data Live</strong> — ditarik dari Google Sheets. Refresh untuk memperbarui.
+        </div>
+      )}
+      {!isLoading && !isLive && (
+        <div className="border border-amber-200 bg-amber-50 rounded px-4 py-2.5 mb-6 text-xs text-amber-800 font-mono">
+          {fetchError === 'sheet-empty'
+            ? <>Sheet masih kosong — tambahkan data di Google Sheets lalu refresh.</>
+            : <>SEED — gagal memuat dari Sheets ({fetchError}). Set sheet ke <em>Anyone with the link can view</em> lalu refresh.</>
+          }
+        </div>
+      )}
+
+      {/* Status filter */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {(['semua', 'aktif', 'akan-datang', 'kedaluwarsa']).map(s => {
+          const cfg = s === 'semua'
+            ? { label: `Semua (${enriched.length})`, badge: 'border border-slate-300 text-slate-600' }
+            : { label: `${STATUS_CONFIG[s].dot} ${STATUS_CONFIG[s].label} (${counts[s]})`, badge: STATUS_CONFIG[s].badge }
+          return (
+            <button
+              key={s}
+              onClick={() => setFilterStatus(s)}
+              className={`px-3 py-1.5 rounded text-xs font-mono transition-all ${cfg.badge} ${
+                filterStatus === s ? 'opacity-100 ring-1 ring-brand-400' : 'opacity-60 hover:opacity-100'
+              }`}
+            >
+              {cfg.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Platform filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Platform:</span>
+        {platforms.map(p => (
+          <button
+            key={p}
+            onClick={() => setFilterPlatform(p)}
+            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              filterPlatform === p
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            {p === 'semua' ? 'Semua' : p}
+          </button>
+        ))}
+      </div>
+
+      {/* Table */}
+      {filtered.length === 0 ? (
+        <div className="text-center py-12 text-slate-500 text-sm">
+          Tidak ada aset yang cocok dengan filter yang dipilih.
+        </div>
+      ) : (
+        <div className="overflow-x-auto border border-slate-200 rounded">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Status</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Nama Aset</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Platform</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Kampanye</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Periode</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Jam Tayang</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Catatan</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">File</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white">
+              {filtered.map(row => {
+                const cfg = STATUS_CONFIG[row.status]
+                return (
+                  <tr key={row.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-3 py-3">
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono ${cfg.badge}`}>
+                        {cfg.dot} {cfg.label}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="font-medium text-slate-900 leading-snug text-sm">{row.namaAset}</div>
+                    </td>
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap text-sm">{row.platform}</td>
+                    <td className="px-3 py-3 text-slate-600 text-sm">{row.kampanye}</td>
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
+                      {formatDate(row.periodeStart)}<br />{formatDate(row.periodeEnd)}
+                    </td>
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{row.jamTayang}</td>
+                    <td className="px-3 py-3 text-slate-500 text-xs max-w-[160px]">
+                      {row.catatan || <span className="text-slate-300">—</span>}
+                    </td>
+                    <td className="px-3 py-3">
+                      {row.linkFile ? (
+                        <a
+                          href={row.linkFile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-brand-600 text-white text-xs font-medium rounded hover:bg-brand-700 transition-colors whitespace-nowrap"
+                        >
+                          Buka →
+                        </a>
+                      ) : (
+                        <span className="font-mono text-xs text-slate-300">—</span>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Architecture note */}
+      <div className="mt-8 border border-slate-200 rounded p-4 text-xs text-slate-600 space-y-2">
+        <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-2">Catatan Arsitektur & Setup</p>
+        <p>
+          Halaman ini adalah <strong>Display Layer</strong> — data diambil langsung dari{' '}
+          <a
+            href={`https://docs.google.com/spreadsheets/d/17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ/edit`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-600 hover:underline"
+          >
+            Google Sheets Campaign 2026
+          </a>.
+          Status dihitung otomatis berdasarkan tanggal hari ini.
+        </p>
+        <p className="font-medium text-slate-700">Struktur kolom yang diharapkan di Google Sheets:</p>
+        <div className="overflow-x-auto">
+          <table className="text-xs border-collapse w-full">
+            <thead>
+              <tr className="bg-slate-100">
+                {['Nama Aset','Platform','Tipe','Kampanye','Periode Mulai','Periode Selesai','Jam Tayang','Link File','Catatan'].map(h => (
+                  <th key={h} className="border border-slate-200 px-2 py-1 text-left font-semibold">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {['Preview [Shopee] Brand BaU','Shopee Live','BaU','Juni BaU','2026-06-01','2026-06-30','09:00–10:00','https://drive.google.com/...',''].map((v,i) => (
+                  <td key={i} className="border border-slate-200 px-2 py-1 text-slate-500 italic">{v}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Format tanggal: <code className="bg-slate-200 px-1 rounded">YYYY-MM-DD</code> atau <code className="bg-slate-200 px-1 rounded">DD/MM/YYYY</code>.
+          Agar fetch berjalan, sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong>.
+        </p>
+        <p className="mt-1">
+          <Link to="/framework/campaign-usage-management" className="text-brand-600 hover:underline">
+            Baca dokumentasi lengkap Campaign Usage Management →
+          </Link>
+        </p>
+      </div>
+    </PageLayout>
+  )
+}

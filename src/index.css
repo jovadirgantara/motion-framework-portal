@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply text-slate-800 bg-white;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+}
+
+@layer components {
+  /* ── Mono eyebrow label above section headings ── */
+  .eyebrow {
+    @apply font-mono text-2xs text-brand-600 tracking-widest uppercase;
+  }
+
+  /* ── Section heading — left-aligned, tight ── */
+  .section-heading {
+    @apply text-xl font-semibold tracking-tight text-slate-900;
+  }
+
+  /* ── Precision card — border only, no shadow ── */
+  .card {
+    @apply bg-white border border-slate-200 rounded transition-colors;
+  }
+  .card-hover {
+    @apply hover:border-brand-400;
+  }
+
+  /* ── Mono badge ── */
+  .badge-mono {
+    @apply font-mono text-2xs bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded;
+  }
+
+  /* ── Divider line ── */
+  .section-divider {
+    @apply border-t border-slate-200;
+  }
+
+  /* ── Framework prose ── */
+  .prose-framework {
+    @apply text-slate-700 leading-relaxed;
+  }
+  .prose-framework h2 {
+    @apply text-xl font-semibold tracking-tight text-slate-900 mt-8 mb-3 first:mt-0;
+  }
+  .prose-framework h3 {
+    @apply text-base font-semibold text-slate-800 mt-6 mb-2;
+  }
+  .prose-framework p {
+    @apply mb-4;
+  }
+  .prose-framework ul {
+    @apply list-disc list-inside mb-4 space-y-1;
+  }
+  .prose-framework ol {
+    @apply list-decimal list-inside mb-4 space-y-1;
+  }
+  .prose-framework table {
+    @apply w-full text-sm mb-4 border-collapse;
+  }
+  .prose-framework th {
+    @apply text-left font-semibold text-slate-700 border-b border-slate-200 pb-2 pr-4;
+  }
+  .prose-framework td {
+    @apply border-b border-slate-100 py-2 pr-4 align-top;
+  }
+  .prose-framework code {
+    @apply font-mono text-sm bg-slate-100 px-1.5 py-0.5 rounded text-brand-700;
+  }
+  .prose-framework pre {
+    @apply font-mono text-sm bg-slate-900 text-slate-100 p-4 rounded overflow-x-auto mb-4;
+  }
+  .prose-framework pre code {
+    @apply bg-transparent text-slate-100 p-0;
+  }
+  .prose-framework blockquote {
+    @apply border-l-2 border-brand-400 pl-4 italic text-slate-600 mb-4;
+  }
+  .prose-framework strong {
+    @apply font-semibold text-slate-900;
+  }
+}

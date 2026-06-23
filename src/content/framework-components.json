@@ -1,0 +1,269 @@
+[
+  {
+    "id": "visual-hierarchy",
+    "order": 1,
+    "title": "Standar Visual Hierarchy",
+    "summary": "Enam prinsip hierarki visual yang memastikan informasi paling penting (harga, diskon, countdown) selalu terbaca pertama oleh penonton live commerce.",
+    "route": "/framework/visual-hierarchy",
+    "relatedToolId": "visual-hierarchy-checklist",
+    "relatedToolLabel": "Cek Aset dengan VH Checklist",
+    "icon": "👁️",
+    "sections": [
+      {
+        "heading": "Apa itu Visual Hierarchy dalam Konteks Live Commerce?",
+        "body": "Visual hierarchy adalah sistem pengorganisasian elemen visual berdasarkan urutan kepentingan informasi. Dalam siaran live commerce, penonton memiliki rentang atensi sangat pendek — framework ini memastikan mata mereka diarahkan ke informasi yang paling kritis terlebih dahulu.\n\n[Konten akan dikembangkan dari Bab II skripsi — bagian landasan teori visual hierarchy dan penerapannya di live commerce Indonesia]"
+      },
+      {
+        "heading": "Prinsip 1: Size (Ukuran)",
+        "body": "Elemen yang lebih besar secara visual dianggap lebih penting. Harga, persentase diskon, dan countdown harus menjadi elemen terbesar dalam komposisi.\n\n**Penerapan di Live Commerce:**\n- Angka harga: ukuran font minimal 72–96pt dalam komposisi 1080×1920\n- Label produk: 50–70% ukuran angka harga\n- Keterangan tambahan: 30–50% ukuran harga\n\n[Detail lengkap dan contoh visual akan ditambahkan setelah validasi ahli]"
+      },
+      {
+        "heading": "Prinsip 2: Contrast (Kontras)",
+        "body": "Kontras tinggi antara elemen informasi dengan latar belakang siaran memastikan keterbacaan dalam berbagai kondisi pencahayaan studio.\n\n**Standar minimum:**\n- Rasio kontras teks utama terhadap background: minimal 4.5:1 (WCAG AA)\n- Untuk teks flash sale / urgensi tinggi: rekomendasi ≥ 7:1 (WCAG AAA)\n\n[Detail teknis dan contoh pengukuran kontras akan ditambahkan]"
+      },
+      {
+        "heading": "Prinsip 3: Color (Warna)",
+        "body": "Warna digunakan secara hierarkis dan konsisten untuk mengkomunikasikan kategori informasi, bukan sekadar dekorasi.\n\n**Panduan umum:**\n- Merah / oranye: diskon, urgensi, flash sale\n- Kuning / emas: featured product, promo utama\n- Putih / abu terang: informasi sekunder, keterangan\n- Hindari lebih dari 3 warna dominan dalam satu aset\n\n[Palet spesifik per platform akan ditambahkan]"
+      },
+      {
+        "heading": "Prinsip 4: Proximity (Kedekatan)",
+        "body": "Elemen yang berkaitan secara informasi harus berdekatan secara spasial. Ini membantu penonton membaca blok informasi sebagai satu unit.\n\n**Contoh pengelompokan yang benar:**\n- [Nama Produk] + [Harga Normal] + [Harga Promo] → satu grup\n- [Countdown jam] + [menit] + [detik] → satu grup\n- Tiap grup dipisahkan ruang putih yang cukup\n\n[Diagram layout akan ditambahkan]"
+      },
+      {
+        "heading": "Prinsip 5: Alignment (Penyelarasan)",
+        "body": "Penyelarasan yang konsisten menciptakan kesan profesional dan memudahkan mata bergerak secara prediktif antar-elemen.\n\n**Standar alignment:**\n- Gunakan grid berbasis persentase, bukan pixel absolut\n- Safe zone: jaga 5–10% margin dari tepi komposisi\n- Konsistensi alignment antar-aset dalam satu sesi live\n\n[Panduan grid sistem akan ditambahkan]"
+      },
+      {
+        "heading": "Prinsip 6: Motion (Gerak)",
+        "body": "Urutan dan karakter animasi menentukan alur atensi penonton. Elemen yang bergerak pertama atau paling menonjol akan mendapat atensi pertama.\n\n**Aturan motion dalam live commerce:**\n- Elemen utama: muncul pertama, animasi firm (tidak berlebihan)\n- Elemen pendukung: muncul setelah elemen utama terbaca\n- Loop element: pastikan transisi seamless, tidak distraktif\n- Hindari motion yang bersaing antara elemen dekoratif dan informatif\n\n[Contoh timing chart dan motion reference akan ditambahkan]"
+      }
+    ]
+  },
+  {
+    "id": "complexity",
+    "order": 2,
+    "title": "Klasifikasi Kompleksitas",
+    "summary": "Sistem klasifikasi 4 level untuk mengkategorikan aset motion graphic berdasarkan kompleksitasnya — basis perencanaan waktu produksi yang akurat.",
+    "route": "/framework/complexity",
+    "relatedToolId": "complexity-classifier",
+    "relatedToolLabel": "Klasifikasikan Aset Ini",
+    "icon": "📊",
+    "sections": [
+      {
+        "heading": "Mengapa Perlu Klasifikasi Kompleksitas?",
+        "body": "Salah satu masalah utama dalam produksi live commerce adalah ketidakmampuan memprediksi durasi pengerjaan. Lower-third sederhana dan countdown kompleks diperlakukan sama saat planning — ini menyebabkan estimasi meleset dan deadline terlanggar.\n\nSistem 4 level ini memberikan bahasa bersama antara designer dan creative manager untuk merencanakan kapasitas kerja secara realistis.\n\n[Konteks penelitian dan basis empiris level ini akan ditambahkan dari Bab II]"
+      },
+      {
+        "heading": "Level 1 — Simple / Sederhana (10–20 menit motion per brand)*",
+        "body": "**Karakteristik:**\n- Motion dasar: Shiny Asset, Scaling Judul & Badges, Pop-up/Slide Highlight\n- BG, Overlay, Footer standar\n- 1–3 elemen/layer animasi utama\n- Teknik: fade atau slide sederhana\n- Tidak ada efek tambahan\n\n**Contoh brand:** MuTouch, Sosro, WiZ, Fonterra\n\n**Estimasi render:** 5–10 menit\n\n**Workflow:** Langsung produksi. Brief singkat sudah cukup. Review internal 1 kali sebelum export.\n\n*Estimasi waktu motion per brand — akan dikalibrasi dari data pilot testing."
+      },
+      {
+        "heading": "Level 2 — Medium / Menengah (15–25 menit motion per brand)*",
+        "body": "**Karakteristik:**\n- Motion Level 1 + TVC + 2 Background atau lebih + Sweetener Element\n- 4–8 elemen/layer animasi\n- Teknik: keyframe multi-property\n- Efek ringan (shadow, glow sederhana)\n\n**Contoh brand:** Moist Diane, KOSE, KCS, Mars\n\n**Estimasi render:** 5–15 menit\n\n**Workflow:** Buat motion board / storyboard singkat sebelum produksi. Satu putaran revisi sudah diperhitungkan.\n\n*Estimasi waktu motion per brand — akan dikalibrasi dari data pilot testing."
+      },
+      {
+        "heading": "Level 3 — Advanced / Kompleks (30–40 menit motion per brand)*",
+        "body": "**Karakteristik:**\n- Motion Level 2 + AI Generated BG/Element + More Sweetener Element + Requested Element\n- 9–15 elemen/layer animasi\n- Teknik: easing kompleks + parenting / pre-comp\n- Efek berat (blur, particle, AI-generated asset integration)\n\n**Contoh brand:** PCI, Batiste, Nutrimart\n\n**Estimasi render:** 10–20 menit\n\n**Workflow:** Wajib brief lengkap + referensi visual. Planning 15 menit sebelum produksi. Minimal 2 putaran review.\n\n*Estimasi waktu motion per brand — akan dikalibrasi dari data pilot testing."
+      },
+      {
+        "heading": "Level 4 — Period / Multi-periode (30–60 menit per brand)*",
+        "body": "**Karakteristik:**\n- Motion Level 3 atau Level 2 + lebih dari 1 Usage Date Period\n- Aset yang sama digunakan untuk beberapa periode / kampanye berbeda\n- Membutuhkan manajemen versi yang lebih ketat\n- Koordinasi jadwal dengan Campaign Usage Management wajib dilakukan\n\n**Contoh brand:** KINO Family, L-MEN, Sleek\n\n**Estimasi render:** 20–30 menit\n\n**Workflow:** Wajib kick-off meeting. Bagi ke sub-task per periode. Alokasikan buffer untuk render & revisi. Koordinasi langsung dengan Campaign Usage Management untuk input jadwal.\n\n*Estimasi waktu motion per brand — akan dikalibrasi dari data pilot testing."
+      }
+    ]
+  },
+  {
+    "id": "workflow",
+    "order": 3,
+    "title": "Workflow Produksi",
+    "summary": "Tiga fase produksi terstandarisasi (pra-produksi, produksi, pasca-produksi) dengan checklist per fase untuk memastikan tidak ada langkah kritis yang terlewat.",
+    "route": "/framework/workflow",
+    "relatedToolId": null,
+    "icon": "🔄",
+    "sections": [
+      {
+        "heading": "Gambaran Umum Workflow",
+        "body": "Framework ini membagi produksi motion graphic live commerce menjadi tiga fase dengan gate review di antara setiap fase. Ini memastikan masalah teridentifikasi lebih awal, sebelum cost of change menjadi tinggi.\n\n[Diagram workflow lengkap akan ditambahkan dari Bab III]"
+      },
+      {
+        "heading": "Fase 1: Pra-Produksi",
+        "body": "**Tujuan:** Pastikan semua informasi tersedia sebelum mulai membuka After Effects.\n\n**Checklist Pra-Produksi:**\n- [ ] Brief diterima dan dipahami (platform, tujuan aset, deadline)\n- [ ] Referensi visual / moodboard dikumpulkan\n- [ ] Spesifikasi platform dikonfirmasi (resolusi, fps, format output)\n- [ ] Nama file dan struktur folder disiapkan (gunakan Naming Generator)\n- [ ] Level kompleksitas diklasifikasikan dan estimasi waktu disepakati\n- [ ] Aset yang dibutuhkan tersedia (logo, font, warna brand)\n\n[Detail per sub-task akan ditambahkan]"
+      },
+      {
+        "heading": "Fase 2: Produksi",
+        "body": "**Tujuan:** Eksekusi aset sesuai standar visual hierarchy dan spesifikasi teknis.\n\n**Checklist Produksi:**\n- [ ] Komposisi dibuat sesuai spesifikasi platform\n- [ ] Elemen utama (harga/countdown) diprioritaskan visual hierarchy-nya\n- [ ] VH Checklist dijalankan selama produksi (bukan hanya di akhir)\n- [ ] Naming layer konsisten (bukan 'Layer 1', 'Layer 2')\n- [ ] Pre-render / RAM preview untuk cek timing dan motion\n- [ ] File disimpan di folder yang benar dengan nama standar\n\n[Detail dan praktik terbaik akan ditambahkan]"
+      },
+      {
+        "heading": "Fase 3: Pasca-Produksi",
+        "body": "**Tujuan:** Export sesuai standar render, QC final, dan arsip file.\n\n**Checklist Pasca-Produksi:**\n- [ ] VH Checklist final dijalankan dan skor ≥ threshold\n- [ ] Render setting dikonfirmasi sesuai platform (gunakan Render Calculator)\n- [ ] File hasil render diperiksa: durasi, kualitas, alpha (jika ada)\n- [ ] File hasil export diberi nama sesuai konvensi\n- [ ] File project (.aep) di-archive di subfolder yang benar\n- [ ] Brief ditandai selesai dan stakeholder dinotifikasi\n\n[Panduan review dengan creative manager akan ditambahkan]"
+      }
+    ]
+  },
+  {
+    "id": "asset-management",
+    "order": 4,
+    "title": "Manajemen Aset & Struktur Folder",
+    "summary": "Standar organisasi file proyek: struktur folder berjenjang, sistem version control sederhana, dan panduan asset library untuk memastikan kolaborasi dan arsip yang rapi.",
+    "route": "/framework/asset-management",
+    "relatedToolId": "naming-generator",
+    "relatedToolLabel": "Generate Nama File",
+    "icon": "📁",
+    "sections": [
+      {
+        "heading": "Mengapa Manajemen Aset Perlu Distandarisasi?",
+        "body": "Tanpa standar, tiap designer memiliki sistem folder sendiri. Akibatnya: aset tidak bisa ditemukan, render lama tidak tahu mana versi final, dan onboarding designer baru memakan waktu berminggu-minggu hanya untuk memahami struktur file.\n\n[Konteks masalah dari kondisi aktual industri akan ditambahkan dari Bab IV]"
+      },
+      {
+        "heading": "Struktur Folder Standar",
+        "body": "```\n/Projects/\n└── {PLATFORM}/              ← mis. Shopee, TikTok, Generic\n    └── {NamaProject}/        ← mis. FlashSale_Juni2026\n        ├── 01_Brief/         ← dokumen brief, referensi\n        ├── 02_Assets/        ← aset sumber (logo, foto, font)\n        │   ├── Fonts/\n        │   ├── Images/\n        │   └── Audio/\n        ├── 03_WorkingFiles/  ← file .aep (working)\n        ├── 04_Renders/       ← pre-render / preview\n        └── 05_Exports/       ← file final yang diserahkan\n            ├── ForClient/\n            └── Archive/\n```\n\nTiap subfolder memiliki tujuan spesifik. Jangan campur file sumber dengan file export.\n\n[Panduan lebih detail dan rasionalisasi tiap subfolder akan ditambahkan]"
+      },
+      {
+        "heading": "Version Control Sederhana",
+        "body": "Tanpa tools khusus (git terlalu kompleks untuk aset biner), version control dilakukan melalui:\n\n1. **Naming convention** — versi tercantum di nama file (`_v01`, `_v02`)\n2. **Tidak pernah overwrite** — selalu simpan versi baru sebagai file terpisah\n3. **File `_FINAL` dan `_ARCHIVE`** — tandai file final yang sudah diserahkan\n4. **README.txt di folder project** — catatan singkat tentang status project\n\n[Contoh kasus dan workflow version control akan ditambahkan]"
+      },
+      {
+        "heading": "Asset Library",
+        "body": "Asset library adalah koleksi aset yang dapat digunakan ulang lintas project:\n\n**Isi standar Asset Library:**\n- Template .aep per jenis aset (lower third, countdown, dll)\n- Palet warna per platform\n- Font yang sudah dilisensikan\n- Sound effects standar\n- Referensi animasi / timing chart\n\n**Lokasi:** `/Library/` di luar struktur project (bukan per-project)\n\n[Panduan pemeliharaan asset library akan ditambahkan]"
+      }
+    ]
+  },
+  {
+    "id": "naming-convention",
+    "order": 5,
+    "title": "Naming Convention",
+    "summary": "Aturan penamaan Display Name untuk aset motion graphic live commerce — memastikan setiap file dapat diidentifikasi tanpa harus membukanya. Digunakan di jadwal kampanye dan komunikasi tim.",
+    "route": "/framework/naming-convention",
+    "relatedToolId": "naming-generator",
+    "relatedToolLabel": "Generate Nama Aset Sekarang",
+    "icon": "🏷️",
+    "sections": [
+      {
+        "heading": "Format Display Name",
+        "body": "Format standar untuk identifikasi aset di jadwal kampanye dan komunikasi tim:\n\n`FileType [Platform] Brand MockupType Campaign (Periode) (Jam)`\n\n**Contoh nyata:**\n- `Preview [TikTok] Snickers Mingyu BaU (07 - 24 Juni) (09:00 - 10:00)`\n- `BG [Shopee] Samsung Di Stroller PayDay (25 Jun) (14:00 - 15:00)`\n- `Footer [TikTok] Wardah Couple Double Date (05 - 06 Jul)`\n\nFormat ini sengaja menggunakan spasi dan kurung karena dibaca manusia (operator, lead, klien), bukan dibaca sistem file."
+      },
+      {
+        "heading": "Anatomi Setiap Segmen",
+        "body": "| Segmen | Pilihan | Keterangan |\n|---|---|---|\n| FileType | BG, Overlay, Footer, Maskot, Other | Jenis output aset |\n| [Platform] | [Shopee], [TikTok] | Platform siaran dalam kurung kotak |\n| Brand | bebas (wajib) | Nama brand, mis. Snickers, Samsung |\n| MockupType | bebas (wajib) | Deskripsi mockup, mis. Mingyu, Di Stroller |\n| Campaign | BaU, PayDay, Double Date, Other | Tipe kampanye |\n| (Periode) | opsional | Rentang tanggal, mis. (07 - 24 Juni) |\n| (Jam) | opsional | Jam tayang, mis. (09:00 - 10:00) |"
+      },
+      {
+        "heading": "Tipe Campaign",
+        "body": "| Kode | Kepanjangan | Penggunaan |\n|---|---|---|\n| BaU | Business as Usual | Konten reguler tanpa event khusus |\n| PayDay | Pay Day | Kampanye tanggal gajian (akhir/awal bulan) |\n| Double Date (DD) | Double Date | Event tanggal ganda: 7.7, 8.8, 11.11, dll |\n| Other | Kustom | Event lain — isi nama sendiri |"
+      },
+      {
+        "heading": "Platform yang Didukung",
+        "body": "| Platform | Label di nama |\n|---|---|\n| Shopee Live | [Shopee] |\n| TikTok Shop | [TikTok] |"
+      },
+      {
+        "heading": "Praktik Do / Don't",
+        "body": "**DO:**\n- Generate nama sebelum mulai produksi — gunakan Naming Generator\n- Gunakan nama yang deskriptif dan bisa dibaca tanpa konteks tambahan\n- Sertakan periode dan jam tayang untuk aset campaign-spesifik\n\n**DON'T:**\n- Jangan gunakan 'FINAL', 'FINAL2', 'COPY' — tidak informatif\n- Jangan singkat brand hingga tidak terbaca (mis. 'SNK' untuk 'Snickers')\n- Jangan campur format — gunakan konvensi ini secara konsisten di seluruh tim"
+      }
+    ]
+  },
+  {
+    "id": "render-standard",
+    "order": 6,
+    "title": "Render Standard",
+    "summary": "Spesifikasi output teknis per platform dan jenis penggunaan — codec, resolusi, fps, bitrate, dan penanganan alpha channel — agar aset kompatibel dengan pipeline live streaming.",
+    "route": "/framework/render-standard",
+    "relatedToolId": "render-calculator",
+    "relatedToolLabel": "Cek Render Setting",
+    "icon": "🎬",
+    "sections": [
+      {
+        "heading": "Mengapa Render Standard Penting?",
+        "body": "Output yang salah spesifikasi menyebabkan: alpha channel hilang (overlay tampil kotak hitam), motion graphic pecah saat dikompres platform, atau warna bergeser setelah upload.\n\nStandar ini memastikan output dapat langsung dipakai tanpa troubleshooting di menit-menit terakhir sebelum live.\n\n[Data dari kondisi aktual lapangan akan ditambahkan]"
+      },
+      {
+        "heading": "Tiga Jenis Output",
+        "body": "| Jenis Output | Digunakan untuk | Format yang Direkomendasikan |\n|---|---|---|\n| **Overlay + Alpha** | Lower third, footer, badge di atas video siaran | ProRes 4444 (.mov) |\n| **Full-frame Video** | Intro bumper, outro, background penuh | H.264 (.mp4) |\n| **Loop Element** | Animasi berulang (countdown, sparkle) | ProRes 4444 atau PNG Sequence |"
+      },
+      {
+        "heading": "Mengapa ProRes 4444 untuk Overlay?",
+        "body": "H.264 dan H.265 tidak mendukung alpha channel. Jika Anda mengekspor overlay transparan ke format H.264, latar belakang hitam akan muncul di siaran live.\n\n**ProRes 4444** mendukung channel alpha (RGBA) dan kualitas lossless praktis yang mempertahankan detail tepi elemen transparan.\n\n**Di OBS:** Tambahkan file ProRes .mov sebagai 'Media Source'. OBS akan membaca alpha channel secara otomatis jika file diekspor dengan benar.\n\n[Panduan langkah demi langkah di After Effects dan OBS akan ditambahkan]"
+      },
+      {
+        "heading": "Catatan Spesifikasi per Platform",
+        "body": "**Shopee Live & Tokopedia Live:** Landscape 9:16, 1080×1920, 30fps\n\n**TikTok Shop:** Portrait 9:16, 1080×1920, 30fps — **Perhatian:** canvas berbeda dari platform landscape!\n\n**OBS Generic:** Menyesuaikan resolusi output streaming yang dikonfigurasi di OBS. Default industri: 1080×1920, 30fps.\n\n> Spesifikasi platform dapat berubah seiring update aplikasi. Selalu konfirmasi dengan dokumentasi terbaru platform sebelum produksi massal.\n\n[Tabel lengkap dan perbandingan platform akan ditambahkan]"
+      }
+    ]
+  },
+  {
+    "id": "quality-control",
+    "order": 7,
+    "title": "Quality Control",
+    "summary": "Standar QC berbasis 6 prinsip visual hierarchy: cara menjalankan checklist review, membaca skor adherence, dan mengidentifikasi isu yang harus diperbaiki sebelum file diserahkan.",
+    "route": "/framework/quality-control",
+    "relatedToolId": "visual-hierarchy-checklist",
+    "relatedToolLabel": "Jalankan QC Checklist",
+    "icon": "✅",
+    "sections": [
+      {
+        "heading": "Apa itu QC dalam Konteks Framework Ini?",
+        "body": "Quality Control di sini secara spesifik merujuk pada review kepatuhan terhadap standar visual hierarchy — bukan hanya 'apakah animasinya bagus' secara subjektif, tapi 'apakah hierarki informasi sudah benar secara terukur'.\n\nSkor adherence % adalah metrik utama yang dikumpulkan dalam pilot testing untuk mengukur efektivitas framework.\n\n[Definisi operasional dan hubungan dengan instrumen penelitian akan ditambahkan dari Bab III]"
+      },
+      {
+        "heading": "Cara Menjalankan QC Checklist",
+        "body": "1. **Buka VH Checklist Tool** — tersedia di menu Tools\n2. **Review aset** di tampilan sebenarnya (preview di OBS atau player video)\n3. **Nilai tiap kriteria** — Pass / Fail / N/A berdasarkan apa yang terlihat, bukan niat\n4. **Baca skor adherence** — total dan breakdown per prinsip\n5. **Perbaiki semua item Fail** sebelum export final\n6. **Export ringkasan** untuk dokumentasi / arsip\n\n> Jalankan checklist minimal sekali di tengah produksi (bukan hanya saat selesai) untuk menghemat waktu revisi."
+      },
+      {
+        "heading": "Membaca Hasil Checklist",
+        "body": "**Adherence % ≥ 75% (Sesuai Standar):**\nAset layak export. Catat item yang masih Fail untuk perbaikan di iterasi berikutnya.\n\n**Adherence % 50–74% (Perlu Perbaikan):**\nAda beberapa isu visual hierarchy yang signifikan. Perbaiki item Fail di prinsip yang skornya paling rendah terlebih dahulu.\n\n**Adherence % < 50% (Tidak Layak Export):**\nAset butuh revisi substansial. Review ulang pemahaman visual hierarchy sebelum lanjut.\n\n> Threshold 75% adalah default SEED yang akan dikalibrasi dari hasil validasi ahli.\n\n[Panduan interpretasi dan contoh kasus akan ditambahkan]"
+      },
+      {
+        "heading": "QC dalam Pipeline Produksi",
+        "body": "**Kapan menjalankan QC:**\n- Di tengah fase produksi (setelah layout dasar selesai)\n- Sebelum render final (setelah semua animasi selesai)\n- Setelah revisi dari klien / creative manager\n\n**Siapa yang menjalankan:**\n- Designer yang mengerjakan: self-review\n- Creative manager / art director: final approval review\n\n**Dokumentasi:** Export ringkasan checklist dan simpan bersama file project di folder `01_Brief/` sebagai bukti QC."
+      }
+    ]
+  },
+  {
+    "id": "campaign-usage-management",
+    "order": 8,
+    "title": "Campaign Usage Management",
+    "summary": "Sistem penjadwalan dan pelacakan penggunaan aset motion graphic per kampanye — dikelola Motion Designer Lead melalui Google Sheets, ditampilkan live di portal untuk dikonsumsi operator live stream.",
+    "route": "/framework/campaign-usage-management",
+    "relatedToolId": null,
+    "relatedToolLabel": null,
+    "campaignScheduleLink": true,
+    "icon": "📅",
+    "sections": [
+      {
+        "heading": "Apa itu Campaign Usage Management?",
+        "body": "Campaign Usage Management adalah komponen ke-8 framework yang mengelola siklus hidup penggunaan aset motion graphic terhadap jadwal kampanye live commerce. Campaign Usage Management menjawab masalah spesifik: operator live stream sering tidak tahu aset mana yang berlaku untuk sesi siaran tertentu, harus koordinasi manual ke tim produksi, atau bahkan menggunakan aset yang sudah kedaluwarsa.\n\nDengan Campaign Usage Management, informasi jadwal aset tersedia secara mandiri di portal — operator cukup buka halaman Jadwal Kampanye, lihat status, dan langsung buka file yang dibutuhkan."
+      },
+      {
+        "heading": "Arsitektur: Display Layer, Bukan Interactive Tool",
+        "body": "Campaign Usage Management secara arsitektur berbeda dari 4 Minimal Interactive Tools lainnya:\n\n**4 Interactive Tools (Naming Generator, Complexity Classifier, VH Checklist, Render Calculator):**\n- Berjalan sepenuhnya di browser (client-side stateless)\n- Input dari pengguna → diproses → output langsung ditampilkan\n- Tidak ada fetch ke server eksternal\n\n**Campaign Usage Management (Halaman Jadwal Kampanye):**\n- Server-fetched display layer\n- Portal mengambil data dari Google Sheets saat halaman dibuka\n- Data diinput oleh Motion Designer Lead (bukan oleh operator)\n- Operator hanya membaca dan membuka link file — tidak bisa edit\n\nPemisahan arsitektur ini penting: 4 tools adalah produk interaktif yang diuji dalam pilot testing; Campaign Usage Management adalah fitur operasional yang divalidasi relevansinya oleh ahli."
+      },
+      {
+        "heading": "Alur Kerja Campaign Usage Management",
+        "body": "**Pihak Motion Designer Lead (pengisi data):**\n1. Buka Google Sheets yang sudah disiapkan sebagai sumber data\n2. Isi atau perbarui data kampanye: nama aset, platform, mockup type, kampanye, periode & jam tayang, link file\n3. Portal otomatis memperbarui tampilan saat halaman di-refresh\n\n**Pihak Operator Live Stream (pengguna data):**\n1. Buka halaman Jadwal Kampanye di portal\n2. Lihat tabel aset dengan badge status otomatis:\n   - 🟢 **Aktif** — aset berlaku sekarang\n   - 🟡 **Akan Datang** — jadwal belum dimulai\n   - 🔴 **Kedaluwarsa** — masa berlaku sudah lewat\n3. Klik tombol 'Buka File' untuk akses langsung ke Google Drive / storage\n4. Gunakan filter platform atau status untuk mempersempit pencarian\n\n[Panduan teknis setup Google Sheets sebagai sumber data akan ditambahkan]"
+      },
+      {
+        "heading": "Data yang Dikelola",
+        "body": "Setiap entri kampanye berisi:\n\n| Field | Keterangan | Contoh |\n|---|---|---|\n| Nama Aset | Nama file aset sesuai naming convention | `Preview [Shopee] Snickers BaU` |\n| Platform | Platform tujuan siaran | Shopee Live / TikTok Shop |\n| Mockup Type | Jenis tampilan aset | BaU / PayDay / 5.5 |\n| Kampanye | Kode kampanye / event | PayDay Juni / 6.6 |\n| Periode | Rentang tanggal berlaku | 25–30 Juni 2026 |\n| Jam Tayang | Jam mulai–selesai | 18:00–20:00 |\n| Link File | Link langsung ke Google Drive | [Buka File] |\n| Status | Dihitung otomatis oleh portal | Aktif / Akan Datang / Kedaluwarsa |"
+      },
+      {
+        "heading": "Hubungan dengan Komponen Framework Lainnya",
+        "body": "Campaign Usage Management merupakan komponen hilir yang bergantung pada komponen lainnya:\n\n- **Naming Convention** — nama aset di Campaign Usage Management mengikuti standar naming convention agar mudah diidentifikasi\n- **Asset Management** — Campaign Usage Management melengkapi folder system dengan lapisan penjadwalan berbasis waktu\n- **Quality Control** — hanya aset yang sudah lulus QC yang masuk ke jadwal Campaign Usage Management\n\nCampaign Usage Management menutup loop produksi: dari perencanaan aset → produksi → QC → **distribusi jadwal ke operator** → siaran live.\n\n[Diagram alur lengkap akan ditambahkan dari Bab III Arsitektur Sistem]"
+      }
+    ]
+  },
+  {
+    "id": "framework-overview",
+    "order": 0,
+    "title": "Framework Overview",
+    "summary": "Gambaran keseluruhan 8 komponen konstitutif Framework Produksi Motion Graphic Live Commerce Berbasis Visual Hierarchy.",
+    "route": "/framework",
+    "relatedToolId": null,
+    "icon": "🗺️",
+    "sections": [
+      {
+        "heading": "Tentang Framework Ini",
+        "body": "Framework Produksi Motion Graphic Live Commerce Berbasis Visual Hierarchy adalah sistem kerja terstandarisasi yang dikembangkan melalui penelitian Design and Development Research (DDR) di lingkungan industri live commerce Indonesia.\n\nFramework ini menjawab masalah nyata: tidak adanya standar produksi baku yang menyebabkan inkonsistensi visual, estimasi waktu yang tidak akurat, manajemen file yang kacau, operator yang menggunakan aset salah atau kedaluwarsa, dan onboarding designer baru yang lambat.\n\n[Konteks penelitian lengkap dan tinjauan pustaka tersedia di halaman /about]"
+      },
+      {
+        "heading": "8 Komponen Konstitutif",
+        "body": "Framework terdiri dari 8 komponen yang saling terhubung dan membentuk satu kesatuan sistem produksi:\n\n1. **Visual Hierarchy Standard** — 6 prinsip visual yang mengatur prioritas informasi dalam aset live commerce\n2. **Complexity Classification** — sistem level 1–4 untuk klasifikasi aset dan estimasi waktu produksi yang akurat\n3. **Production Workflow** — 3 fase produksi terstandarisasi (pra-produksi, produksi, pasca-produksi) dengan gate review\n4. **Asset Management** — standar organisasi file, struktur folder, dan version control sederhana\n5. **Naming Convention** — format penamaan file yang konsisten dan dapat diidentifikasi tanpa membuka file\n6. **Render Standard** — spesifikasi output teknis per platform dan jenis penggunaan\n7. **Quality Control** — checklist review terukur berbasis prinsip visual hierarchy sebelum distribusi\n8. **Campaign Usage Management** — sistem penjadwalan dan pelacakan aset per kampanye untuk operator live stream\n\nKomponen 1 (Visual Hierarchy) adalah **inti filosofis** framework. Komponen 2–7 mendukung penerapan prinsip visual hierarchy secara konsisten dan terukur. Komponen 8 menutup loop produksi dengan memastikan aset yang tepat sampai ke operator pada waktu yang tepat."
+      }
+    ]
+  }
+]

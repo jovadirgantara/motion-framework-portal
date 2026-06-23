@@ -1,0 +1,21 @@
+{
+  "_note": "Semua nilai di file ini adalah default yang dapat dikalibrasi. Ubah di sini tanpa menyentuh komponen React.",
+  "platforms": [
+    { "value": "Shopee", "label": "Shopee Live" },
+    { "value": "TikTok", "label": "TikTok Shop" }
+  ],
+  "assetTypes": [
+    { "value": "Preview",      "label": "Preview" },
+    { "value": "BG",      "label": "BG" },
+    { "value": "Overlay", "label": "Overlay" },
+    { "value": "Footer",  "label": "Footer" },
+    { "value": "Maskot",  "label": "Maskot" },
+    { "value": "Other",   "label": "Other (kustom)" }
+  ],
+  "campaignTypes": [
+    { "value": "BaU",          "label": "BaU" },
+    { "value": "PayDay",       "label": "PayDay" },
+    { "value": "Double Date",  "label": "Double Date (DD)" },
+    { "value": "Other",        "label": "Other (kustom)" }
+  ]
+}

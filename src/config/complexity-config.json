@@ -1,0 +1,173 @@
+{
+  "_note": "SEED VALUES — Bobot skor dan threshold BELUM FINAL. Akan dikalibrasi dari data pilot testing.",
+  "dimensions": [
+    {
+      "id": "MC",
+      "label": "Motion Complexity",
+      "questions": [
+        {
+          "id": "mc1",
+          "text": "Apakah menggunakan sweetener element?",
+          "options": [
+            { "label": "Tidak", "score": 0 },
+            { "label": "Ya", "score": 5 }
+          ]
+        },
+        {
+          "id": "mc2",
+          "text": "Apakah terdapat custom / requested animation?",
+          "options": [
+            { "label": "Tidak", "score": 0 },
+            { "label": "Ya", "score": 10 }
+          ]
+        },
+        {
+          "id": "mc3",
+          "text": "Apakah menggunakan AI generated element?",
+          "options": [
+            { "label": "Tidak", "score": 0 },
+            { "label": "Ya", "score": 5 }
+          ]
+        },
+        {
+          "id": "mc4",
+          "text": "Jenis animasi yang digunakan",
+          "options": [
+            { "label": "Basic (Shiny, Scaling, Pop-up)", "score": 0 },
+            { "label": "Intermediate", "score": 5 },
+            { "label": "Advanced", "score": 10 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AC",
+      "label": "Asset Complexity",
+      "questions": [
+        {
+          "id": "ac1",
+          "text": "Menggunakan TVC / Video Background?",
+          "options": [
+            { "label": "Tidak", "score": 0 },
+            { "label": "Ya", "score": 5 }
+          ]
+        },
+        {
+          "id": "ac2",
+          "text": "Jumlah Background",
+          "options": [
+            { "label": "1 Background", "score": 0 },
+            { "label": "2–3 Background", "score": 5 },
+            { "label": "> 3 Background", "score": 10 }
+          ]
+        },
+        {
+          "id": "ac3",
+          "text": "Jumlah Graphic Element",
+          "options": [
+            { "label": "Sedikit", "score": 0 },
+            { "label": "Sedang", "score": 5 },
+            { "label": "Banyak", "score": 10 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CC",
+      "label": "Campaign Complexity",
+      "questions": [
+        {
+          "id": "cc1",
+          "text": "Jumlah Campaign Usage Period",
+          "options": [
+            { "label": "1 Period", "score": 0 },
+            { "label": "2–3 Period", "score": 10 },
+            { "label": "> 3 Period", "score": 20 }
+          ]
+        },
+        {
+          "id": "cc2",
+          "text": "Jumlah Produk / SKU",
+          "options": [
+            { "label": "1–5 SKU", "score": 0 },
+            { "label": "6–15 SKU", "score": 5 },
+            { "label": "> 15 SKU", "score": 10 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RC",
+      "label": "Revision Complexity",
+      "questions": [
+        {
+          "id": "rc1",
+          "text": "Apakah brand memiliki guideline ketat?",
+          "options": [
+            { "label": "Tidak", "score": 0 },
+            { "label": "Ya", "score": 5 }
+          ]
+        },
+        {
+          "id": "rc2",
+          "text": "Jumlah stakeholder approval",
+          "options": [
+            { "label": "1 Approval", "score": 0 },
+            { "label": "2 Approval", "score": 5 },
+            { "label": "> 2 Approval", "score": 10 }
+          ]
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "level": 1,
+      "label": "LVL 1",
+      "sublabel": "Simple",
+      "minScore": 0,
+      "maxScore": 25,
+      "estimasiProduksi": "10–20 menit",
+      "estimasiRender": "5–10 menit",
+      "estimasiNote": "default SEED, belum dikalibrasi dari pilot testing",
+      "karakteristik": ["Shiny Asset", "Scaling", "Pop-up", "Single Background", "Overlay sederhana"],
+      "badgeColor": "green"
+    },
+    {
+      "level": 2,
+      "label": "LVL 2",
+      "sublabel": "Medium",
+      "minScore": 26,
+      "maxScore": 50,
+      "estimasiProduksi": "15–25 menit",
+      "estimasiRender": "5–15 menit",
+      "estimasiNote": "default SEED, belum dikalibrasi dari pilot testing",
+      "karakteristik": ["TVC", "Multiple Background", "Sweetener Element"],
+      "badgeColor": "blue"
+    },
+    {
+      "level": 3,
+      "label": "LVL 3",
+      "sublabel": "Advanced",
+      "minScore": 51,
+      "maxScore": 75,
+      "estimasiProduksi": "30–40 menit",
+      "estimasiRender": "10–20 menit",
+      "estimasiNote": "default SEED, belum dikalibrasi dari pilot testing",
+      "karakteristik": ["AI Generated Asset", "Requested Element", "Multiple Sweetener", "Complex Asset Structure"],
+      "badgeColor": "yellow"
+    },
+    {
+      "level": 4,
+      "label": "LVL 4",
+      "sublabel": "Period",
+      "minScore": 76,
+      "maxScore": 100,
+      "estimasiProduksi": "30–60 menit",
+      "estimasiRender": "20–30 menit",
+      "estimasiNote": "default SEED, belum dikalibrasi dari pilot testing",
+      "karakteristik": ["Multi Campaign Usage", "Multi Period Usage", "Large Scale Asset Management", "High Revision Potential"],
+      "badgeColor": "red"
+    }
+  ]
+}

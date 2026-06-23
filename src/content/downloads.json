@@ -1,0 +1,38 @@
+[
+  {
+    "id": "framework-pdf",
+    "title": "Framework PDF — Ringkasan Lengkap",
+    "description": "Dokumen PDF yang merangkum semua 7 komponen framework produksi motion graphic live commerce dalam format printable.",
+    "fileUrl": "/downloads/framework-mglc.pdf",
+    "fileType": "pdf",
+    "available": false,
+    "availableNote": "Tersedia setelah validasi ahli selesai"
+  },
+  {
+    "id": "folder-template",
+    "title": "Folder Template — Struktur Proyek Standar",
+    "description": "Arsip .zip berisi struktur folder kosong siap pakai: Projects/, Library/, dengan semua subfolder sesuai standar framework.",
+    "fileUrl": "/downloads/folder-template.zip",
+    "fileType": "zip",
+    "available": false,
+    "availableNote": "Tersedia setelah pilot testing"
+  },
+  {
+    "id": "vh-checklist-print",
+    "title": "VH Checklist — Printable",
+    "description": "Versi cetak dari Visual Hierarchy Checklist dalam format A4, lengkap dengan kolom Pass/Fail/N/A dan ruang catatan.",
+    "fileUrl": "/downloads/vh-checklist-printable.pdf",
+    "fileType": "pdf",
+    "available": false,
+    "availableNote": "Tersedia setelah pilot testing"
+  },
+  {
+    "id": "render-presets",
+    "title": "Render Presets — Referensi Cepat",
+    "description": "Kartu referensi render setting untuk semua platform dalam format PDF: codec, resolusi, fps, bitrate, alpha untuk Shopee, TikTok Shop, Tokopedia, dan OBS.",
+    "fileUrl": "/downloads/render-presets.pdf",
+    "fileType": "pdf",
+    "available": false,
+    "availableNote": "Tersedia setelah validasi ahli selesai"
+  }
+]

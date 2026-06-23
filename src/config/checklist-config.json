@@ -1,0 +1,178 @@
+{
+  "_note": "Visual Hierarchy Checklist — Quality Control untuk Motion Graphic Live Commerce. PASS=1, FAIL=0, N/A=tidak dihitung.",
+  "categories": [
+    {
+      "id": "cat1",
+      "label": "Information Priority",
+      "indicators": [
+        {
+          "id": "cat1_1",
+          "text": "Apakah terdapat informasi utama yang jelas?",
+          "hint": "Contoh: Produk, Harga, atau Diskon. PASS jika terdapat satu informasi utama yang dominan."
+        },
+        {
+          "id": "cat1_2",
+          "text": "Apakah urutan prioritas informasi sudah jelas?",
+          "hint": "Primary → Secondary → Supporting. PASS jika pengguna dapat mengetahui informasi paling penting dalam 3 detik pertama."
+        },
+        {
+          "id": "cat1_3",
+          "text": "Apakah tidak ada lebih dari dua focal point yang bersaing dalam waktu bersamaan?",
+          "hint": "PASS jika fokus visual tetap terkendali. FAIL jika banyak elemen berebut perhatian."
+        }
+      ]
+    },
+    {
+      "id": "cat2",
+      "label": "Size & Contrast",
+      "indicators": [
+        {
+          "id": "cat2_1",
+          "text": "Apakah elemen prioritas memiliki ukuran paling dominan?",
+          "hint": "PASS jika informasi utama memiliki visual weight terbesar."
+        },
+        {
+          "id": "cat2_2",
+          "text": "Apakah kontras elemen utama cukup kuat terhadap background?",
+          "hint": "PASS jika mudah dibaca."
+        },
+        {
+          "id": "cat2_3",
+          "text": "Apakah teks tetap terbaca pada berbagai kondisi background?",
+          "hint": "PASS jika readability tetap terjaga."
+        }
+      ]
+    },
+    {
+      "id": "cat3",
+      "label": "Color Hierarchy",
+      "indicators": [
+        {
+          "id": "cat3_1",
+          "text": "Apakah warna digunakan untuk membedakan tingkat prioritas informasi?",
+          "hint": "PASS jika warna membantu hierarchy."
+        },
+        {
+          "id": "cat3_2",
+          "text": "Apakah elemen penting memiliki penekanan warna yang konsisten?",
+          "hint": "PASS jika diskon, harga, CTA, atau countdown memiliki emphasis yang jelas."
+        },
+        {
+          "id": "cat3_3",
+          "text": "Apakah warna tidak menimbulkan kompetisi visual berlebihan?",
+          "hint": "PASS jika tidak ada terlalu banyak warna dominan sekaligus."
+        }
+      ]
+    },
+    {
+      "id": "cat4",
+      "label": "Layout & Spatial Hierarchy",
+      "indicators": [
+        {
+          "id": "cat4_1",
+          "text": "Apakah elemen yang saling berkaitan ditempatkan berdekatan?",
+          "hint": "Berdasarkan prinsip Proximity. PASS jika grouping jelas."
+        },
+        {
+          "id": "cat4_2",
+          "text": "Apakah alignment antar elemen konsisten?",
+          "hint": "PASS jika layout terlihat terstruktur."
+        },
+        {
+          "id": "cat4_3",
+          "text": "Apakah visual path mengarahkan mata secara logis?",
+          "hint": "Contoh: Produk → Harga → Promo → CTA. PASS jika alur visual mudah diikuti."
+        }
+      ]
+    },
+    {
+      "id": "cat5",
+      "label": "Motion Hierarchy",
+      "indicators": [
+        {
+          "id": "cat5_1",
+          "text": "Apakah elemen paling penting muncul lebih dahulu?",
+          "hint": "Berdasarkan temporal hierarchy. PASS jika urutan kemunculan mengikuti prioritas informasi."
+        },
+        {
+          "id": "cat5_2",
+          "text": "Apakah penggunaan stagger atau delay membantu urutan pembacaan?",
+          "hint": "PASS jika kemunculan elemen tidak bersamaan."
+        },
+        {
+          "id": "cat5_3",
+          "text": "Apakah timing kemunculan elemen memberikan waktu baca yang cukup?",
+          "hint": "PASS jika pengguna memiliki waktu membaca informasi."
+        },
+        {
+          "id": "cat5_4",
+          "text": "Apakah motion digunakan untuk memperkuat hierarchy?",
+          "hint": "PASS jika motion mendukung informasi utama. FAIL jika motion hanya dekoratif."
+        },
+        {
+          "id": "cat5_5",
+          "text": "Apakah motion penting lebih dominan dibanding motion pendukung?",
+          "hint": "Contoh: Harga scale up, Badge hanya fade. PASS jika hierarchy motion jelas."
+        }
+      ]
+    },
+    {
+      "id": "cat6",
+      "label": "Attention Control",
+      "indicators": [
+        {
+          "id": "cat6_1",
+          "text": "Apakah sweetener mendukung elemen utama?",
+          "hint": "PASS jika sweetener berfungsi sebagai pendukung. FAIL jika sweetener menjadi fokus utama."
+        },
+        {
+          "id": "cat6_2",
+          "text": "Apakah shiny asset tidak mengganggu pembacaan informasi?",
+          "hint": "PASS jika hanya sebagai aksen."
+        },
+        {
+          "id": "cat6_3",
+          "text": "Apakah background video / TVC tidak mengalahkan elemen utama?",
+          "hint": "PASS jika informasi tetap menjadi fokus."
+        },
+        {
+          "id": "cat6_4",
+          "text": "Apakah animasi loop tidak mengganggu perhatian pengguna?",
+          "hint": "PASS jika loop bersifat subtle."
+        }
+      ]
+    },
+    {
+      "id": "cat7",
+      "label": "Live Commerce Readiness",
+      "indicators": [
+        {
+          "id": "cat7_1",
+          "text": "Apakah harga menjadi salah satu elemen yang paling mudah ditemukan?",
+          "hint": "PASS jika harga cepat terlihat."
+        },
+        {
+          "id": "cat7_2",
+          "text": "Apakah promo atau diskon mudah ditemukan?",
+          "hint": "PASS jika urgency tersampaikan."
+        },
+        {
+          "id": "cat7_3",
+          "text": "Apakah CTA mudah ditemukan?",
+          "hint": "PASS jika call-to-action jelas."
+        },
+        {
+          "id": "cat7_4",
+          "text": "Apakah motion masih terbaca ketika live stream sedang ramai?",
+          "hint": "PASS jika tetap efektif pada kondisi nyata live commerce."
+        }
+      ]
+    }
+  ],
+  "interpretation": [
+    { "min": 90, "max": 100, "label": "Excellent Visual Hierarchy", "desc": "Motion Graphic siap digunakan.", "color": "green" },
+    { "min": 75, "max": 89,  "label": "Good Visual Hierarchy",      "desc": "Masih terdapat beberapa area yang dapat dioptimalkan.", "color": "blue" },
+    { "min": 60, "max": 74,  "label": "Needs Improvement",          "desc": "Terdapat beberapa pelanggaran prinsip visual hierarchy.", "color": "yellow" },
+    { "min": 0,  "max": 59,  "label": "Poor Visual Hierarchy",      "desc": "Disarankan melakukan revisi sebelum digunakan.", "color": "red" }
+  ]
+}
