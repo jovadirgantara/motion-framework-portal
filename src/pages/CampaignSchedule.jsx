@@ -11,15 +11,17 @@ const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?form
 // Mapping nama kolom header di Google Sheets → field internal.
 // Jika nama kolom di sheet kamu berbeda, ubah di sini.
 const COL_MAP = {
-  namaAset:     ['Nama Aset', 'nama aset', 'Nama', 'nama', 'Display Name'],
-  platform:     ['Platform', 'platform'],
-  mockupType:   ['Tipe', 'tipe', 'Mockup Type', 'Type', 'type'],
-  kampanye:     ['Kampanye', 'kampanye', 'Campaign', 'campaign'],
-  periodeStart: ['Periode Mulai', 'periode mulai', 'Mulai', 'mulai', 'Start', 'start', 'Tanggal Mulai'],
-  periodeEnd:   ['Periode Selesai', 'periode selesai', 'Selesai', 'selesai', 'End', 'end', 'Tanggal Selesai'],
-  jamTayang:    ['Jam Tayang', 'jam tayang', 'Jam', 'jam', 'Time', 'time'],
-  linkFile:     ['Link File', 'link file', 'Link', 'link', 'File', 'Drive Link', 'drive link'],
-  catatan:      ['Catatan', 'catatan', 'Notes', 'notes', 'Keterangan', 'keterangan'],
+  namaAset:      ['Nama Aset', 'nama aset', 'Nama', 'nama', 'Display Name'],
+  platform:      ['Platform', 'platform'],
+  mockupType:    ['Tipe', 'tipe', 'Mockup Type', 'Type', 'type'],
+  kampanye:      ['Kampanye', 'kampanye', 'Campaign', 'campaign'],
+  periodeStart:  ['Periode Mulai', 'periode mulai', 'Mulai', 'mulai', 'Start', 'start', 'Tanggal Mulai'],
+  periodeEnd:    ['Periode Selesai', 'periode selesai', 'Selesai', 'selesai', 'End', 'end', 'Tanggal Selesai'],
+  jamTayang:     ['Jam Tayang', 'jam tayang', 'Jam', 'jam', 'Time', 'time'],
+  statusMockup:  ['Status Mockup', 'status mockup', 'Mockup Status', 'mockup status'],
+  statusMotion:  ['Status Motion', 'status motion', 'Motion Status', 'motion status'],
+  linkFile:      ['Link File', 'link file', 'Link', 'link', 'File', 'Drive Link', 'drive link'],
+  catatan:       ['Catatan', 'catatan', 'Notes', 'notes', 'Keterangan', 'keterangan'],
 }
 
 // ─── SEED (fallback jika sheet kosong / belum public) ────────────────────────
@@ -33,6 +35,8 @@ const SEED_DATA = [
     periodeStart: '2026-06-07',
     periodeEnd: '2026-06-24',
     jamTayang: '09:00 – 10:00',
+    statusMockup: 'On AE',
+    statusMotion: 'On Motion',
     linkFile: '',
     catatan: 'Kolaborasi Mingyu ENHYPEN',
   },
@@ -45,6 +49,8 @@ const SEED_DATA = [
     periodeStart: '2026-06-25',
     periodeEnd: '2026-06-30',
     jamTayang: '20:00 – 22:00',
+    statusMockup: 'On Strat',
+    statusMotion: 'Revision',
     linkFile: '',
     catatan: '',
   },
@@ -57,6 +63,8 @@ const SEED_DATA = [
     periodeStart: '2026-06-01',
     periodeEnd: '2026-07-15',
     jamTayang: 'Sepanjang hari',
+    statusMockup: 'On GD',
+    statusMotion: 'Ready',
     linkFile: '',
     catatan: 'LVL 4 – multiple usage date',
   },
@@ -140,6 +148,18 @@ const STATUS_CONFIG = {
   aktif:        { label: 'Aktif',        dot: '🟢', badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
   'akan-datang':{ label: 'Akan Datang',  dot: '🟡', badge: 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-300' },
   kedaluwarsa:  { label: 'Kedaluwarsa', dot: '🔴', badge: 'bg-red-100 text-red-800 ring-1 ring-red-300' },
+}
+
+const MOCKUP_STATUS_CONFIG = {
+  'On GD':   { badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
+  'On AE':   { badge: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300' },
+  'On Strat':{ badge: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300' },
+}
+
+const MOTION_STATUS_CONFIG = {
+  'On Motion':{ badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
+  'Revision': { badge: 'bg-amber-100 text-amber-800 ring-1 ring-amber-300' },
+  'Ready':    { badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
 }
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
@@ -293,7 +313,10 @@ export default function CampaignSchedule() {
               <tr>
                 <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Status</th>
                 <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Nama Aset</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Mockup Type</th>
                 <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Platform</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Status Mockup</th>
+                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Status Motion</th>
                 <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Kampanye</th>
                 <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Periode</th>
                 <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Jam Tayang</th>
@@ -314,7 +337,24 @@ export default function CampaignSchedule() {
                     <td className="px-3 py-3">
                       <div className="font-medium text-slate-900 leading-snug text-sm">{row.namaAset}</div>
                     </td>
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap text-xs font-mono">
+                      {row.mockupType || <span className="text-slate-300">—</span>}
+                    </td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap text-sm">{row.platform}</td>
+                    <td className="px-3 py-3">
+                      {row.statusMockup ? (
+                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? 'bg-slate-100 text-slate-600'}`}>
+                          {row.statusMockup}
+                        </span>
+                      ) : <span className="font-mono text-xs text-slate-300">—</span>}
+                    </td>
+                    <td className="px-3 py-3">
+                      {row.statusMotion ? (
+                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOTION_STATUS_CONFIG[row.statusMotion]?.badge ?? 'bg-slate-100 text-slate-600'}`}>
+                          {row.statusMotion}
+                        </span>
+                      ) : <span className="font-mono text-xs text-slate-300">—</span>}
+                    </td>
                     <td className="px-3 py-3 text-slate-600 text-sm">{row.kampanye}</td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
                       {formatDate(row.periodeStart)}<br />{formatDate(row.periodeEnd)}
@@ -365,19 +405,23 @@ export default function CampaignSchedule() {
           <table className="text-xs border-collapse w-full">
             <thead>
               <tr className="bg-slate-100">
-                {['Nama Aset','Platform','Tipe','Kampanye','Periode Mulai','Periode Selesai','Jam Tayang','Link File','Catatan'].map(h => (
+                {['Nama Aset','Platform','Tipe','Kampanye','Periode Mulai','Periode Selesai','Jam Tayang','Status Mockup','Status Motion','Link File','Catatan'].map(h => (
                   <th key={h} className="border border-slate-200 px-2 py-1 text-left font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               <tr>
-                {['Preview [Shopee] Brand BaU','Shopee Live','BaU','Juni BaU','2026-06-01','2026-06-30','09:00–10:00','https://drive.google.com/...',''].map((v,i) => (
+                {['Preview [Shopee] Brand BaU','Shopee Live','BaU','Juni BaU','2026-06-01','2026-06-30','09:00–10:00','On AE','On Motion','https://drive.google.com/...',''].map((v,i) => (
                   <td key={i} className="border border-slate-200 px-2 py-1 text-slate-500 italic">{v}</td>
                 ))}
               </tr>
             </tbody>
           </table>
+          <p className="mt-2">
+            Nilai <strong>Status Mockup</strong>: <code className="bg-slate-200 px-1 rounded">On GD</code>, <code className="bg-slate-200 px-1 rounded">On AE</code>, <code className="bg-slate-200 px-1 rounded">On Strat</code><br />
+            Nilai <strong>Status Motion</strong>: <code className="bg-slate-200 px-1 rounded">On Motion</code>, <code className="bg-slate-200 px-1 rounded">Revision</code>, <code className="bg-slate-200 px-1 rounded">Ready</code>
+          </p>
         </div>
         <p>
           Format tanggal: <code className="bg-slate-200 px-1 rounded">YYYY-MM-DD</code> atau <code className="bg-slate-200 px-1 rounded">DD/MM/YYYY</code>.
