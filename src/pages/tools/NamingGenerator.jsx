@@ -163,7 +163,7 @@ export default function NamingGenerator() {
             label="Brand"
             value={brand}
             onChange={setBrand}
-            placeholder="mis. Snickers, Samsung, Wardah"
+            placeholder="mis. Snickers, Ellips, Sweety"
             required
           />
 

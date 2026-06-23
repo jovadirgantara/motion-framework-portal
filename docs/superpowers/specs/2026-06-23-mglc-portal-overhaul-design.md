@@ -262,7 +262,7 @@ Each tool card shows: tool title + "Implementasi: Komponen N — {title}" + two 
 ### Data Source
 
 - Google Sheets ID: `17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ`
-- Endpoint: `https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:json`
+- Endpoint: `https://docs.google.com/spreadsheets/d/17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ/edit?usp=sharing`
 - Fetch strategy: on component mount, no caching
 - Sheet must be published to web (File → Share → Publish to web)
 

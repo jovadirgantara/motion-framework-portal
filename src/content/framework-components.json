@@ -138,11 +138,11 @@
     "sections": [
       {
         "heading": "Format Display Name",
-        "body": "Format standar untuk identifikasi aset di jadwal kampanye dan komunikasi tim:\n\n`FileType [Platform] Brand MockupType Campaign (Periode) (Jam)`\n\n**Contoh nyata:**\n- `Preview [TikTok] Snickers Mingyu BaU (07 - 24 Juni) (09:00 - 10:00)`\n- `BG [Shopee] Samsung Di Stroller PayDay (25 Jun) (14:00 - 15:00)`\n- `Footer [TikTok] Wardah Couple Double Date (05 - 06 Jul)`\n\nFormat ini sengaja menggunakan spasi dan kurung karena dibaca manusia (operator, lead, klien), bukan dibaca sistem file."
+        "body": "Format standar untuk identifikasi aset di jadwal kampanye dan komunikasi tim:\n\n`FileType [Platform] Brand MockupType Campaign (Periode) (Jam)`\n\n**Contoh nyata:**\n- `Preview [TikTok] Snickers Mingyu BaU (07 - 24 Juni) (09:00 - 10:00)`\n- `BG [Shopee] Ellips Di Stroller PayDay (25 Jun) (14:00 - 15:00)`\n- `Footer [TikTok] Wardah Couple Double Date (05 - 06 Jul)`\n\nFormat ini sengaja menggunakan spasi dan kurung karena dibaca manusia (operator, lead, klien), bukan dibaca sistem file."
       },
       {
         "heading": "Anatomi Setiap Segmen",
-        "body": "| Segmen | Pilihan | Keterangan |\n|---|---|---|\n| FileType | BG, Overlay, Footer, Maskot, Other | Jenis output aset |\n| [Platform] | [Shopee], [TikTok] | Platform siaran dalam kurung kotak |\n| Brand | bebas (wajib) | Nama brand, mis. Snickers, Samsung |\n| MockupType | bebas (wajib) | Deskripsi mockup, mis. Mingyu, Di Stroller |\n| Campaign | BaU, PayDay, Double Date, Other | Tipe kampanye |\n| (Periode) | opsional | Rentang tanggal, mis. (07 - 24 Juni) |\n| (Jam) | opsional | Jam tayang, mis. (09:00 - 10:00) |"
+        "body": "| Segmen | Pilihan | Keterangan |\n|---|---|---|\n| FileType | BG, Overlay, Footer, Maskot, Other | Jenis output aset |\n| [Platform] | [Shopee], [TikTok] | Platform siaran dalam kurung kotak |\n| Brand | bebas (wajib) | Nama brand, mis. Snickers, Ellips |\n| MockupType | bebas (wajib) | Deskripsi mockup, mis. Mingyu, Di Stroller |\n| Campaign | BaU, PayDay, Double Date, Other | Tipe kampanye |\n| (Periode) | opsional | Rentang tanggal, mis. (07 - 24 Juni) |\n| (Jam) | opsional | Jam tayang, mis. (09:00 - 10:00) |"
       },
       {
         "heading": "Tipe Campaign",
