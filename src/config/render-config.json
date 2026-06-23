@@ -9,6 +9,7 @@
     { "value": "hollyland","label": "Hollyland" }
   ],
   "outputTypes": [
+    { "value": "preview",       "label": "Preview" },
     { "value": "background",    "label": "Background" },
     { "value": "overlay_alpha", "label": "Overlay dengan Alpha (Transparan)" }
   ],
@@ -30,7 +31,7 @@
       "codec": "H.264",
       "resolution": "1080×1920",
       "fps": 30,
-      "preset": "Match Source - Adaptive Low Bitrate",
+      "preset": "Match Source - Adaptive Medium Bitrate",
       "duration": "30–60 detik (disesuaikan durasi konten)",
       "outputFormat": ".mp4",
       "note": "H.264 cukup untuk background tanpa transparansi. Gunakan bitrate tinggi agar motion tetap tajam saat di-loop di OBS sebagai Media Source."
@@ -43,7 +44,7 @@
       "codec": "H.264",
       "resolution": "1080×1920",
       "fps": 30,
-      "preset": "Match Source - Adaptive Low Bitrate",
+      "preset": "Match Source - Adaptive Medium Bitrate",
       "duration": "30–60 detik (disesuaikan durasi konten)",
       "outputFormat": ".mp4",
       "note": "Queue dari AE ke AME. Gunakan preset 'Match Source - Adaptive Low Bitrate'. Queue beberapa komposisi sekaligus untuk efisiensi produksi."
@@ -170,7 +171,7 @@
       "codec": "H.264",
       "resolution": "1080×1920",
       "fps": 30,
-      "preset": "Match Source - Adaptive Low Bitrate",
+      "preset": "Match Source - Adaptive Medium Bitrate",
       "duration": "30–60 detik (disesuaikan durasi konten)",
       "outputFormat": ".mp4",
       "note": "Format portrait 9:16 untuk TikTok Shop. Pastikan canvas AE 1080×1920 sebelum export. Gunakan preset adaptive agar bitrate menyesuaikan kompleksitas motion."
@@ -183,7 +184,7 @@
       "codec": "H.264",
       "resolution": "1080×1920",
       "fps": 30,
-      "preset": "Match Source - Adaptive Low Bitrate",
+      "preset": "Match Source - Adaptive Medium Bitrate",
       "duration": "30–60 detik (disesuaikan durasi konten)",
       "outputFormat": ".mp4",
       "note": "Queue dari AE ke AME. Pilih preset 'Match Source - Adaptive Low Bitrate'. Pastikan resolusi tidak auto-scale — set manual ke 1080×1920."
@@ -301,6 +302,20 @@
       "duration": "Sesuaikan durasi loop — semakin pendek semakin kecil file",
       "outputFormat": ".gif",
       "note": "AME: pilih format Animated GIF → preset 'Animated GIF with Transparency (Match Source)'. Set resolusi manual ke ≤720×1280 dan frame rate ≤20 FPS agar file tetap ringan."
-    }
+    },
+
+    { "platform": "shopee", "device": "hollyland", "outputType": "background", "software": "aftereffects", "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Medium Bitrate", "duration": "30–60 detik (disesuaikan durasi konten)", "outputFormat": ".mp4", "note": "Background untuk Hollyland via AE. Pastikan canvas 1080×1920. Gunakan preset Medium Bitrate agar kualitas cukup untuk layar Hollyland." },
+    { "platform": "shopee", "device": "hollyland", "outputType": "background", "software": "media_encoder", "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Medium Bitrate", "duration": "30–60 detik (disesuaikan durasi konten)", "outputFormat": ".mp4", "note": "Background untuk Hollyland via AME. Queue dari AE → AME, pilih preset 'Match Source - Adaptive Medium Bitrate'. Resolusi 1080×1920 wajib diset manual." },
+    { "platform": "tiktok", "device": "hollyland", "outputType": "background", "software": "aftereffects", "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Medium Bitrate", "duration": "30–60 detik (disesuaikan durasi konten)", "outputFormat": ".mp4", "note": "Background portrait untuk TikTok Shop via Hollyland. Canvas 1080×1920 di AE. Medium Bitrate untuk keseimbangan kualitas dan ukuran file." },
+    { "platform": "tiktok", "device": "hollyland", "outputType": "background", "software": "media_encoder", "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Medium Bitrate", "duration": "30–60 detik (disesuaikan durasi konten)", "outputFormat": ".mp4", "note": "AME queue dari AE. Preset 'Match Source - Adaptive Medium Bitrate'. Resolusi 1080×1920 portrait — jangan biarkan auto-scale." },
+
+    { "platform": "shopee", "device": "pc",        "outputType": "preview", "software": "aftereffects",  "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Low Bitrate", "duration": "Sesuaikan durasi konten", "outputFormat": ".mp4", "note": "Preview untuk keperluan review internal. Low Bitrate cukup — file lebih kecil, mudah dibagikan. Jangan gunakan file preview untuk siaran langsung." },
+    { "platform": "shopee", "device": "pc",        "outputType": "preview", "software": "media_encoder", "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Low Bitrate", "duration": "Sesuaikan durasi konten", "outputFormat": ".mp4", "note": "Preview via AME. Preset 'Match Source - Adaptive Low Bitrate' — ukuran file kecil untuk review tim. Queue dari AE ke AME untuk efisiensi." },
+    { "platform": "shopee", "device": "hollyland", "outputType": "preview", "software": "aftereffects",  "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Low Bitrate", "duration": "Sesuaikan durasi konten", "outputFormat": ".mp4", "note": "Preview Hollyland Shopee. Gunakan file ini hanya untuk cek visual di perangkat — jangan jadikan file final siaran." },
+    { "platform": "shopee", "device": "hollyland", "outputType": "preview", "software": "media_encoder", "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Low Bitrate", "duration": "Sesuaikan durasi konten", "outputFormat": ".mp4", "note": "Preview via AME untuk Hollyland. Low Bitrate — cukup untuk review. Tidak direkomendasikan sebagai file siaran final." },
+    { "platform": "tiktok", "device": "pc",        "outputType": "preview", "software": "aftereffects",  "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Low Bitrate", "duration": "Sesuaikan durasi konten", "outputFormat": ".mp4", "note": "Preview portrait TikTok Shop untuk review internal. Canvas 1080×1920 di AE. Low Bitrate agar file mudah dibagikan ke tim atau klien." },
+    { "platform": "tiktok", "device": "pc",        "outputType": "preview", "software": "media_encoder", "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Low Bitrate", "duration": "Sesuaikan durasi konten", "outputFormat": ".mp4", "note": "Preview TikTok via AME. Pilih preset 'Match Source - Adaptive Low Bitrate'. Resolusi 1080×1920 — set manual agar tidak auto-scale." },
+    { "platform": "tiktok", "device": "hollyland", "outputType": "preview", "software": "aftereffects",  "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Low Bitrate", "duration": "Sesuaikan durasi konten", "outputFormat": ".mp4", "note": "Preview portrait untuk TikTok via Hollyland. Gunakan hanya untuk review visual. Jangan pakai file preview sebagai file siaran final." },
+    { "platform": "tiktok", "device": "hollyland", "outputType": "preview", "software": "media_encoder", "codec": "H.264", "resolution": "1080×1920", "fps": 30, "preset": "Match Source - Adaptive Low Bitrate", "duration": "Sesuaikan durasi konten", "outputFormat": ".mp4", "note": "Preview TikTok Hollyland via AME. Preset Low Bitrate — file kecil untuk review. Queue dari AE ke AME." }
   ]
 }
