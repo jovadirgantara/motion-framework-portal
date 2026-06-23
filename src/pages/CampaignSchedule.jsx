@@ -36,7 +36,7 @@ const SEED_DATA = [
     periodeEnd: '2026-06-24',
     jamTayang: '09:00 – 10:00',
     statusMockup: 'On AE',
-    statusMotion: 'On Motion',
+    statusMotion: 'On Progress',
     linkFile: '',
     catatan: 'Kolaborasi Mingyu ENHYPEN',
   },
@@ -151,15 +151,16 @@ const STATUS_CONFIG = {
 }
 
 const MOCKUP_STATUS_CONFIG = {
-  'On GD':   { badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
-  'On AE':   { badge: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300' },
-  'On Strat':{ badge: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300' },
+  'On GD':    { badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
+  'On AE':    { badge: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300' },
+  'On Strat': { badge: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300' },
+  'On Motion':{ badge: 'bg-indigo-100 text-indigo-800 ring-1 ring-indigo-300' },
 }
 
 const MOTION_STATUS_CONFIG = {
-  'On Motion':{ badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
-  'Revision': { badge: 'bg-amber-100 text-amber-800 ring-1 ring-amber-300' },
-  'Ready':    { badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
+  'On Progress':{ badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
+  'Revision':   { badge: 'bg-amber-100 text-amber-800 ring-1 ring-amber-300' },
+  'Ready':      { badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
 }
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
@@ -419,8 +420,8 @@ export default function CampaignSchedule() {
             </tbody>
           </table>
           <p className="mt-2">
-            Nilai <strong>Status Mockup</strong>: <code className="bg-slate-200 px-1 rounded">On GD</code>, <code className="bg-slate-200 px-1 rounded">On AE</code>, <code className="bg-slate-200 px-1 rounded">On Strat</code><br />
-            Nilai <strong>Status Motion</strong>: <code className="bg-slate-200 px-1 rounded">On Motion</code>, <code className="bg-slate-200 px-1 rounded">Revision</code>, <code className="bg-slate-200 px-1 rounded">Ready</code>
+            Nilai <strong>Status Mockup</strong>: <code className="bg-slate-200 px-1 rounded">On GD</code>, <code className="bg-slate-200 px-1 rounded">On AE</code>, <code className="bg-slate-200 px-1 rounded">On Strat</code>, <code className="bg-slate-200 px-1 rounded">On Motion</code><br />
+            Nilai <strong>Status Motion</strong>: <code className="bg-slate-200 px-1 rounded">On Progress</code>, <code className="bg-slate-200 px-1 rounded">Revision</code>, <code className="bg-slate-200 px-1 rounded">Ready</code>
           </p>
         </div>
         <p>
