@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import PageLayout from '../components/layout/PageLayout'
 import FadeIn from '../components/ui/FadeIn'
+import PlaceholderImage from '../components/ui/PlaceholderImage'
 import frameworkComponents from '../content/framework-components.json'
 
 const problems = [
@@ -48,35 +49,46 @@ export default function Home() {
     <PageLayout>
 
       {/* Hero */}
-      <section className="pt-12 pb-14 border-b border-slate-200">
-        <div className="max-w-2xl">
-          <div className="font-mono text-2xs text-brand-600 tracking-widest uppercase mb-4 animate-hero-1">
-            DDR Research · S1 Pendidikan Multimedia · UPI Cibiru
-          </div>
-          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-900 leading-tight mb-4 animate-hero-2">
-            Framework Produksi Motion Graphic{' '}
-            <span className="text-brand-600">Live Commerce</span>{' '}
-            Berbasis Visual Hierarchy
-          </h1>
-          <div className="animate-hero-3">
-            <p className="text-slate-500 text-base leading-relaxed mb-8 max-w-xl">
-              Sebuah framework yang membantu tim live commerce menentukan prioritas informasi visual,
-              mempercepat produksi aset, serta menjaga konsistensi kualitas motion graphic pada berbagai campaign marketplace.
-            </p>
-            <div className="flex items-center gap-3">
-              <Link
-                to="/framework"
-                className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded hover:bg-brand-700 transition-colors"
-              >
-                Baca Framework
-              </Link>
-              <Link
-                to="/tools"
-                className="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-300 rounded hover:bg-slate-50 transition-colors"
-              >
-                Langsung ke Tools
-              </Link>
+      <section className="pt-12 pb-16 border-b border-slate-200">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center">
+          {/* Text — 3/5 */}
+          <div className="md:col-span-3">
+            <div className="font-mono text-2xs text-brand-600 tracking-widest uppercase mb-4 animate-hero-1">
+              DDR Research · S1 Pendidikan Multimedia · UPI Cibiru
             </div>
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-900 leading-tight mb-4 animate-hero-2">
+              Framework Produksi Motion Graphic{' '}
+              <span className="text-brand-600">Live Commerce</span>{' '}
+              Berbasis Visual Hierarchy
+            </h1>
+            <div className="animate-hero-3">
+              <p className="text-slate-500 text-base leading-relaxed mb-8 max-w-xl">
+                Sebuah framework yang membantu tim live commerce menentukan prioritas informasi visual,
+                mempercepat produksi aset, serta menjaga konsistensi kualitas motion graphic pada berbagai campaign marketplace.
+              </p>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/framework"
+                  className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded hover:bg-brand-700 transition-colors"
+                >
+                  Baca Framework
+                </Link>
+                <Link
+                  to="/tools"
+                  className="px-4 py-2 text-sm font-medium text-slate-700 border border-slate-300 rounded hover:bg-slate-50 transition-colors"
+                >
+                  Langsung ke Tools
+                </Link>
+              </div>
+            </div>
+          </div>
+          {/* Photo — 2/5, hidden on mobile */}
+          <div className="hidden md:block md:col-span-2 animate-hero-4">
+            <PlaceholderImage
+              label="Foto: Suasana produksi live streaming e-commerce"
+              aspect="4/3"
+              className="w-full shadow-lg"
+            />
           </div>
         </div>
       </section>
