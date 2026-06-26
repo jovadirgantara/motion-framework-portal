@@ -13,14 +13,21 @@ export default function FrameworkComponentPage() {
   return (
     <FrameworkPageLayout component={component}>
       <FadeIn>
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-3xl">{component.icon}</span>
-          <div>
-            <div className="text-xs text-brand-600 font-medium">Komponen {component.order}</div>
-            <h1 className="text-2xl font-bold text-slate-900">{component.title}</h1>
+        <div className="relative overflow-hidden bg-brand-50 border border-brand-100 rounded-xl p-6 mb-8">
+          {/* Decorative background number */}
+          <span className="absolute right-4 top-0 text-8xl font-bold text-brand-100 select-none pointer-events-none leading-none">
+            {String(component.order).padStart(2, '0')}
+          </span>
+          {/* Content */}
+          <div className="relative">
+            <p className="eyebrow mb-2">Komponen {component.order}</p>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-3xl">{component.icon}</span>
+              <h1 className="text-2xl font-bold text-slate-900">{component.title}</h1>
+            </div>
+            <p className="text-slate-600 max-w-xl">{component.summary}</p>
           </div>
         </div>
-        <p className="text-slate-600 mb-8 ml-12">{component.summary}</p>
       </FadeIn>
 
       <FadeIn delay={100}>
