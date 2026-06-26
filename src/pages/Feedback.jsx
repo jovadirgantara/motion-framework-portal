@@ -15,11 +15,14 @@ export default function Feedback() {
     <PageLayout>
       <FadeIn>
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Feedback Penelitian</h1>
-        <p className="text-slate-600 mb-6">
-          Feedback Anda membantu mengkalibrasi framework dan menyempurnakan portal ini
-          sebagai bagian dari penelitian Design and Development Research.
-        </p>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+          <p className="eyebrow mb-1">/ Feedback</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Feedback Penelitian</h1>
+          <p className="text-sm text-slate-500">
+            Feedback Anda membantu mengkalibrasi framework dan menyempurnakan portal ini
+            sebagai bagian dari penelitian Design and Development Research.
+          </p>
+        </div>
 
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
           <strong>Untuk Pilot Testing:</strong> Isi form setelah Anda selesai mencoba semua 4 tool.

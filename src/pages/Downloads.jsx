@@ -7,8 +7,11 @@ export default function Downloads() {
   return (
     <PageLayout>
       <FadeIn>
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Unduhan</h1>
-        <p className="text-slate-600 mb-8">Template, checklist, dan panduan dalam format yang bisa langsung dipakai.</p>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-8">
+          <p className="eyebrow mb-1">/ Unduhan</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Unduhan</h1>
+          <p className="text-sm text-slate-500">Template, checklist, dan panduan dalam format yang bisa langsung dipakai.</p>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {downloads.map(item => (
             <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-5 flex gap-4">
