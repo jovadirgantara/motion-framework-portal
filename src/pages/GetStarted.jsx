@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageLayout from '../components/layout/PageLayout'
+import FadeIn from '../components/ui/FadeIn'
 
 const steps = [
   {
@@ -76,12 +77,15 @@ export default function GetStarted() {
   return (
     <PageLayout>
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Mulai dari Sini</h1>
-        <p className="text-slate-600 mb-8">
-          Urutan baca yang disarankan untuk designer baru atau validator yang mau memahami framework secara menyeluruh.
-          Total waktu estimasi: <strong>~45 menit</strong>.
-        </p>
+        <FadeIn>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Mulai dari Sini</h1>
+          <p className="text-slate-600 mb-8">
+            Urutan baca yang disarankan untuk designer baru atau validator yang mau memahami framework secara menyeluruh.
+            Total waktu estimasi: <strong>~45 menit</strong>.
+          </p>
+        </FadeIn>
 
+        <FadeIn delay={80}>
         <div className="space-y-3">
           {steps.map(s => (
             <div
@@ -123,6 +127,7 @@ export default function GetStarted() {
             </div>
           ))}
         </div>
+        </FadeIn>
       </div>
     </PageLayout>
   )
