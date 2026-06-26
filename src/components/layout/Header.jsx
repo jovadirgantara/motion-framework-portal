@@ -13,13 +13,13 @@ export default function Header() {
   const location = useLocation()
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+    <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-12">
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-6 h-6 bg-brand-600 rounded-sm flex items-center justify-center shrink-0">
+            <div className="w-6 h-6 bg-brand-600 rounded-sm flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
               <span className="text-white text-xs font-mono font-bold leading-none">MG</span>
             </div>
             <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export default function Header() {
                 className={({ isActive }) =>
                   `px-3 py-1.5 text-sm rounded transition-colors font-medium ${
                     isActive || location.pathname.startsWith(item.to)
-                      ? 'text-brand-700 bg-brand-50'
+                      ? 'text-brand-700 bg-brand-50 font-semibold'
                       : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                   }`
                 }
@@ -91,7 +91,7 @@ export default function Header() {
               onClick={() => setMenuOpen(false)}
               className={({ isActive }) =>
                 `block px-3 py-2 text-sm rounded font-medium ${
-                  isActive ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50'
+                  isActive ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'
                 }`
               }
             >
