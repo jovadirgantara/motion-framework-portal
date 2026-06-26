@@ -197,7 +197,7 @@ export default function Home() {
       {/* Campaign Schedule */}
       <section className="py-16 border-b border-slate-200">
         <FadeIn>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-6 border-l-4 border-brand-600 pl-6">
             <div className="flex-1">
               <p className="eyebrow mb-1">/ Komponen 08 · Campaign Usage Management</p>
               <h2 className="section-heading mb-1.5">Jadwal Penggunaan Mockup</h2>
@@ -221,17 +221,17 @@ export default function Home() {
       {/* CTA Feedback */}
       <section className="py-16">
         <FadeIn>
-          <div className="border border-slate-200 rounded p-8 flex flex-col sm:flex-row sm:items-center gap-6">
+          <div className="bg-brand-600 rounded-xl p-10 flex flex-col sm:flex-row sm:items-center gap-6">
             <div className="flex-1">
-              <p className="eyebrow mb-1">/ Feedback</p>
-              <h2 className="section-heading mb-1.5">Sudah mencoba tools-nya?</h2>
-              <p className="text-sm text-slate-500">
+              <p className="font-mono text-2xs text-brand-300 tracking-widest uppercase mb-1">/ Feedback</p>
+              <h2 className="text-xl font-semibold tracking-tight text-white mb-1.5">Sudah mencoba tools-nya?</h2>
+              <p className="text-sm text-brand-100">
                 Feedback Anda membantu mengkalibrasi framework dan menyempurnakan portal ini sebagai bahan penelitian.
               </p>
             </div>
             <Link
               to="/feedback"
-              className="shrink-0 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded hover:bg-brand-700 transition-colors"
+              className="shrink-0 px-4 py-2 bg-white text-brand-700 text-sm font-medium rounded hover:bg-brand-50 transition-colors"
             >
               Beri Feedback →
             </Link>
