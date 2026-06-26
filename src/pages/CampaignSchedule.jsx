@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import PageLayout from '../components/layout/PageLayout'
+import FadeIn from '../components/ui/FadeIn'
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 // Sheet harus di-set "Anyone with the link can view" agar fetch bisa berjalan.
@@ -220,6 +221,7 @@ export default function CampaignSchedule() {
   return (
     <PageLayout>
       {/* Header */}
+      <FadeIn>
       <div className="pt-8 pb-6 border-b border-slate-200 mb-8">
         <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-4">
           <Link to="/" className="hover:text-brand-600">Home</Link>
@@ -243,6 +245,7 @@ export default function CampaignSchedule() {
           </Link>
         </div>
       </div>
+      </FadeIn>
 
       {/* Status bar */}
       {isLoading && (

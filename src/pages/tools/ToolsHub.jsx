@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
-import Sidebar from '../../components/layout/Sidebar'
+import FadeIn from '../../components/ui/FadeIn'
 
 const tools = [
   {
@@ -56,29 +56,31 @@ export default function ToolsHub() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {tools.map((tool, i) => (
-          <div key={tool.to} className="card card-hover p-5 flex flex-col">
-            <span className="font-mono text-2xs text-slate-400 mb-3">{String(i + 1).padStart(2, '0')}</span>
-            <h2 className="text-sm font-semibold text-slate-900 mb-1">{tool.title}</h2>
-            <p className="text-xs text-slate-500 mb-2 flex-1 leading-relaxed">{tool.desc}</p>
-            <div className="border-t border-slate-100 pt-3 mt-2 flex items-center justify-between">
-              <Link
-                to={tool.to}
-                className="px-3 py-1.5 bg-brand-600 text-white text-xs font-medium rounded hover:bg-brand-700 transition-colors"
-              >
-                buka →
-              </Link>
-              <Link
-                to={tool.relatedFramework}
-                className="font-mono text-2xs text-slate-400 hover:text-brand-600 transition-colors"
-              >
-                {tool.relatedLabel}
-              </Link>
+      <FadeIn>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {tools.map((tool, i) => (
+            <div key={tool.to} className="card card-hover p-5 flex flex-col">
+              <span className="font-mono text-2xs text-slate-400 mb-3">{String(i + 1).padStart(2, '0')}</span>
+              <h2 className="text-sm font-semibold text-slate-900 mb-1">{tool.title}</h2>
+              <p className="text-xs text-slate-500 mb-2 flex-1 leading-relaxed">{tool.desc}</p>
+              <div className="border-t border-slate-100 pt-3 mt-2 flex items-center justify-between">
+                <Link
+                  to={tool.to}
+                  className="px-3 py-1.5 bg-brand-600 text-white text-xs font-medium rounded hover:bg-brand-700 transition-colors"
+                >
+                  buka →
+                </Link>
+                <Link
+                  to={tool.relatedFramework}
+                  className="font-mono text-2xs text-slate-400 hover:text-brand-600 transition-colors"
+                >
+                  {tool.relatedLabel}
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </FadeIn>
     </PageLayout>
   )
 }

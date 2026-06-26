@@ -25,10 +25,10 @@
 
   /* ── Precision card — border only, no shadow ── */
   .card {
-    @apply bg-white border border-slate-200 rounded transition-colors;
+    @apply bg-white border border-slate-200 rounded transition-all duration-200;
   }
   .card-hover {
-    @apply hover:border-brand-400;
+    @apply hover:border-brand-400 hover:-translate-y-0.5 hover:shadow-sm;
   }
 
   /* ── Mono badge ── */
@@ -83,5 +83,39 @@
   }
   .prose-framework strong {
     @apply font-semibold text-slate-900;
+  }
+}
+
+/* ── Hero entrance animation ── */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-1 {
+  animation: fadeSlideUp 400ms ease-out both;
+  animation-delay: 0ms;
+}
+.animate-hero-2 {
+  animation: fadeSlideUp 400ms ease-out both;
+  animation-delay: 100ms;
+}
+.animate-hero-3 {
+  animation: fadeSlideUp 400ms ease-out both;
+  animation-delay: 220ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-1,
+  .animate-hero-2,
+  .animate-hero-3 {
+    animation: none;
+    opacity: 1;
   }
 }

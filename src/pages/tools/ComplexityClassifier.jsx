@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
+import FadeIn from '../../components/ui/FadeIn'
 import SeedNote from '../../components/ui/SeedNote'
 import { trackEvent } from '../../utils/analytics'
 import config from '../../config/complexity-config.json'
@@ -59,18 +60,20 @@ export default function ComplexityClassifier() {
   return (
     <PageLayout sidebar="tools">
       {/* Header */}
-      <div className="pb-6 border-b border-slate-200 mb-6">
-        <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
-          <Link to="/tools" className="hover:text-brand-600">Tools</Link>
-          <span>/</span>
-          <span>Complexity Classifier</span>
+      <FadeIn>
+        <div className="pb-6 border-b border-slate-200 mb-6">
+          <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
+            <Link to="/tools" className="hover:text-brand-600">Tools</Link>
+            <span>/</span>
+            <span>Complexity Classifier</span>
+          </div>
+          <p className="eyebrow mb-1">/ Tool 02 · Complexity Classifier</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Complexity Classifier</h1>
+          <p className="text-sm text-slate-500">
+            Jawab {totalQ} pertanyaan di 4 dimensi. Dapatkan Complexity Index (CI) dan Level 1–4.
+          </p>
         </div>
-        <p className="eyebrow mb-1">/ Tool 02 · Complexity Classifier</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Complexity Classifier</h1>
-        <p className="text-sm text-slate-500">
-          Jawab {totalQ} pertanyaan di 4 dimensi. Dapatkan Complexity Index (CI) dan Level 1–4.
-        </p>
-      </div>
+      </FadeIn>
 
       {!submitted ? (
         <>

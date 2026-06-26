@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
+import FadeIn from '../../components/ui/FadeIn'
 import SeedNote from '../../components/ui/SeedNote'
 import { trackEvent } from '../../utils/analytics'
 import config from '../../config/render-config.json'
@@ -131,19 +132,22 @@ export default function RenderCalculator() {
   return (
     <PageLayout sidebar="tools">
       {/* Header */}
-      <div className="pb-6 border-b border-slate-200 mb-6">
-        <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
-          <Link to="/tools" className="hover:text-brand-600">Tools</Link>
-          <span>/</span>
-          <span>Render Settings Calculator</span>
+      <FadeIn>
+        <div className="pb-6 border-b border-slate-200 mb-6">
+          <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
+            <Link to="/tools" className="hover:text-brand-600">Tools</Link>
+            <span>/</span>
+            <span>Render Settings Calculator</span>
+          </div>
+          <p className="eyebrow mb-1">/ Tool 04 · Render Settings Calculator</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Render Settings Calculator</h1>
+          <p className="text-sm text-slate-500 max-w-xl">
+            Pilih platform, device, jenis output, dan software — dapatkan rekomendasi render setting yang tepat.
+          </p>
         </div>
-        <p className="eyebrow mb-1">/ Tool 04 · Render Settings Calculator</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Render Settings Calculator</h1>
-        <p className="text-sm text-slate-500 max-w-xl">
-          Pilih platform, device, jenis output, dan software — dapatkan rekomendasi render setting yang tepat.
-        </p>
-      </div>
+      </FadeIn>
 
+      <FadeIn delay={80}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
         <div className="border border-slate-200 rounded p-5 space-y-6">
@@ -320,6 +324,7 @@ export default function RenderCalculator() {
           Beri feedback untuk penelitian →
         </Link>
       </div>
+      </FadeIn>
     </PageLayout>
   )
 }

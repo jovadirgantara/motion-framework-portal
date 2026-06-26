@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PageLayout from '../components/layout/PageLayout'
+import FadeIn from '../components/ui/FadeIn'
 import glossary from '../content/glossary.json'
 
 export default function About() {
@@ -12,6 +13,7 @@ export default function About() {
   return (
     <PageLayout>
       <div className="max-w-3xl mx-auto">
+        <FadeIn>
         <h1 className="text-2xl font-bold text-slate-900 mb-6">Tentang</h1>
 
         <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6">
@@ -49,6 +51,9 @@ export default function About() {
           ))}
         </div>
 
+        </FadeIn>
+
+        <FadeIn delay={80}>
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 text-sm text-amber-800">
           <strong>Catatan integritas data:</strong> Semua angka estimasi waktu, bobot skor, dan threshold
           yang ditampilkan dalam tools adalah nilai <em>default awal (SEED)</em> untuk diuji —
@@ -56,7 +61,10 @@ export default function About() {
           dilaporkan sebagai bagian dari Bab IV skripsi.
         </div>
 
+        </FadeIn>
+
         {/* Glossary */}
+        <FadeIn delay={120}>
         <h2 className="text-base font-semibold text-slate-900 mb-3">Glosarium</h2>
         <input
           type="text"
@@ -76,6 +84,7 @@ export default function About() {
             <p className="text-sm text-slate-400 text-center py-4">Tidak ada istilah yang cocok.</p>
           )}
         </div>
+        </FadeIn>
       </div>
     </PageLayout>
   )

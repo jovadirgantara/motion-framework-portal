@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import PageLayout from '../components/layout/PageLayout'
+import FadeIn from '../components/ui/FadeIn'
 import { trackEvent } from '../utils/analytics'
 
 // Ganti URL ini dengan Google Form atau Typeform yang sesungguhnya
@@ -12,6 +13,7 @@ export default function Feedback() {
 
   return (
     <PageLayout>
+      <FadeIn>
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Feedback Penelitian</h1>
         <p className="text-slate-600 mb-6">
@@ -58,6 +60,7 @@ export default function Feedback() {
           */}
         </div>
       </div>
+      </FadeIn>
     </PageLayout>
   )
 }

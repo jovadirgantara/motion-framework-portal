@@ -78,8 +78,12 @@ export default function Header() {
       </div>
 
       {/* Mobile menu */}
-      {menuOpen && (
-        <div className="md:hidden border-t border-slate-100 bg-white px-4 py-3 space-y-0.5">
+      <div
+        className={`md:hidden bg-white px-4 overflow-hidden transition-all duration-200 ease-out ${
+          menuOpen ? 'max-h-96 border-t border-slate-100 py-3' : 'max-h-0 py-0'
+        }`}
+      >
+        <div className="space-y-0.5">
           {navItems.map(item => (
             <NavLink
               key={item.to}
@@ -104,7 +108,7 @@ export default function Header() {
             </Link>
           </div>
         </div>
-      )}
+      </div>
     </header>
   )
 }
