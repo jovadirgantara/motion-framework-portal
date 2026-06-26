@@ -163,11 +163,11 @@ export default function NamingGenerator() {
             />
           )}
 
-          <TextField
+          <SelectField
             label="Brand"
             value={brand}
             onChange={setBrand}
-            placeholder="mis. Snickers, Ellips, Sweety"
+            options={config.brands}
             required
           />
 
