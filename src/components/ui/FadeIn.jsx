@@ -6,8 +6,8 @@ export default function FadeIn({ children, delay = 0, className = '' }) {
   return (
     <div
       ref={ref}
-      className={`transition-all duration-500 ease-out ${
-        inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+      className={`transition-all duration-600 ease-out ${
+        inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
       } ${className}`}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >
