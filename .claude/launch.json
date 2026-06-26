@@ -2,11 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "motion-graphic-portal",
-      "runtimeExecutable": "C:\\Users\\DIRUGA\\AppData\\Local\\pnpm-standalone\\pnpm.exe",
+      "name": "Vite Dev Server",
+      "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 5173,
-      "autoPort": true
+      "port": 5173
+    },
+    {
+      "name": "Vite Preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview"],
+      "port": 4173
     }
   ]
 }
