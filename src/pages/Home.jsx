@@ -127,18 +127,22 @@ export default function Home() {
               <Link
                 key={comp.id}
                 to={comp.route}
-                className="card card-hover group p-4 block"
+                className="card card-hover group block overflow-hidden"
               >
-                <div className="flex items-start justify-between mb-3">
-                  <span className="font-mono text-2xs text-brand-600">
+                {/* Icon zone */}
+                <div className="h-20 bg-brand-50 flex items-center justify-center group-hover:bg-brand-100 transition-colors">
+                  <span className="text-3xl">{comp.icon}</span>
+                </div>
+                {/* Content */}
+                <div className="p-4">
+                  <span className="font-mono text-2xs text-brand-600 block mb-2">
                     {String(comp.order).padStart(2, '0')}
                   </span>
-                  <span className="text-base">{comp.icon}</span>
+                  <h3 className="text-sm font-semibold tracking-tight text-slate-900 mb-1.5 group-hover:text-brand-700 transition-colors leading-snug">
+                    {comp.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">{comp.summary}</p>
                 </div>
-                <h3 className="text-sm font-semibold tracking-tight text-slate-900 mb-1.5 group-hover:text-brand-700 transition-colors leading-snug">
-                  {comp.title}
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">{comp.summary}</p>
               </Link>
             ))}
           </div>
