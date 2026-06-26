@@ -17,24 +17,28 @@ const tools = [
   {
     to: '/tools/naming-generator',
     code: 'T01',
+    icon: '🏷️',
     title: 'Naming Generator',
     desc: 'Generate nama file standar dari input terkontrol. Hilangkan inkonsistensi penamaan selamanya.',
   },
   {
     to: '/tools/complexity-classifier',
     code: 'T02',
+    icon: '📊',
     title: 'Complexity Classifier',
     desc: 'Klasifikasikan level kompleksitas aset. Dapatkan estimasi waktu pengerjaan yang realistis.',
   },
   {
     to: '/tools/visual-hierarchy-checklist',
     code: 'T03',
+    icon: '✅',
     title: 'VH Checklist',
     desc: 'Review aset terhadap 6 prinsip visual hierarchy. Output: skor adherence terukur + daftar isu.',
   },
   {
     to: '/tools/render-calculator',
     code: 'T04',
+    icon: '🎬',
     title: 'Render Calculator',
     desc: 'Rekomendasi render setting per platform — codec, resolusi, fps, alpha channel.',
   },
@@ -167,19 +171,23 @@ export default function Home() {
               <Link
                 key={tool.to}
                 to={tool.to}
-                className="card card-hover group p-5 block"
+                className="card card-hover group flex overflow-hidden"
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="font-mono text-2xs text-brand-600">{tool.code}</span>
-                  <div className="flex-1 h-px bg-slate-100" />
+                {/* Icon zone */}
+                <div className="w-16 shrink-0 bg-brand-50 flex items-center justify-center text-2xl group-hover:bg-brand-100 transition-colors">
+                  {tool.icon}
                 </div>
-                <h3 className="text-sm font-semibold tracking-tight text-slate-900 mb-1.5 group-hover:text-brand-700 transition-colors">
-                  {tool.title}
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed mb-3">{tool.desc}</p>
-                <span className="text-xs text-brand-600 font-medium font-mono group-hover:underline">
-                  buka →
-                </span>
+                {/* Content */}
+                <div className="flex-1 p-4 flex flex-col">
+                  <span className="font-mono text-2xs text-brand-600 mb-1">{tool.code}</span>
+                  <h3 className="text-sm font-semibold tracking-tight text-slate-900 mb-1.5 group-hover:text-brand-700 transition-colors">
+                    {tool.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed mb-3 flex-1">{tool.desc}</p>
+                  <span className="text-xs text-brand-600 font-medium font-mono group-hover:underline self-start">
+                    buka →
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
