@@ -249,8 +249,18 @@ export default function CampaignSchedule() {
 
       {/* Status bar */}
       {isLoading && (
-        <div className="flex items-center gap-2 border border-slate-200 rounded px-4 py-2.5 mb-6 text-xs text-slate-500 font-mono">
-          <span className="animate-spin">⏳</span> Memuat data dari Google Sheets…
+        <div className="border border-slate-200 rounded-lg overflow-hidden mb-6">
+          <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center gap-2">
+            <div className="h-3 bg-slate-200 rounded animate-pulse w-48" />
+            <div className="h-3 bg-slate-200 rounded animate-pulse w-32" />
+          </div>
+          {[1, 2, 3].map(i => (
+            <div key={i} className="flex gap-4 px-4 py-3 border-b border-slate-100 last:border-0">
+              <div className="h-4 bg-slate-100 rounded animate-pulse w-16 shrink-0" />
+              <div className="h-4 bg-slate-100 rounded animate-pulse flex-1" />
+              <div className="h-4 bg-slate-100 rounded animate-pulse w-24 shrink-0" />
+            </div>
+          ))}
         </div>
       )}
       {!isLoading && isLive && (
@@ -266,6 +276,20 @@ export default function CampaignSchedule() {
           }
         </div>
       )}
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {[
+          { key: 'aktif',       label: 'Aktif',       dot: '🟢', bg: 'bg-green-50  border-green-200',  text: 'text-green-800'  },
+          { key: 'akan-datang', label: 'Akan Datang', dot: '🟡', bg: 'bg-yellow-50 border-yellow-200', text: 'text-yellow-800' },
+          { key: 'kedaluwarsa', label: 'Kedaluwarsa', dot: '🔴', bg: 'bg-red-50    border-red-200',    text: 'text-red-800'    },
+        ].map(s => (
+          <div key={s.key} className={`border rounded-lg p-4 text-center ${s.bg}`}>
+            <div className={`text-2xl font-bold mb-1 ${s.text}`}>{counts[s.key]}</div>
+            <div className={`text-xs font-mono ${s.text}`}>{s.dot} {s.label}</div>
+          </div>
+        ))}
+      </div>
 
       {/* Status filter */}
       <div className="flex flex-wrap gap-2 mb-4">
