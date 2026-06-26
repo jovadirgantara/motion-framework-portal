@@ -94,17 +94,19 @@ export default function Home() {
       </section>
 
       {/* Problem Statement */}
-      <section className="py-12 border-b border-slate-200">
+      <section className="py-16 border-b border-slate-200 section-alt">
         <FadeIn>
           <div className="mb-6">
             <p className="eyebrow mb-1">/ Problem Statement</p>
             <h2 className="section-heading">6 Masalah yang Diselesaikan</h2>
             <p className="text-sm text-slate-500 mt-1">Kondisi aktual produksi motion graphic live commerce di Indonesia</p>
           </div>
-          <div className="divide-y divide-slate-100 border border-slate-200 rounded">
+          <div className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden bg-white">
             {problems.map(p => (
-              <div key={p.code} className="flex items-start gap-4 px-4 py-3 hover:bg-slate-50 transition-colors">
-                <span className="font-mono text-2xs text-slate-400 pt-0.5 shrink-0 w-8">{p.code}</span>
+              <div key={p.code} className="flex items-start gap-4 px-4 py-3.5 hover:bg-brand-50 transition-colors">
+                <span className="font-mono text-xs text-brand-700 bg-brand-100 px-1.5 py-0.5 rounded font-semibold shrink-0 mt-0.5">
+                  {p.code}
+                </span>
                 <p className="text-sm text-slate-700">{p.text}</p>
               </div>
             ))}
@@ -113,7 +115,7 @@ export default function Home() {
       </section>
 
       {/* Framework Components */}
-      <section className="py-12 border-b border-slate-200">
+      <section className="py-16 border-b border-slate-200">
         <FadeIn>
           <div className="mb-6">
             <p className="eyebrow mb-1">/ Framework</p>
@@ -149,7 +151,7 @@ export default function Home() {
       </section>
 
       {/* Tools */}
-      <section className="py-12 border-b border-slate-200">
+      <section className="py-16 border-b border-slate-200 section-alt">
         <FadeIn>
           <div className="mb-6">
             <p className="eyebrow mb-1">/ Interactive Tools</p>
@@ -181,7 +183,7 @@ export default function Home() {
       </section>
 
       {/* Campaign Schedule */}
-      <section className="py-12 border-b border-slate-200">
+      <section className="py-16 border-b border-slate-200">
         <FadeIn>
           <div className="flex flex-col sm:flex-row sm:items-center gap-6">
             <div className="flex-1">
@@ -205,7 +207,7 @@ export default function Home() {
       </section>
 
       {/* CTA Feedback */}
-      <section className="py-12">
+      <section className="py-16">
         <FadeIn>
           <div className="border border-slate-200 rounded p-8 flex flex-col sm:flex-row sm:items-center gap-6">
             <div className="flex-1">
