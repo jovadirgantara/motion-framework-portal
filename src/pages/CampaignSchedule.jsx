@@ -23,7 +23,23 @@ const COL_MAP = {
   statusMotion:  ['Status Motion', 'status motion', 'Motion Status', 'motion status'],
   linkFile:      ['Link File', 'link file', 'Link', 'link', 'File', 'Drive Link', 'drive link'],
   catatan:       ['Catatan', 'catatan', 'Notes', 'notes', 'Keterangan', 'keterangan'],
+  brand:         ['Brand', 'brand', 'Merek', 'merek'],
 }
+
+// ─── BRAND LIST ──────────────────────────────────────────────────────────────
+const BRAND_LIST = [
+  'FONTERRA', 'QUAKER', 'PHILIPS JAKARTA', 'WIZ', 'GREENFIELDS',
+  'I-MEAL', 'KOEPOE-KOEPOE', 'DUA BELIBIS', 'BANANA BOAT',
+  'SCHICK & INTUITION', 'PHILIPS SURABAYA', 'PCI', 'BATISTE',
+  'MOIST DIANE', 'MUTOUCH', 'SCHWARZKOPF', 'PSL JAKARTA',
+  'PSL SURABAYA', 'PURE PREMIUM', 'PRO BABY', 'DELFI', 'KOSE',
+  'KCS', 'ALKAHFI', 'TWININGS', 'SOSRO', 'RUMAH TEH', 'SNICKERS',
+  'OCTOPUS', 'NUTRIMART', 'MAMA HILO', 'SLEEK BABY', 'ELLIPS',
+  'HILO TEEN', 'Hilo Official', 'MOMYPOKO ROYAL SOFT',
+  'MOMYPOKO NEW BORN', 'CLICKS', 'KINO HAIR & BEAUTY CARE',
+  'RECLOWW', 'BETADINE', 'PLOSSA', 'ASTRA OTOSHOP', 'UFS',
+  'HUNT4TOYS', 'L-MEN',
+]
 
 // ─── SEED (fallback jika sheet kosong / belum public) ────────────────────────
 const SEED_DATA = [
@@ -40,6 +56,7 @@ const SEED_DATA = [
     statusMotion: 'On Progress',
     linkFile: '',
     catatan: 'Kolaborasi Mingyu ENHYPEN',
+    brand: 'SNICKERS',
   },
   {
     id: 'seed-2',
@@ -54,6 +71,7 @@ const SEED_DATA = [
     statusMotion: 'Revision',
     linkFile: '',
     catatan: '',
+    brand: '',
   },
   {
     id: 'seed-3',
@@ -68,6 +86,7 @@ const SEED_DATA = [
     statusMotion: 'Ready',
     linkFile: '',
     catatan: 'LVL 4 – multiple usage date',
+    brand: 'L-MEN',
   },
 ]
 
