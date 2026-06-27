@@ -175,23 +175,20 @@ const MOCKUP_STATUS_CONFIG = {
   'On AE':    { badge: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300' },
   'On Strat': { badge: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300' },
   'On Motion':{ badge: 'bg-indigo-100 text-indigo-800 ring-1 ring-indigo-300' },
-}
-
-const MOTION_STATUS_CONFIG = {
-  'On Progress':{ badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
-  'Revision':   { badge: 'bg-amber-100 text-amber-800 ring-1 ring-amber-300' },
-  'Ready':      { badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
+  'Revision': { badge: 'bg-amber-100 text-amber-800 ring-1 ring-amber-300' },
+  'Ready':    { badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
 }
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function CampaignSchedule() {
   const [rawData, setRawData]       = useState(null)   // null = loading
   const [fetchError, setFetchError] = useState(null)
-  const [filterPlatform, setFilterPlatform] = useState('semua')
-  const [filterStatus,   setFilterStatus]   = useState('semua')
-  const [filterBrand,    setFilterBrand]    = useState('semua')
-  const [brandOpen,      setBrandOpen]      = useState(false)
-  const [brandSearch,    setBrandSearch]    = useState('')
+  const [filterPlatform,  setFilterPlatform]  = useState('semua')
+  const [filterStatus,    setFilterStatus]    = useState('semua')
+  const [filterBrand,     setFilterBrand]     = useState('semua')
+  const [filterCampaign,  setFilterCampaign]  = useState('semua')
+  const [brandOpen,       setBrandOpen]       = useState(false)
+  const [brandSearch,     setBrandSearch]     = useState('')
   const brandRef = useRef(null)
   const [sortKey, setSortKey] = useState(null)
   const [sortDir, setSortDir] = useState('asc')
@@ -242,9 +239,20 @@ export default function CampaignSchedule() {
       const matchP = filterPlatform === 'semua' || row.platform === filterPlatform
       const matchS = filterStatus   === 'semua' || row.status   === filterStatus
       const matchB = filterBrand    === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
-      return matchP && matchS && matchB
+      let matchC = true
+      if (filterCampaign !== 'semua') {
+        const k = (row.kampanye ?? '').toLowerCase()
+        const isPayDay = k.includes('payday')
+        const isBaU    = k.includes('bau')
+        const isDD     = k.includes('dd')
+        if (filterCampaign === 'PayDay') matchC = isPayDay
+        else if (filterCampaign === 'BaU') matchC = isBaU
+        else if (filterCampaign === 'DD')  matchC = isDD
+        else if (filterCampaign === 'Other') matchC = !isPayDay && !isBaU && !isDD
+      }
+      return matchP && matchS && matchB && matchC
     }),
-    [enriched, filterPlatform, filterStatus, filterBrand],
+    [enriched, filterPlatform, filterStatus, filterBrand, filterCampaign],
   )
 
   const platforms = ['semua', ...Array.from(new Set(displayData.map(r => r.platform).filter(Boolean)))]
@@ -465,6 +473,24 @@ export default function CampaignSchedule() {
         </div>
       </div>
 
+      {/* Campaign filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Campaign:</span>
+        {(['semua', 'PayDay', 'BaU', 'DD', 'Other']).map(c => (
+          <button
+            key={c}
+            onClick={() => setFilterCampaign(c)}
+            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              filterCampaign === c
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            {c === 'semua' ? 'Semua' : c}
+          </button>
+        ))}
+      </div>
+
       {/* Table */}
       {sorted.length === 0 ? (
         <div className="text-center py-12 text-slate-500 text-sm">
@@ -481,7 +507,6 @@ export default function CampaignSchedule() {
                   { label: 'Mockup Type',   key: 'mockupType'   },
                   { label: 'Platform',      key: 'platform'     },
                   { label: 'Status Mockup', key: 'statusMockup' },
-                  { label: 'Status Motion', key: 'statusMotion' },
                   { label: 'Kampanye',      key: 'kampanye'     },
                   { label: 'Periode',       key: 'periodeStart' },
                   { label: 'Jam Tayang',    key: 'jamTayang'    },
@@ -531,13 +556,6 @@ export default function CampaignSchedule() {
                       {row.statusMockup ? (
                         <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? 'bg-slate-100 text-slate-600'}`}>
                           {row.statusMockup}
-                        </span>
-                      ) : <span className="font-mono text-xs text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3">
-                      {row.statusMotion ? (
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOTION_STATUS_CONFIG[row.statusMotion]?.badge ?? 'bg-slate-100 text-slate-600'}`}>
-                          {row.statusMotion}
                         </span>
                       ) : <span className="font-mono text-xs text-slate-300">—</span>}
                     </td>
@@ -591,22 +609,21 @@ export default function CampaignSchedule() {
           <table className="text-xs border-collapse w-full">
             <thead>
               <tr className="bg-slate-100">
-                {['Nama Aset','Brand','Platform','Tipe','Kampanye','Periode Mulai','Periode Selesai','Jam Tayang','Status Mockup','Status Motion','Link File','Catatan'].map(h => (
+                {['Nama Aset','Brand','Platform','Tipe','Kampanye','Periode Mulai','Periode Selesai','Jam Tayang','Status Mockup','Link File','Catatan'].map(h => (
                   <th key={h} className="border border-slate-200 px-2 py-1 text-left font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               <tr>
-                {['Preview [Shopee] Brand BaU','SNICKERS','Shopee Live','BaU','Juni BaU','2026-06-01','2026-06-30','09:00–10:00','On AE','On Motion','https://drive.google.com/...',''].map((v,i) => (
+                {['Preview [Shopee] Brand BaU','SNICKERS','Shopee Live','BaU','Juni BaU','2026-06-01','2026-06-30','09:00–10:00','On AE','https://drive.google.com/...',''].map((v,i) => (
                   <td key={i} className="border border-slate-200 px-2 py-1 text-slate-500 italic">{v}</td>
                 ))}
               </tr>
             </tbody>
           </table>
           <p className="mt-2">
-            Nilai <strong>Status Mockup</strong>: <code className="bg-slate-200 px-1 rounded">On GD</code>, <code className="bg-slate-200 px-1 rounded">On AE</code>, <code className="bg-slate-200 px-1 rounded">On Strat</code>, <code className="bg-slate-200 px-1 rounded">On Motion</code><br />
-            Nilai <strong>Status Motion</strong>: <code className="bg-slate-200 px-1 rounded">On Progress</code>, <code className="bg-slate-200 px-1 rounded">Revision</code>, <code className="bg-slate-200 px-1 rounded">Ready</code>
+            Nilai <strong>Status Mockup</strong>: <code className="bg-slate-200 px-1 rounded">On GD</code>, <code className="bg-slate-200 px-1 rounded">On AE</code>, <code className="bg-slate-200 px-1 rounded">On Strat</code>, <code className="bg-slate-200 px-1 rounded">On Motion</code>, <code className="bg-slate-200 px-1 rounded">Revision</code>, <code className="bg-slate-200 px-1 rounded">Ready</code>
           </p>
         </div>
         <p>
