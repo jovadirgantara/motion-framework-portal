@@ -475,17 +475,39 @@ export default function CampaignSchedule() {
           <table className="w-full text-sm text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Status</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Nama Aset</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Mockup Type</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Platform</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Status Mockup</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Status Motion</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Kampanye</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Periode</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Jam Tayang</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">Catatan</th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase">File</th>
+                {[
+                  { label: 'Status',        key: 'status'       },
+                  { label: 'Nama Aset',     key: 'namaAset'     },
+                  { label: 'Mockup Type',   key: 'mockupType'   },
+                  { label: 'Platform',      key: 'platform'     },
+                  { label: 'Status Mockup', key: 'statusMockup' },
+                  { label: 'Status Motion', key: 'statusMotion' },
+                  { label: 'Kampanye',      key: 'kampanye'     },
+                  { label: 'Periode',       key: 'periodeStart' },
+                  { label: 'Jam Tayang',    key: 'jamTayang'    },
+                  { label: 'Catatan',       key: null           },
+                  { label: 'File',          key: null           },
+                ].map(col => (
+                  <th
+                    key={col.label}
+                    onClick={col.key ? () => handleSort(col.key) : undefined}
+                    className={`px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none ${
+                      col.key ? 'cursor-pointer hover:text-slate-600 hover:bg-slate-100' : ''
+                    }`}
+                  >
+                    <span className="flex items-center gap-1 whitespace-nowrap">
+                      {col.label}
+                      {col.key && (
+                        <span className="text-[10px]">
+                          {sortKey === col.key
+                            ? sortDir === 'asc' ? '↑' : '↓'
+                            : <span className="opacity-30">↕</span>
+                          }
+                        </span>
+                      )}
+                    </span>
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
