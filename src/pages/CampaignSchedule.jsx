@@ -163,6 +163,31 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+// Returns "YYYY-MM" key from a date string, or null if invalid
+function getMonthKey(dateStr) {
+  const d = new Date(normalizeDate(dateStr))
+  if (isNaN(d)) return null
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
+// "2026-06" → "Juni 2026"
+function formatMonthLabel(key) {
+  const [year, month] = key.split('-').map(Number)
+  const d = new Date(year, month - 1, 1)
+  return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+}
+
+// True if the row's period overlaps with the given monthKey ("YYYY-MM")
+function monthOverlaps(periodeStart, periodeEnd, monthKey) {
+  const [year, month] = monthKey.split('-').map(Number)
+  const mStart = new Date(year, month - 1, 1)
+  const mEnd   = new Date(year, month, 0, 23, 59, 59)
+  const s = new Date(normalizeDate(periodeStart))
+  const e = new Date(normalizeDate(periodeEnd))
+  if (isNaN(s) || isNaN(e)) return false
+  return s <= mEnd && e >= mStart
+}
+
 // ─── STATUS CONFIG ────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
   aktif:        { label: 'Aktif',        dot: '🟢', badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
@@ -186,10 +211,14 @@ export default function CampaignSchedule() {
   const [filterPlatform,  setFilterPlatform]  = useState('semua')
   const [filterStatus,    setFilterStatus]    = useState('semua')
   const [filterBrand,     setFilterBrand]     = useState('semua')
+  const [filterBulan,     setFilterBulan]     = useState('semua')
   const [filterCampaign,  setFilterCampaign]  = useState('semua')
   const [brandOpen,       setBrandOpen]       = useState(false)
   const [brandSearch,     setBrandSearch]     = useState('')
+  const [bulanOpen,       setBulanOpen]       = useState(false)
+  const [bulanSearch,     setBulanSearch]     = useState('')
   const brandRef = useRef(null)
+  const bulanRef = useRef(null)
   const [sortKey, setSortKey] = useState(null)
   const [sortDir, setSortDir] = useState('asc')
 
@@ -220,6 +249,10 @@ export default function CampaignSchedule() {
         setBrandOpen(false)
         setBrandSearch('')
       }
+      if (bulanRef.current && !bulanRef.current.contains(e.target)) {
+        setBulanOpen(false)
+        setBulanSearch('')
+      }
     }
     document.addEventListener('mousedown', handleOutside)
     return () => document.removeEventListener('mousedown', handleOutside)
@@ -234,11 +267,23 @@ export default function CampaignSchedule() {
     [displayData],
   )
 
+  const allMonths = useMemo(() => {
+    const seen = new Set()
+    displayData.forEach(r => {
+      const sk = getMonthKey(r.periodeStart)
+      const ek = getMonthKey(r.periodeEnd)
+      if (sk) seen.add(sk)
+      if (ek) seen.add(ek)
+    })
+    return Array.from(seen).sort()
+  }, [displayData])
+
   const filtered = useMemo(
     () => enriched.filter(row => {
       const matchP = filterPlatform === 'semua' || row.platform === filterPlatform
       const matchS = filterStatus   === 'semua' || row.status   === filterStatus
       const matchB = filterBrand    === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
+      const matchM = filterBulan    === 'semua' || monthOverlaps(row.periodeStart, row.periodeEnd, filterBulan)
       let matchC = true
       if (filterCampaign !== 'semua') {
         const k = (row.kampanye ?? '').toLowerCase()
@@ -250,9 +295,9 @@ export default function CampaignSchedule() {
         else if (filterCampaign === 'DD')  matchC = isDD
         else if (filterCampaign === 'Other') matchC = !isPayDay && !isBaU && !isDD
       }
-      return matchP && matchS && matchB && matchC
+      return matchP && matchS && matchB && matchM && matchC
     }),
-    [enriched, filterPlatform, filterStatus, filterBrand, filterCampaign],
+    [enriched, filterPlatform, filterStatus, filterBrand, filterBulan, filterCampaign],
   )
 
   const platforms = ['semua', ...Array.from(new Set(displayData.map(r => r.platform).filter(Boolean)))]
@@ -260,6 +305,10 @@ export default function CampaignSchedule() {
   const filteredBrands = brandSearch.trim()
     ? BRAND_LIST.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
     : BRAND_LIST
+
+  const filteredBulans = bulanSearch.trim()
+    ? allMonths.filter(k => formatMonthLabel(k).toLowerCase().includes(bulanSearch.toLowerCase()))
+    : allMonths
 
   function handleSort(key) {
     if (sortKey === key) {
@@ -408,7 +457,7 @@ export default function CampaignSchedule() {
       </div>
 
       {/* Brand filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-6" ref={brandRef}>
+      <div className="flex flex-wrap items-center gap-2 mb-3" ref={brandRef}>
         <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Brand:</span>
         <div className="relative">
           <button
@@ -473,6 +522,72 @@ export default function CampaignSchedule() {
         </div>
       </div>
 
+      {/* Bulan filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-3" ref={bulanRef}>
+        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Bulan:</span>
+        <div className="relative">
+          <button
+            onClick={() => {
+              setBulanOpen(o => !o)
+              if (bulanOpen) setBulanSearch('')
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              filterBulan !== 'semua'
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            {filterBulan === 'semua' ? 'Semua Bulan' : formatMonthLabel(filterBulan)}
+            <span className="text-[10px] opacity-70">{bulanOpen ? '▲' : '▼'}</span>
+          </button>
+
+          {bulanOpen && (
+            <div className="absolute z-10 top-full left-0 mt-1 w-48 bg-white border border-slate-200 rounded shadow-lg">
+              <div className="p-2 border-b border-slate-100">
+                <input
+                  type="text"
+                  value={bulanSearch}
+                  onChange={e => setBulanSearch(e.target.value)}
+                  placeholder="Cari bulan..."
+                  autoFocus
+                  className="w-full text-xs px-2 py-1.5 border border-slate-200 rounded outline-none focus:border-brand-400"
+                />
+              </div>
+              <ul className="max-h-52 overflow-y-auto py-1">
+                {filterBulan !== 'semua' && !bulanSearch && (
+                  <li>
+                    <button
+                      onClick={() => { setFilterBulan('semua'); setBulanOpen(false); setBulanSearch('') }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-50"
+                    >
+                      Semua Bulan
+                    </button>
+                  </li>
+                )}
+                {filteredBulans.length === 0 ? (
+                  <li className="px-3 py-2 text-xs text-slate-400 italic">Tidak ditemukan</li>
+                ) : (
+                  filteredBulans.map(k => (
+                    <li key={k}>
+                      <button
+                        onClick={() => { setFilterBulan(k); setBulanOpen(false); setBulanSearch('') }}
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
+                          filterBulan === k
+                            ? 'bg-brand-50 text-brand-700 font-medium'
+                            : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        {formatMonthLabel(k)}
+                      </button>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Campaign filter */}
       <div className="flex flex-wrap items-center gap-2 mb-6">
         <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Campaign:</span>
@@ -508,6 +623,7 @@ export default function CampaignSchedule() {
                   { label: 'Platform',      key: 'platform'     },
                   { label: 'Status Mockup', key: 'statusMockup' },
                   { label: 'Kampanye',      key: 'kampanye'     },
+                  { label: 'Bulan',         key: null           },
                   { label: 'Periode',       key: 'periodeStart' },
                   { label: 'Jam Tayang',    key: 'jamTayang'    },
                   { label: 'Catatan',       key: null           },
@@ -560,6 +676,9 @@ export default function CampaignSchedule() {
                       ) : <span className="font-mono text-xs text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3 text-slate-600 text-sm">{row.kampanye}</td>
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
+                      {getMonthKey(row.periodeStart) ? formatMonthLabel(getMonthKey(row.periodeStart)) : <span className="text-slate-300">—</span>}
+                    </td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
                       {formatDate(row.periodeStart)}<br />{formatDate(row.periodeEnd)}
                     </td>
@@ -629,6 +748,11 @@ export default function CampaignSchedule() {
         <p>
           Format tanggal: <code className="bg-slate-200 px-1 rounded">YYYY-MM-DD</code> atau <code className="bg-slate-200 px-1 rounded">DD/MM/YYYY</code>.
           Agar fetch berjalan, sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong>.
+        </p>
+        <p className="text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2 font-mono text-2xs leading-relaxed">
+          💡 <strong>Kolom Bulan</strong> di tabel dihitung otomatis dari <em>Periode Mulai</em> — tidak perlu kolom baru di sheet.
+          Filter Bulan menampilkan aset yang <em>periodenya tumpang tindih</em> dengan bulan tersebut
+          (mis. kampanye Juni–Juli akan muncul di filter "Juni" maupun "Juli").
         </p>
         <p className="mt-1">
           <Link to="/framework/campaign-usage-management" className="text-brand-600 hover:underline">
