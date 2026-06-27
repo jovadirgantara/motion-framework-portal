@@ -591,14 +591,14 @@ export default function CampaignSchedule() {
           <table className="text-xs border-collapse w-full">
             <thead>
               <tr className="bg-slate-100">
-                {['Nama Aset','Platform','Tipe','Kampanye','Periode Mulai','Periode Selesai','Jam Tayang','Status Mockup','Status Motion','Link File','Catatan'].map(h => (
+                {['Nama Aset','Brand','Platform','Tipe','Kampanye','Periode Mulai','Periode Selesai','Jam Tayang','Status Mockup','Status Motion','Link File','Catatan'].map(h => (
                   <th key={h} className="border border-slate-200 px-2 py-1 text-left font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               <tr>
-                {['Preview [Shopee] Brand BaU','Shopee Live','BaU','Juni BaU','2026-06-01','2026-06-30','09:00–10:00','On AE','On Motion','https://drive.google.com/...',''].map((v,i) => (
+                {['Preview [Shopee] Brand BaU','SNICKERS','Shopee Live','BaU','Juni BaU','2026-06-01','2026-06-30','09:00–10:00','On AE','On Motion','https://drive.google.com/...',''].map((v,i) => (
                   <td key={i} className="border border-slate-200 px-2 py-1 text-slate-500 italic">{v}</td>
                 ))}
               </tr>
