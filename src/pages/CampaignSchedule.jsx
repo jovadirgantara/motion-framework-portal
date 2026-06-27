@@ -351,7 +351,7 @@ export default function CampaignSchedule() {
       </div>
 
       {/* Platform filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-6">
+      <div className="flex flex-wrap items-center gap-2 mb-3">
         <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Platform:</span>
         {platforms.map(p => (
           <button
@@ -366,6 +366,72 @@ export default function CampaignSchedule() {
             {p === 'semua' ? 'Semua' : p}
           </button>
         ))}
+      </div>
+
+      {/* Brand filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-6" ref={brandRef}>
+        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Brand:</span>
+        <div className="relative">
+          <button
+            onClick={() => {
+              setBrandOpen(o => !o)
+              if (brandOpen) setBrandSearch('')
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              filterBrand !== 'semua'
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            {filterBrand === 'semua' ? 'Semua Brand' : filterBrand}
+            <span className="text-[10px] opacity-70">{brandOpen ? '▲' : '▼'}</span>
+          </button>
+
+          {brandOpen && (
+            <div className="absolute z-10 top-full left-0 mt-1 w-56 bg-white border border-slate-200 rounded shadow-lg">
+              <div className="p-2 border-b border-slate-100">
+                <input
+                  type="text"
+                  value={brandSearch}
+                  onChange={e => setBrandSearch(e.target.value)}
+                  placeholder="Cari brand..."
+                  autoFocus
+                  className="w-full text-xs px-2 py-1.5 border border-slate-200 rounded outline-none focus:border-brand-400"
+                />
+              </div>
+              <ul className="max-h-52 overflow-y-auto py-1">
+                {filterBrand !== 'semua' && !brandSearch && (
+                  <li>
+                    <button
+                      onClick={() => { setFilterBrand('semua'); setBrandOpen(false); setBrandSearch('') }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-50"
+                    >
+                      Semua Brand
+                    </button>
+                  </li>
+                )}
+                {filteredBrands.length === 0 ? (
+                  <li className="px-3 py-2 text-xs text-slate-400 italic">Tidak ditemukan</li>
+                ) : (
+                  filteredBrands.map(b => (
+                    <li key={b}>
+                      <button
+                        onClick={() => { setFilterBrand(b); setBrandOpen(false); setBrandSearch('') }}
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
+                          filterBrand === b
+                            ? 'bg-brand-50 text-brand-700 font-medium'
+                            : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        {b}
+                      </button>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Table */}
