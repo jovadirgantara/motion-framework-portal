@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import PageLayout from '../components/layout/PageLayout'
 import FadeIn from '../components/ui/FadeIn'
@@ -189,6 +189,10 @@ export default function CampaignSchedule() {
   const [fetchError, setFetchError] = useState(null)
   const [filterPlatform, setFilterPlatform] = useState('semua')
   const [filterStatus,   setFilterStatus]   = useState('semua')
+  const [filterBrand,    setFilterBrand]    = useState('semua')
+  const [brandOpen,      setBrandOpen]      = useState(false)
+  const [brandSearch,    setBrandSearch]    = useState('')
+  const brandRef = useRef(null)
 
   useEffect(() => {
     let cancelled = false
@@ -211,6 +215,17 @@ export default function CampaignSchedule() {
     return () => { cancelled = true }
   }, [])
 
+  useEffect(() => {
+    function handleOutside(e) {
+      if (brandRef.current && !brandRef.current.contains(e.target)) {
+        setBrandOpen(false)
+        setBrandSearch('')
+      }
+    }
+    document.addEventListener('mousedown', handleOutside)
+    return () => document.removeEventListener('mousedown', handleOutside)
+  }, [])
+
   const isLoading  = rawData === null && fetchError === null
   const isLive     = rawData !== null && rawData.length > 0
   const displayData = isLive ? rawData : SEED_DATA
@@ -224,12 +239,17 @@ export default function CampaignSchedule() {
     () => enriched.filter(row => {
       const matchP = filterPlatform === 'semua' || row.platform === filterPlatform
       const matchS = filterStatus   === 'semua' || row.status   === filterStatus
-      return matchP && matchS
+      const matchB = filterBrand    === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
+      return matchP && matchS && matchB
     }),
-    [enriched, filterPlatform, filterStatus],
+    [enriched, filterPlatform, filterStatus, filterBrand],
   )
 
   const platforms = ['semua', ...Array.from(new Set(displayData.map(r => r.platform).filter(Boolean)))]
+
+  const filteredBrands = brandSearch.trim()
+    ? BRAND_LIST.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
+    : BRAND_LIST
 
   const counts = useMemo(() => {
     const c = { aktif: 0, 'akan-datang': 0, kedaluwarsa: 0 }
