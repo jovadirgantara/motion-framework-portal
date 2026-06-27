@@ -193,6 +193,8 @@ export default function CampaignSchedule() {
   const [brandOpen,      setBrandOpen]      = useState(false)
   const [brandSearch,    setBrandSearch]    = useState('')
   const brandRef = useRef(null)
+  const [sortKey, setSortKey] = useState(null)
+  const [sortDir, setSortDir] = useState('asc')
 
   useEffect(() => {
     let cancelled = false
@@ -250,6 +252,35 @@ export default function CampaignSchedule() {
   const filteredBrands = brandSearch.trim()
     ? BRAND_LIST.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
     : BRAND_LIST
+
+  function handleSort(key) {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+  }
+
+  const STATUS_ORDER = { aktif: 0, 'akan-datang': 1, kedaluwarsa: 2 }
+
+  const sorted = useMemo(() => {
+    if (!sortKey) return filtered
+    return [...filtered].sort((a, b) => {
+      let av, bv
+      if (sortKey === 'status') {
+        av = STATUS_ORDER[a.status] ?? 99
+        bv = STATUS_ORDER[b.status] ?? 99
+      } else {
+        av = (a[sortKey] ?? '').toString()
+        bv = (b[sortKey] ?? '').toString()
+      }
+      const cmp = typeof av === 'number'
+        ? av - bv
+        : av.localeCompare(bv, 'id', { sensitivity: 'base' })
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [filtered, sortKey, sortDir])
 
   const counts = useMemo(() => {
     const c = { aktif: 0, 'akan-datang': 0, kedaluwarsa: 0 }
@@ -435,7 +466,7 @@ export default function CampaignSchedule() {
       </div>
 
       {/* Table */}
-      {filtered.length === 0 ? (
+      {sorted.length === 0 ? (
         <div className="text-center py-12 text-slate-500 text-sm">
           Tidak ada aset yang cocok dengan filter yang dipilih.
         </div>
@@ -458,7 +489,7 @@ export default function CampaignSchedule() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
-              {filtered.map(row => {
+              {sorted.map(row => {
                 const cfg = STATUS_CONFIG[row.status]
                 return (
                   <tr key={row.id} className="hover:bg-slate-50 transition-colors">
