@@ -2,34 +2,33 @@ import { Link } from 'react-router-dom'
 
 export default function Footer() {
   return (
-    <footer className="border-t-4 border-brand-600 bg-white mt-16">
+    <footer className="border-t border-slate-200 bg-white mt-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
 
           {/* Brand */}
           <div className="md:col-span-2">
-            <p className="eyebrow mb-2">/ MGLC Framework Portal</p>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-5 h-5 bg-brand-600 rounded-sm flex items-center justify-center">
-                <span className="text-white font-mono font-bold text-2xs leading-none">MG</span>
+            <Link to="/" className="flex items-center gap-3 mb-3 group">
+              <div className="w-9 h-9 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0">
+                <span className="text-white font-mono font-bold text-xs leading-none">MG</span>
               </div>
-              <span className="text-sm font-semibold tracking-tight text-slate-900">MGLC Framework</span>
-            </div>
-            <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
+              <span className="text-sm font-semibold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors">
+                MGLC Framework
+              </span>
+            </Link>
+            <p className="text-xs text-slate-500 leading-relaxed max-w-xs mb-3">
               Portal dokumentasi interaktif framework produksi motion graphic live commerce berbasis visual hierarchy.
               Dikembangkan sebagai bagian dari penelitian S1 Pendidikan Multimedia, UPI Cibiru.
             </p>
-            <div className="mt-3">
-              <span className="font-mono text-2xs text-slate-400 border border-slate-200 rounded px-1.5 py-0.5">
-                v0.1-seed · Data belum dikalibrasi
-              </span>
-            </div>
+            <span className="font-mono text-2xs text-slate-400 border border-slate-200 rounded-full px-2 py-0.5">
+              v0.1-seed · Data belum dikalibrasi
+            </span>
           </div>
 
           {/* Nav */}
           <div>
-            <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-3">Navigasi</p>
-            <ul className="space-y-1.5 text-sm">
+            <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-4">Navigasi</p>
+            <ul className="space-y-2 text-sm">
               {[
                 ['/framework', 'Framework'],
                 ['/tools', 'Tools'],
@@ -38,7 +37,9 @@ export default function Footer() {
                 ['/about', 'Tentang'],
               ].map(([to, label]) => (
                 <li key={to}>
-                  <Link to={to} className="text-slate-500 hover:text-slate-900 transition-colors">{label}</Link>
+                  <Link to={to} className="text-slate-500 hover:text-brand-700 transition-colors">
+                    {label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -46,14 +47,17 @@ export default function Footer() {
 
           {/* Research */}
           <div>
-            <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-3">Penelitian</p>
-            <ul className="space-y-1.5 text-sm text-slate-500">
-              <li className="font-medium text-slate-700">Jova Dirgantara Putra</li>
+            <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-4">Penelitian</p>
+            <ul className="space-y-2 text-sm text-slate-500">
+              <li className="font-semibold text-slate-700">Jova Dirgantara Putra</li>
               <li className="font-mono text-xs text-slate-400">NIM 2201632</li>
               <li>S1 Pendidikan Multimedia</li>
               <li>UPI Cibiru</li>
-              <li className="pt-1">
-                <Link to="/feedback" className="text-brand-600 hover:text-brand-700 transition-colors font-medium">
+              <li className="pt-2">
+                <Link
+                  to="/feedback"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-700 border border-brand-300 rounded-full hover:bg-brand-50 transition-colors"
+                >
                   Beri Feedback →
                 </Link>
               </li>
