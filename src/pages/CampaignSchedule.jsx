@@ -146,15 +146,16 @@ function normalizeDate(str) {
   return str
 }
 
-function getStatus(periodeStart, periodeEnd) {
+function getStatus(periodeStart, periodeEnd, statusMockup) {
   const today = new Date()
   today.setHours(12, 0, 0, 0)
   const start = new Date(normalizeDate(periodeStart))
   const end   = new Date(normalizeDate(periodeEnd))
   end.setHours(23, 59, 59)
+  const isReady = (statusMockup ?? '').toLowerCase() === 'ready'
   if (today < start) return 'akan-datang'
-  if (today > end)   return 'kedaluwarsa'
-  return 'aktif'
+  if (today > end)   return isReady ? 'kedaluwarsa' : 'missing'
+  return isReady ? 'aktif' : 'belum-siap'
 }
 
 function formatDate(dateStr) {
@@ -190,9 +191,11 @@ function monthOverlaps(periodeStart, periodeEnd, monthKey) {
 
 // ─── STATUS CONFIG ────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
+  missing:      { label: 'Missing',      dot: '⚫', badge: 'bg-slate-200 text-slate-700 ring-1 ring-slate-400' },
+  'belum-siap': { label: 'Belum Siap',   dot: '🟠', badge: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300' },
   aktif:        { label: 'Aktif',        dot: '🟢', badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
   'akan-datang':{ label: 'Akan Datang',  dot: '🟡', badge: 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-300' },
-  kedaluwarsa:  { label: 'Kedaluwarsa', dot: '🔴', badge: 'bg-red-100 text-red-800 ring-1 ring-red-300' },
+  kedaluwarsa:  { label: 'Kedaluwarsa',  dot: '🔴', badge: 'bg-red-100 text-red-800 ring-1 ring-red-300' },
 }
 
 const MOCKUP_STATUS_CONFIG = {
@@ -263,7 +266,7 @@ export default function CampaignSchedule() {
   const displayData = isLive ? rawData : SEED_DATA
 
   const enriched = useMemo(
-    () => displayData.map(row => ({ ...row, status: getStatus(row.periodeStart, row.periodeEnd) })),
+    () => displayData.map(row => ({ ...row, status: getStatus(row.periodeStart, row.periodeEnd, row.statusMockup) })),
     [displayData],
   )
 
@@ -319,7 +322,7 @@ export default function CampaignSchedule() {
     }
   }
 
-  const STATUS_ORDER = { aktif: 0, 'akan-datang': 1, kedaluwarsa: 2 }
+  const STATUS_ORDER = { missing: 0, 'belum-siap': 1, aktif: 2, 'akan-datang': 3, kedaluwarsa: 4 }
 
   const sorted = useMemo(() => {
     if (!sortKey) return filtered
@@ -340,7 +343,7 @@ export default function CampaignSchedule() {
   }, [filtered, sortKey, sortDir])
 
   const counts = useMemo(() => {
-    const c = { aktif: 0, 'akan-datang': 0, kedaluwarsa: 0 }
+    const c = { missing: 0, 'belum-siap': 0, aktif: 0, 'akan-datang': 0, kedaluwarsa: 0 }
     enriched.forEach(r => c[r.status]++)
     return c
   }, [enriched])
@@ -405,8 +408,10 @@ export default function CampaignSchedule() {
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-5 gap-3 mb-6">
         {[
+          { key: 'missing',     label: 'Missing',     dot: '⚫', bg: 'bg-slate-100  border-slate-300',  text: 'text-slate-700'  },
+          { key: 'belum-siap',  label: 'Belum Siap',  dot: '🟠', bg: 'bg-orange-50 border-orange-200', text: 'text-orange-800' },
           { key: 'aktif',       label: 'Aktif',       dot: '🟢', bg: 'bg-green-50  border-green-200',  text: 'text-green-800'  },
           { key: 'akan-datang', label: 'Akan Datang', dot: '🟡', bg: 'bg-yellow-50 border-yellow-200', text: 'text-yellow-800' },
           { key: 'kedaluwarsa', label: 'Kedaluwarsa', dot: '🔴', bg: 'bg-red-50    border-red-200',    text: 'text-red-800'    },
@@ -420,7 +425,7 @@ export default function CampaignSchedule() {
 
       {/* Status filter */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {(['semua', 'aktif', 'akan-datang', 'kedaluwarsa']).map(s => {
+        {(['semua', 'missing', 'belum-siap', 'aktif', 'akan-datang', 'kedaluwarsa']).map(s => {
           const cfg = s === 'semua'
             ? { label: `Semua (${enriched.length})`, badge: 'border border-slate-300 text-slate-600' }
             : { label: `${STATUS_CONFIG[s].dot} ${STATUS_CONFIG[s].label} (${counts[s]})`, badge: STATUS_CONFIG[s].badge }
