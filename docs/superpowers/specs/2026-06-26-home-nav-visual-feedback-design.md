@@ -91,5 +91,6 @@ Setelah: selalu di-render, height di-toggle via CSS:
 
 - Tidak ada library baru
 - Tidak ada perubahan markup yang breaking
-- `FadeIn` harus gracefully degrade jika JS disabled (elemen tetap visible via CSS fallback)
-- Animasi harus respek `prefers-reduced-motion`
+- **JS-off graceful degrade:** `FadeIn` apply class `opacity-0 translate-y-3` via JS setelah mount (bukan di initial HTML). Jika JS disabled, elemen langsung terlihat tanpa perlu fallback tambahan.
+- **`prefers-reduced-motion`:** Hook `useInView` cek `window.matchMedia('(prefers-reduced-motion: reduce)')`. Jika true, langsung set `inView = true` tanpa observer — elemen muncul seketika tanpa animasi.
+- Hero animation classes (`.animate-hero-*`) juga wrap dengan `@media (prefers-reduced-motion: reduce) { animation: none; opacity: 1; }` di CSS.

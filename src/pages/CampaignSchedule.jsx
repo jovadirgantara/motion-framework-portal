@@ -713,57 +713,84 @@ export default function CampaignSchedule() {
         </div>
       )}
 
-      {/* Architecture note */}
-      <div className="mt-8 border border-slate-200 rounded p-4 text-xs text-slate-600 space-y-2">
-        <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-2">Catatan Arsitektur & Setup</p>
-        <p>
-          Halaman ini adalah <strong>Display Layer</strong> — data diambil langsung dari{' '}
-          <a
-            href={`https://docs.google.com/spreadsheets/d/17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ/edit`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-brand-600 hover:underline"
-          >
-            Google Sheets Campaign 2026
-          </a>.
-          Status dihitung otomatis berdasarkan tanggal hari ini.
-        </p>
-        <p className="font-medium text-slate-700">Struktur kolom yang diharapkan di Google Sheets:</p>
-        <div className="overflow-x-auto">
-          <table className="text-xs border-collapse w-full">
-            <thead>
-              <tr className="bg-slate-100">
-                {['Nama Aset','Brand','Platform','Tipe','Kampanye','Periode Mulai','Periode Selesai','Jam Tayang','Status Mockup','Link File','Catatan'].map(h => (
-                  <th key={h} className="border border-slate-200 px-2 py-1 text-left font-semibold">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                {['Preview [Shopee] Brand BaU','SNICKERS','Shopee Live','BaU','Juni BaU','2026-06-01','2026-06-30','09:00–10:00','On AE','https://drive.google.com/...',''].map((v,i) => (
-                  <td key={i} className="border border-slate-200 px-2 py-1 text-slate-500 italic">{v}</td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-          <p className="mt-2">
-            Nilai <strong>Status Mockup</strong>: <code className="bg-slate-200 px-1 rounded">On GD</code>, <code className="bg-slate-200 px-1 rounded">On AE</code>, <code className="bg-slate-200 px-1 rounded">On Strat</code>, <code className="bg-slate-200 px-1 rounded">On Motion</code>, <code className="bg-slate-200 px-1 rounded">Revision</code>, <code className="bg-slate-200 px-1 rounded">Ready</code>
-          </p>
-        </div>
-        <p>
-          Format tanggal: <code className="bg-slate-200 px-1 rounded">YYYY-MM-DD</code> atau <code className="bg-slate-200 px-1 rounded">DD/MM/YYYY</code>.
-          Agar fetch berjalan, sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong>.
-        </p>
-        <p className="text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2 font-mono text-2xs leading-relaxed">
-          💡 <strong>Kolom Bulan</strong> di tabel dihitung otomatis dari <em>Periode Mulai</em> — tidak perlu kolom baru di sheet.
-          Filter Bulan menampilkan aset yang <em>periodenya tumpang tindih</em> dengan bulan tersebut
-          (mis. kampanye Juni–Juli akan muncul di filter "Juni" maupun "Juli").
-        </p>
-        <p className="mt-1">
-          <Link to="/framework/campaign-usage-management" className="text-brand-600 hover:underline">
-            Baca dokumentasi lengkap Campaign Usage Management →
-          </Link>
-        </p>
+      {/* Row notes */}
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {[
+          {
+            col: 'Status',
+            note: 'Dihitung otomatis: Aktif jika periode berjalan & statusMockup = Ready, Belum Siap jika berjalan tapi belum Ready, Akan Datang jika belum mulai, Kedaluwarsa jika sudah lewat & Ready, Missing jika lewat & belum Ready.',
+          },
+          {
+            col: 'Nama Aset',
+            note: 'Nama display aset — biasanya format: Preview [Platform] Brand Tipe.',
+          },
+          {
+            col: 'Mockup Type',
+            note: 'Tipe kampanye aset: BaU (Business as Usual), PayDay, Period, DD, dsb.',
+          },
+          {
+            col: 'Platform',
+            note: 'Platform siaran live: Shopee Live, TikTok Shop, dsb.',
+          },
+          {
+            col: 'Status Mockup',
+            note: 'Tahap produksi mockup di pipeline. Nilai valid: On GD, On AE, On Strat, On Motion, Revision, Ready.',
+          },
+          {
+            col: 'Kampanye',
+            note: 'Nama kampanye atau periode dari Google Sheets, dipakai untuk filter Campaign (PayDay / BaU / DD / Other).',
+          },
+          {
+            col: 'Bulan',
+            note: 'Dihitung otomatis dari Periode Mulai — bukan kolom terpisah di Sheets. Filter Bulan menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.',
+          },
+          {
+            col: 'Periode',
+            note: 'Tanggal mulai & selesai. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
+          },
+          {
+            col: 'Jam Tayang',
+            note: 'Jam siaran live sesuai jadwal kampanye, mis. 09:00–10:00 atau "Sepanjang hari".',
+          },
+          {
+            col: 'Catatan',
+            note: 'Keterangan tambahan bebas — kolaborasi talent, informasi level, dsb.',
+          },
+          {
+            col: 'File',
+            note: 'Tautan Google Drive ke file mockup. Kosong jika file belum diupload.',
+          },
+          {
+            col: 'Setup Sheets',
+            note: (
+              <>
+                Sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong> agar fetch berjalan.{' '}
+                <a
+                  href="https://docs.google.com/spreadsheets/d/17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ/edit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand-600 hover:underline"
+                >
+                  Buka Google Sheets Campaign 2026 →
+                </a>
+              </>
+            ),
+          },
+        ].map(({ col, note }) => (
+          <div key={col} className="flex gap-2.5 bg-slate-50 border border-slate-200 rounded px-3 py-2.5 text-xs text-slate-600">
+            <span className="font-mono text-slate-400 shrink-0 pt-px">#</span>
+            <div>
+              <span className="font-semibold text-slate-700">{col}</span>
+              <span className="text-slate-400 mx-1">—</span>
+              <span>{note}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 text-xs text-slate-400 text-right">
+        <Link to="/framework/campaign-usage-management" className="text-brand-600 hover:underline">
+          Dokumentasi lengkap Campaign Usage Management →
+        </Link>
       </div>
     </PageLayout>
   )
