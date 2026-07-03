@@ -3,22 +3,46 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [master]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
+  id-token: write
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Ensure Pages uses GitHub Actions source
+        run: |
+          echo "=== Pages config saat ini ==="
+          gh api repos/${{ github.repository }}/pages \
+            --jq '{build_type: .build_type, source: .source}' 2>&1 || echo "(Pages belum diaktifkan)"
+
+          echo "=== Set build_type ke workflow ==="
+          echo '{"build_type":"workflow"}' | \
+          gh api repos/${{ github.repository }}/pages \
+            --method PUT --input - \
+            --jq '{build_type: .build_type}' 2>&1 \
+          || \
+          echo '{"build_type":"workflow"}' | \
+          gh api repos/${{ github.repository }}/pages \
+            --method POST --input - \
+            --jq '{build_type: .build_type}' 2>&1 \
+          || echo "Gagal update — lanjutkan saja"
+
+          echo "=== Pages config setelah update ==="
+          gh api repos/${{ github.repository }}/pages \
+            --jq '{build_type: .build_type, source: .source}' 2>&1 || true
 
       - uses: pnpm/action-setup@v4
         with:
@@ -30,25 +54,19 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-
       - run: pnpm build
+      - run: cp dist/index.html dist/404.html
 
-      - name: Add 404.html for SPA routing
-        run: cp dist/index.html dist/404.html
-
-      - name: Configure Pages source to gh-pages branch
-        run: |
-          echo '{"source":{"branch":"gh-pages","path":"/"}}' | \
-          gh api repos/${{ github.repository }}/pages \
-            --method PUT --input - \
-          || \
-          echo '{"source":{"branch":"gh-pages","path":"/"}}' | \
-          gh api repos/${{ github.repository }}/pages \
-            --method POST --input - \
-          || true
-
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
+      - uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
