@@ -621,9 +621,24 @@ export default function CampaignSchedule() {
           <table className="w-full text-sm text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
+                <th
+                  onClick={() => handleSort('periodeStart')}
+                  className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
+                >
+                  <span className="flex items-center gap-3 whitespace-nowrap">
+                    <span className="flex items-center gap-1">
+                      START
+                      <span className="text-[10px]">
+                        {sortKey === 'periodeStart'
+                          ? sortDir === 'asc' ? '↑' : '↓'
+                          : <span className="opacity-30">↕</span>
+                        }
+                      </span>
+                    </span>
+                    <span>END</span>
+                  </span>
+                </th>
                 {[
-                  { label: 'Start',         key: 'periodeStart' },
-                  { label: 'End',           key: null           },
                   { label: 'Bulan',         key: null           },
                   { label: 'Status',        key: 'status'       },
                   { label: 'Nama Aset',     key: 'namaAset'     },
@@ -661,12 +676,17 @@ export default function CampaignSchedule() {
               {sorted.map(row => {
                 const cfg = STATUS_CONFIG[row.status]
                 return (
-                  <tr key={row.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
-                      {formatDate(row.periodeStart)}
-                    </td>
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
-                      {formatDate(row.periodeEnd)}
+                  <tr
+                    key={row.id}
+                    className={`transition-colors ${
+                      row.status === 'aktif' ? 'bg-green-300/25 hover:bg-green-300/40' : 'hover:bg-slate-50'
+                    }`}
+                  >
+                    <td className="px-3 py-3 text-slate-900 whitespace-nowrap font-mono text-xs font-bold">
+                      <span className="flex items-center gap-3">
+                        <span>{formatDate(row.periodeStart)}</span>
+                        <span>{formatDate(row.periodeEnd)}</span>
+                      </span>
                     </td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
                       {getMonthKey(row.periodeStart) ? formatMonthLabel(getMonthKey(row.periodeStart)) : <span className="text-slate-300">—</span>}
@@ -750,7 +770,7 @@ export default function CampaignSchedule() {
           },
           {
             col: 'Start / End',
-            note: 'Tanggal mulai (Start) & selesai (End) periode, ditampilkan sebagai 2 kolom terpisah. Sort tabel mengikuti kolom Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
+            note: 'Tanggal mulai (Start) & selesai (End) periode dalam satu kolom. Sort tabel mengikuti Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
           },
           {
             col: 'Jam Tayang',
