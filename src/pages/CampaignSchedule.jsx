@@ -622,14 +622,14 @@ export default function CampaignSchedule() {
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 {[
+                  { label: 'Periode',       key: 'periodeStart' },
+                  { label: 'Bulan',         key: null           },
                   { label: 'Status',        key: 'status'       },
                   { label: 'Nama Aset',     key: 'namaAset'     },
                   { label: 'Mockup Type',   key: 'mockupType'   },
                   { label: 'Platform',      key: 'platform'     },
                   { label: 'Status Mockup', key: 'statusMockup' },
                   { label: 'Kampanye',      key: 'kampanye'     },
-                  { label: 'Bulan',         key: null           },
-                  { label: 'Periode',       key: 'periodeStart' },
                   { label: 'Jam Tayang',    key: 'jamTayang'    },
                   { label: 'Catatan',       key: null           },
                   { label: 'File',          key: null           },
@@ -661,6 +661,12 @@ export default function CampaignSchedule() {
                 const cfg = STATUS_CONFIG[row.status]
                 return (
                   <tr key={row.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
+                      {formatDate(row.periodeStart)}<br />{formatDate(row.periodeEnd)}
+                    </td>
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
+                      {getMonthKey(row.periodeStart) ? formatMonthLabel(getMonthKey(row.periodeStart)) : <span className="text-slate-300">—</span>}
+                    </td>
                     <td className="px-3 py-3">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono ${cfg.badge}`}>
                         {cfg.dot} {cfg.label}
@@ -681,12 +687,6 @@ export default function CampaignSchedule() {
                       ) : <span className="font-mono text-xs text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3 text-slate-600 text-sm">{row.kampanye}</td>
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
-                      {getMonthKey(row.periodeStart) ? formatMonthLabel(getMonthKey(row.periodeStart)) : <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
-                      {formatDate(row.periodeStart)}<br />{formatDate(row.periodeEnd)}
-                    </td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{row.jamTayang}</td>
                     <td className="px-3 py-3 text-slate-500 text-xs max-w-[160px]">
                       {row.catatan || <span className="text-slate-300">—</span>}
