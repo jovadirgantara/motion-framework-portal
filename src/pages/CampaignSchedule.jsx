@@ -14,6 +14,7 @@ const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?form
 const COL_MAP = {
   namaAset:      ['Nama Aset', 'nama aset', 'Nama', 'nama', 'Display Name'],
   platform:      ['Platform', 'platform'],
+  studio:        ['Studio', 'studio'],
   mockupType:    ['Tipe', 'tipe', 'Mockup Type', 'Type', 'type'],
   kampanye:      ['Kampanye', 'kampanye', 'Campaign', 'campaign'],
   periodeStart:  ['Periode Mulai', 'periode mulai', 'Mulai', 'mulai', 'Start', 'start', 'Tanggal Mulai'],
@@ -47,6 +48,7 @@ const SEED_DATA = [
     id: 'seed-1',
     namaAset: 'Preview [Shopee] Snickers Mingyu BaU',
     platform: 'Shopee Live',
+    studio: 'Jakarta',
     mockupType: 'BaU',
     kampanye: 'Business as Usual – Juni',
     periodeStart: '2026-06-07',
@@ -62,6 +64,7 @@ const SEED_DATA = [
     id: 'seed-2',
     namaAset: 'BG Sweety Festive PayDay',
     platform: 'Shopee Live',
+    studio: 'Bandung',
     mockupType: 'PayDay',
     kampanye: 'PayDay Juni',
     periodeStart: '2026-06-25',
@@ -77,6 +80,7 @@ const SEED_DATA = [
     id: 'seed-3',
     namaAset: 'Preview [TikTok] L-MEN Period Pack',
     platform: 'TikTok Shop',
+    studio: 'Jakarta',
     mockupType: 'Period',
     kampanye: 'BaU – Multiple Period',
     periodeStart: '2026-06-01',
@@ -636,6 +640,24 @@ export default function CampaignSchedule() {
                     </span>
                   </span>
                 </th>
+                {[{ label: 'Status Mockup', key: 'statusMockup' }].map(col => (
+                  <th
+                    key={col.label}
+                    rowSpan={2}
+                    onClick={() => handleSort(col.key)}
+                    className="align-middle px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
+                  >
+                    <span className="flex items-center gap-1 whitespace-nowrap">
+                      {col.label}
+                      <span className="text-[10px]">
+                        {sortKey === col.key
+                          ? sortDir === 'asc' ? '↑' : '↓'
+                          : <span className="opacity-30">↕</span>
+                        }
+                      </span>
+                    </span>
+                  </th>
+                ))}
                 <th
                   colSpan={2}
                   className="px-3 py-1.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none text-center border-b border-slate-200"
@@ -647,7 +669,7 @@ export default function CampaignSchedule() {
                   { label: 'Nama Aset',     key: 'namaAset'     },
                   { label: 'Mockup Type',   key: 'mockupType'   },
                   { label: 'Platform',      key: 'platform'     },
-                  { label: 'Status Mockup', key: 'statusMockup' },
+                  { label: 'Studio',        key: 'studio'       },
                   { label: 'Kampanye',      key: 'kampanye'     },
                   { label: 'Jam Tayang',    key: 'jamTayang'    },
                   { label: 'Catatan',       key: null           },
@@ -710,6 +732,13 @@ export default function CampaignSchedule() {
                         {cfg.dot} {cfg.label}
                       </span>
                     </td>
+                    <td className="px-3 py-3">
+                      {row.statusMockup ? (
+                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? 'bg-slate-100 text-slate-600'}`}>
+                          {row.statusMockup}
+                        </span>
+                      ) : <span className="font-mono text-xs text-slate-300">—</span>}
+                    </td>
                     <td className="px-3 py-3 text-slate-900 whitespace-nowrap font-mono text-xs font-bold">
                       <span className="text-slate-400 font-normal mr-1">START</span>{formatDate(row.periodeStart)}
                     </td>
@@ -726,12 +755,8 @@ export default function CampaignSchedule() {
                       {row.mockupType || <span className="text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap text-sm">{row.platform}</td>
-                    <td className="px-3 py-3">
-                      {row.statusMockup ? (
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? 'bg-slate-100 text-slate-600'}`}>
-                          {row.statusMockup}
-                        </span>
-                      ) : <span className="font-mono text-xs text-slate-300">—</span>}
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap text-sm">
+                      {row.studio || <span className="text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3 text-slate-600 text-sm">{row.kampanye}</td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{row.jamTayang}</td>
@@ -778,6 +803,10 @@ export default function CampaignSchedule() {
           {
             col: 'Platform',
             note: 'Platform siaran live: Shopee Live, TikTok Shop, dsb.',
+          },
+          {
+            col: 'Studio',
+            note: 'Lokasi studio produksi mockup: Jakarta atau Bandung.',
           },
           {
             col: 'Status Mockup',
