@@ -249,6 +249,8 @@ export default function CampaignSchedule() {
   const [fetchError, setFetchError] = useState(null)
   const [filterPlatform,  setFilterPlatform]  = useState('semua')
   const [filterStatus,    setFilterStatus]    = useState('semua')
+  const [filterStatusMockup, setFilterStatusMockup] = useState('semua')
+  const [filterStudio,   setFilterStudio]     = useState('semua')
   const [filterBrand,     setFilterBrand]     = useState('semua')
   const [filterBulan,     setFilterBulan]     = useState('semua')
   const [filterCampaign,  setFilterCampaign]  = useState('semua')
@@ -319,10 +321,12 @@ export default function CampaignSchedule() {
 
   const filtered = useMemo(
     () => enriched.filter(row => {
-      const matchP = filterPlatform === 'semua' || row.platform === filterPlatform
-      const matchS = filterStatus   === 'semua' || row.status   === filterStatus
-      const matchB = filterBrand    === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
-      const matchM = filterBulan    === 'semua' || monthOverlaps(row.periodeStart, row.periodeEnd, filterBulan)
+      const matchP  = filterPlatform === 'semua' || row.platform === filterPlatform
+      const matchS  = filterStatus   === 'semua' || row.status   === filterStatus
+      const matchSM = filterStatusMockup === 'semua' || row.statusMockup === filterStatusMockup
+      const matchSt = filterStudio  === 'semua' || (row.studio ?? '').toLowerCase() === filterStudio.toLowerCase()
+      const matchB  = filterBrand   === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
+      const matchM  = filterBulan   === 'semua' || monthOverlaps(row.periodeStart, row.periodeEnd, filterBulan)
       let matchC = true
       if (filterCampaign !== 'semua') {
         const k = (row.kampanye ?? '').toLowerCase()
@@ -334,9 +338,9 @@ export default function CampaignSchedule() {
         else if (filterCampaign === 'DD')  matchC = isDD
         else if (filterCampaign === 'Other') matchC = !isPayDay && !isBaU && !isDD
       }
-      return matchP && matchS && matchB && matchM && matchC
+      return matchP && matchS && matchSM && matchSt && matchB && matchM && matchC
     }),
-    [enriched, filterPlatform, filterStatus, filterBrand, filterBulan, filterCampaign],
+    [enriched, filterPlatform, filterStatus, filterStatusMockup, filterStudio, filterBrand, filterBulan, filterCampaign],
   )
 
   const platforms = ['semua', ...Array.from(new Set(displayData.map(r => r.platform).filter(Boolean)))]
@@ -384,8 +388,17 @@ export default function CampaignSchedule() {
     return c
   }, [enriched])
 
+  const statusMockups = Object.keys(MOCKUP_STATUS_CONFIG)
+
+  const mockupCounts = useMemo(() => {
+    const c = {}
+    statusMockups.forEach(s => { c[s] = 0 })
+    enriched.forEach(r => { if (r.statusMockup && c[r.statusMockup] !== undefined) c[r.statusMockup]++ })
+    return c
+  }, [enriched])
+
   return (
-    <PageLayout>
+    <PageLayout maxWidthClassName="max-w-none">
       {/* Header */}
       <FadeIn>
       <div className="pt-8 pb-6 border-b border-slate-200 mb-8">
@@ -479,6 +492,26 @@ export default function CampaignSchedule() {
         })}
       </div>
 
+      {/* Status Mockup filter */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {(['semua', ...statusMockups]).map(s => {
+          const cfg = s === 'semua'
+            ? { label: `Semua (${enriched.length})`, badge: 'border border-slate-300 text-slate-600' }
+            : { label: `${s} (${mockupCounts[s]})`, badge: MOCKUP_STATUS_CONFIG[s].badge }
+          return (
+            <button
+              key={s}
+              onClick={() => setFilterStatusMockup(s)}
+              className={`px-3 py-1.5 rounded text-xs font-mono transition-all ${cfg.badge} ${
+                filterStatusMockup === s ? 'opacity-100 ring-1 ring-brand-400' : 'opacity-60 hover:opacity-100'
+              }`}
+            >
+              {cfg.label}
+            </button>
+          )
+        })}
+      </div>
+
       {/* Platform filter */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Platform:</span>
@@ -493,6 +526,24 @@ export default function CampaignSchedule() {
             }`}
           >
             {p === 'semua' ? 'Semua' : p}
+          </button>
+        ))}
+      </div>
+
+      {/* Studio filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Studio:</span>
+        {(['semua', 'Jakarta', 'Bandung']).map(s => (
+          <button
+            key={s}
+            onClick={() => setFilterStudio(s)}
+            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              filterStudio === s
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            {s === 'semua' ? 'Semua' : s}
           </button>
         ))}
       </div>
