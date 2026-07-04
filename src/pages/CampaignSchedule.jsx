@@ -626,7 +626,7 @@ export default function CampaignSchedule() {
                   className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
                 >
                   <span className="flex items-center gap-1 whitespace-nowrap">
-                    START
+                    Period
                     <span className="text-[10px]">
                       {sortKey === 'periodeStart'
                         ? sortDir === 'asc' ? '↑' : '↓'
@@ -769,8 +769,8 @@ export default function CampaignSchedule() {
             note: 'Dihitung otomatis dari Periode Mulai — bukan kolom terpisah di Sheets. Filter Bulan menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.',
           },
           {
-            col: 'Start / End',
-            note: 'Tanggal mulai (Start) & selesai (End) periode, masing-masing kolom sendiri. Sort tabel mengikuti Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
+            col: 'Period / End',
+            note: 'Tanggal mulai (Period) & selesai (End) periode, masing-masing kolom sendiri. Sort tabel mengikuti Period saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
           },
           {
             col: 'Jam Tayang',
