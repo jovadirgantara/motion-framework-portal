@@ -622,6 +622,21 @@ export default function CampaignSchedule() {
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 <th
+                  rowSpan={2}
+                  onClick={() => handleSort('status')}
+                  className="align-middle px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
+                >
+                  <span className="flex items-center gap-1 whitespace-nowrap">
+                    Status
+                    <span className="text-[10px]">
+                      {sortKey === 'status'
+                        ? sortDir === 'asc' ? '↑' : '↓'
+                        : <span className="opacity-30">↕</span>
+                      }
+                    </span>
+                  </span>
+                </th>
+                <th
                   colSpan={2}
                   className="px-3 py-1.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none text-center border-b border-slate-200"
                 >
@@ -629,7 +644,6 @@ export default function CampaignSchedule() {
                 </th>
                 {[
                   { label: 'Bulan',         key: null           },
-                  { label: 'Status',        key: 'status'       },
                   { label: 'Nama Aset',     key: 'namaAset'     },
                   { label: 'Mockup Type',   key: 'mockupType'   },
                   { label: 'Platform',      key: 'platform'     },
@@ -691,6 +705,11 @@ export default function CampaignSchedule() {
                       row.status === 'aktif' ? 'bg-green-300/25 hover:bg-green-300/40' : 'hover:bg-slate-50'
                     }`}
                   >
+                    <td className="px-3 py-3">
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono ${cfg.badge}`}>
+                        {cfg.dot} {cfg.label}
+                      </span>
+                    </td>
                     <td className="px-3 py-3 text-slate-900 whitespace-nowrap font-mono text-xs font-bold">
                       <span className="text-slate-400 font-normal mr-1">START</span>{formatDate(row.periodeStart)}
                     </td>
@@ -699,11 +718,6 @@ export default function CampaignSchedule() {
                     </td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
                       {getMonthKey(row.periodeStart) ? formatMonthLabel(getMonthKey(row.periodeStart)) : <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono ${cfg.badge}`}>
-                        {cfg.dot} {cfg.label}
-                      </span>
                     </td>
                     <td className="px-3 py-3">
                       <div className="font-medium text-slate-900 leading-snug text-sm">{row.namaAset}</div>
