@@ -204,9 +204,9 @@ const STATUS_CONFIG = {
 
 const ROW_HIGHLIGHT = {
   missing:       'bg-slate-400/25 hover:bg-slate-400/40',
-  'belum-siap':  'bg-orange-300/25 hover:bg-orange-300/40',
+  'belum-siap':  'bg-orange-300/5 hover:bg-orange-300/20',
   aktif:         'bg-green-300/25 hover:bg-green-300/40',
-  'akan-datang': 'bg-yellow-300/35 hover:bg-yellow-300/50',
+  'akan-datang': 'bg-yellow-300/5 hover:bg-yellow-300/20',
   kedaluwarsa:   'bg-red-300/25 hover:bg-red-300/40',
 }
 
