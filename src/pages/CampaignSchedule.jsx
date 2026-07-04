@@ -622,7 +622,8 @@ export default function CampaignSchedule() {
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 {[
-                  { label: 'Periode',       key: 'periodeStart' },
+                  { label: 'Start',         key: 'periodeStart' },
+                  { label: 'End',           key: null           },
                   { label: 'Bulan',         key: null           },
                   { label: 'Status',        key: 'status'       },
                   { label: 'Nama Aset',     key: 'namaAset'     },
@@ -662,7 +663,10 @@ export default function CampaignSchedule() {
                 return (
                   <tr key={row.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
-                      {formatDate(row.periodeStart)}<br />{formatDate(row.periodeEnd)}
+                      {formatDate(row.periodeStart)}
+                    </td>
+                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
+                      {formatDate(row.periodeEnd)}
                     </td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
                       {getMonthKey(row.periodeStart) ? formatMonthLabel(getMonthKey(row.periodeStart)) : <span className="text-slate-300">—</span>}
@@ -745,8 +749,8 @@ export default function CampaignSchedule() {
             note: 'Dihitung otomatis dari Periode Mulai — bukan kolom terpisah di Sheets. Filter Bulan menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.',
           },
           {
-            col: 'Periode',
-            note: 'Tanggal mulai & selesai. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
+            col: 'Start / End',
+            note: 'Tanggal mulai (Start) & selesai (End) periode, ditampilkan sebagai 2 kolom terpisah. Sort tabel mengikuti kolom Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
           },
           {
             col: 'Jam Tayang',
