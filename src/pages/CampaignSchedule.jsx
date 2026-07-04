@@ -211,6 +211,30 @@ const MOCKUP_STATUS_CONFIG = {
   'Ready':    { badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
 }
 
+const DEFAULT_BADGE = 'bg-slate-100 text-slate-600 ring-1 ring-slate-300'
+
+// Shopee & TikTok → ungu, Shopee saja → orange, TikTok saja → abu-abu gelap ("hitam muda")
+function getPlatformBadge(platform) {
+  const p = (platform ?? '').toLowerCase()
+  const hasShopee = p.includes('shopee')
+  const hasTiktok = p.includes('tiktok')
+  if (hasShopee && hasTiktok) return 'bg-purple-100 text-purple-800 ring-1 ring-purple-300'
+  if (hasShopee) return 'bg-orange-100 text-orange-800 ring-1 ring-orange-300'
+  if (hasTiktok) return 'bg-slate-300 text-slate-800 ring-1 ring-slate-400'
+  return DEFAULT_BADGE
+}
+
+const STUDIO_CONFIG = {
+  bandung: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300',
+  jakarta: 'bg-pink-100 text-pink-800 ring-1 ring-pink-300',
+}
+
+const MOCKUP_TYPE_CONFIG = {
+  bau:    'bg-green-100 text-green-800 ring-1 ring-green-300',
+  dd:     'bg-blue-100 text-blue-800 ring-1 ring-blue-300',
+  payday: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300',
+}
+
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function CampaignSchedule() {
   const [rawData, setRawData]       = useState(null)   // null = loading
@@ -751,12 +775,26 @@ export default function CampaignSchedule() {
                     <td className="px-3 py-3">
                       <div className="font-medium text-slate-900 leading-snug text-sm">{row.namaAset}</div>
                     </td>
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap text-xs font-mono">
-                      {row.mockupType || <span className="text-slate-300">—</span>}
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      {row.mockupType ? (
+                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_TYPE_CONFIG[row.mockupType.toLowerCase()] ?? DEFAULT_BADGE}`}>
+                          {row.mockupType}
+                        </span>
+                      ) : <span className="font-mono text-xs text-slate-300">—</span>}
                     </td>
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap text-sm">{row.platform}</td>
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap text-sm">
-                      {row.studio || <span className="text-slate-300">—</span>}
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      {row.platform ? (
+                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${getPlatformBadge(row.platform)}`}>
+                          {row.platform}
+                        </span>
+                      ) : <span className="text-xs text-slate-300">—</span>}
+                    </td>
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      {row.studio ? (
+                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${STUDIO_CONFIG[row.studio.toLowerCase()] ?? DEFAULT_BADGE}`}>
+                          {row.studio}
+                        </span>
+                      ) : <span className="text-xs text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3 text-slate-600 text-sm">{row.kampanye}</td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{row.jamTayang}</td>
