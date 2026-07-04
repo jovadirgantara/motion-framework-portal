@@ -1,8 +1,7 @@
 node_modules
 
-# AI tooling / working notes — kept locally, synced via a separate private repo
+# AI tooling / working notes — kept locally, synced via OneDrive
 CLAUDE.md
 .claude/
 .rtk/
 docs/superpowers/
-.notes-git/
