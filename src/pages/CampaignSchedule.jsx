@@ -202,6 +202,14 @@ const STATUS_CONFIG = {
   kedaluwarsa:  { label: 'Kedaluwarsa',  dot: '🔴', badge: 'bg-red-100 text-red-800 ring-1 ring-red-300' },
 }
 
+const ROW_HIGHLIGHT = {
+  missing:       'bg-slate-400/25 hover:bg-slate-400/40',
+  'belum-siap':  'bg-orange-300/25 hover:bg-orange-300/40',
+  aktif:         'bg-green-300/25 hover:bg-green-300/40',
+  'akan-datang': 'bg-yellow-300/35 hover:bg-yellow-300/50',
+  kedaluwarsa:   'bg-red-300/25 hover:bg-red-300/40',
+}
+
 const MOCKUP_STATUS_CONFIG = {
   'On GD':    { badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
   'On AE':    { badge: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300' },
@@ -747,12 +755,10 @@ export default function CampaignSchedule() {
                 return (
                   <tr
                     key={row.id}
-                    className={`transition-colors ${
-                      row.status === 'aktif' ? 'bg-green-300/25 hover:bg-green-300/40' : 'hover:bg-slate-50'
-                    }`}
+                    className={`transition-colors ${ROW_HIGHLIGHT[row.status] ?? 'hover:bg-slate-50'}`}
                   >
                     <td className="px-3 py-3">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono ${cfg.badge}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold ${cfg.badge}`}>
                         {cfg.dot} {cfg.label}
                       </span>
                     </td>
@@ -764,16 +770,16 @@ export default function CampaignSchedule() {
                       ) : <span className="font-mono text-xs text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3 text-slate-900 whitespace-nowrap font-mono text-xs font-bold">
-                      <span className="text-slate-400 font-normal mr-1">START</span>{formatDate(row.periodeStart)}
+                      {formatDate(row.periodeStart)}
                     </td>
                     <td className="px-3 py-3 text-slate-900 whitespace-nowrap font-mono text-xs font-bold">
-                      <span className="text-slate-400 font-normal mr-1">END</span>{formatDate(row.periodeEnd)}
+                      {formatDate(row.periodeEnd)}
                     </td>
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
                       {getMonthKey(row.periodeStart) ? formatMonthLabel(getMonthKey(row.periodeStart)) : <span className="text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3">
-                      <div className="font-medium text-slate-900 leading-snug text-sm">{row.namaAset}</div>
+                      <div className={`text-slate-900 leading-snug text-sm ${row.status === 'aktif' ? 'font-bold' : 'font-normal'}`}>{row.namaAset}</div>
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
                       {row.mockupType ? (
