@@ -622,21 +622,10 @@ export default function CampaignSchedule() {
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
                 <th
-                  onClick={() => handleSort('periodeStart')}
-                  className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
+                  colSpan={2}
+                  className="px-3 py-1.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none text-center border-b border-slate-200"
                 >
-                  <span className="flex items-center gap-1 whitespace-nowrap">
-                    Period
-                    <span className="text-[10px]">
-                      {sortKey === 'periodeStart'
-                        ? sortDir === 'asc' ? '↑' : '↓'
-                        : <span className="opacity-30">↕</span>
-                      }
-                    </span>
-                  </span>
-                </th>
-                <th className="px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none">
-                  <span className="whitespace-nowrap">END</span>
+                  Period
                 </th>
                 {[
                   { label: 'Bulan',         key: null           },
@@ -652,8 +641,9 @@ export default function CampaignSchedule() {
                 ].map(col => (
                   <th
                     key={col.label}
+                    rowSpan={2}
                     onClick={col.key ? () => handleSort(col.key) : undefined}
-                    className={`px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none ${
+                    className={`align-middle px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none ${
                       col.key ? 'cursor-pointer hover:text-slate-600 hover:bg-slate-100' : ''
                     }`}
                   >
@@ -670,6 +660,25 @@ export default function CampaignSchedule() {
                     </span>
                   </th>
                 ))}
+              </tr>
+              <tr>
+                <th
+                  onClick={() => handleSort('periodeStart')}
+                  className="px-3 py-2 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
+                >
+                  <span className="flex items-center gap-1 whitespace-nowrap">
+                    Start
+                    <span className="text-[10px]">
+                      {sortKey === 'periodeStart'
+                        ? sortDir === 'asc' ? '↑' : '↓'
+                        : <span className="opacity-30">↕</span>
+                      }
+                    </span>
+                  </span>
+                </th>
+                <th className="px-3 py-2 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none">
+                  <span className="whitespace-nowrap">End</span>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
@@ -769,8 +778,8 @@ export default function CampaignSchedule() {
             note: 'Dihitung otomatis dari Periode Mulai — bukan kolom terpisah di Sheets. Filter Bulan menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.',
           },
           {
-            col: 'Period / End',
-            note: 'Tanggal mulai (Period) & selesai (End) periode, masing-masing kolom sendiri. Sort tabel mengikuti Period saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
+            col: 'Period (Start / End)',
+            note: 'Header "Period" menaungi 2 sub-kolom: Start (tanggal mulai) & End (tanggal selesai). Sort tabel mengikuti Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
           },
           {
             col: 'Jam Tayang',
