@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import PageLayout from '../components/layout/PageLayout'
-import FadeIn from '../components/ui/FadeIn'
+import PageHeader from '../components/ui/PageHeader'
+import { revealUp, stagger, viewportOnce } from '../utils/motion'
 
 const steps = [
   {
@@ -77,28 +79,37 @@ export default function GetStarted() {
   return (
     <PageLayout>
       <div className="max-w-2xl mx-auto">
-        <FadeIn>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Mulai dari Sini</h1>
-          <p className="text-slate-600 mb-8">
-            Urutan baca yang disarankan untuk designer baru atau validator yang mau memahami framework secara menyeluruh.
-            Total waktu estimasi: <strong>~45 menit</strong>.
-          </p>
-        </FadeIn>
+        <PageHeader
+          eyebrow="/ Mulai dari Sini"
+          title="Mulai dari Sini"
+          description={
+            <>
+              Urutan baca yang disarankan untuk designer baru atau validator yang mau memahami framework
+              secara menyeluruh. Total waktu estimasi: <strong className="text-slate-700">~45 menit</strong>.
+            </>
+          }
+        />
 
-        <FadeIn delay={80}>
-        <div className="space-y-3">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          variants={stagger}
+          className="space-y-4"
+        >
           {steps.map(s => (
-            <div
+            <motion.div
               key={s.step}
-              className={`flex gap-4 bg-white border rounded-xl p-5 ${
-                s.isTool ? 'border-brand-200 bg-brand-50' :
-                s.isFeedback ? 'border-green-200 bg-green-50' :
-                'border-slate-200'
+              variants={revealUp}
+              className={`flex gap-4 rounded-2xl p-5 ${
+                s.isTool ? 'bg-brand-50' :
+                s.isFeedback ? 'bg-teal-50' :
+                'bg-white border border-slate-200'
               }`}
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 ${
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 font-display ${
                 s.isTool ? 'bg-brand-600 text-white' :
-                s.isFeedback ? 'bg-green-600 text-white' :
+                s.isFeedback ? 'bg-teal-600 text-white' :
                 'bg-slate-200 text-slate-600'
               }`}>
                 {s.step}
@@ -106,28 +117,29 @@ export default function GetStarted() {
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    {s.isTool && <span className="text-xs font-medium text-brand-600 mr-2">🛠️ Tool</span>}
-                    {s.isFeedback && <span className="text-xs font-medium text-green-600 mr-2">💬 Feedback</span>}
-                    <span className="text-sm font-semibold text-slate-900">{s.title}</span>
+                    {s.isTool && (
+                      <span className="text-2xs font-mono uppercase tracking-widest text-brand-600 mr-2">Tool</span>
+                    )}
+                    {s.isFeedback && (
+                      <span className="text-2xs font-mono uppercase tracking-widest text-teal-600 mr-2">Feedback</span>
+                    )}
+                    <span className="font-display text-base font-bold text-slate-900">{s.title}</span>
                   </div>
                   <span className="text-xs text-slate-400 shrink-0">{s.time}</span>
                 </div>
-                <p className="text-sm text-slate-600 mt-1 mb-2">{s.desc}</p>
+                <p className="text-sm text-slate-600 mt-1 mb-2 leading-relaxed">{s.desc}</p>
                 <Link
                   to={s.to}
-                  className={`text-sm font-medium hover:underline ${
-                    s.isTool ? 'text-brand-600' :
-                    s.isFeedback ? 'text-green-600' :
-                    'text-brand-600'
+                  className={`text-sm font-semibold hover:underline underline-offset-4 ${
+                    s.isFeedback ? 'text-teal-600' : 'text-brand-600'
                   }`}
                 >
                   {s.cta}
                 </Link>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
-        </FadeIn>
+        </motion.div>
       </div>
     </PageLayout>
   )
