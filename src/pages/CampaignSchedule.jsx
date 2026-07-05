@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import PageLayout from '../components/layout/PageLayout'
-import FadeIn from '../components/ui/FadeIn'
+import Reveal from '../components/ui/Reveal'
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 // Sheet harus di-set "Anyone with the link can view" agar fetch bisa berjalan.
@@ -400,7 +400,7 @@ export default function CampaignSchedule() {
   return (
     <PageLayout maxWidthClassName="max-w-none">
       {/* Header */}
-      <FadeIn>
+      <Reveal>
       <div className="pt-8 pb-6 border-b border-slate-200 mb-8">
         <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-4">
           <Link to="/" className="hover:text-brand-600">Home</Link>
@@ -410,7 +410,7 @@ export default function CampaignSchedule() {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <p className="eyebrow mb-1">/ Komponen 08 · Campaign Usage Management</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Jadwal Penggunaan Mockup</h1>
+            <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 mb-2">Jadwal Penggunaan Mockup</h1>
             <p className="text-sm text-slate-500 max-w-xl">
               Daftar aset motion graphic yang sedang aktif, akan datang, dan sudah kedaluwarsa.
               Data dikelola Motion Designer Lead via Google Sheets. Operator: cek status dan buka file.
@@ -424,7 +424,7 @@ export default function CampaignSchedule() {
           </Link>
         </div>
       </div>
-      </FadeIn>
+      </Reveal>
 
       {/* Status bar */}
       {isLoading && (
