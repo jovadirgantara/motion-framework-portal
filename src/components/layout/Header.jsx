@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Logo from './Logo'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -36,9 +37,8 @@ export default function Header() {
             <motion.div
               whileHover={{ rotate: 5, scale: 1.1 }}
               transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-              className="w-9 h-9 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0"
             >
-              <span className="text-white text-2xs font-mono font-bold leading-none">ORBIZ</span>
+              <Logo />
             </motion.div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors">
@@ -101,9 +101,7 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-14">
                 <Link to="/" className="flex items-center gap-3" onClick={() => setMenuOpen(false)}>
-                  <div className="w-9 h-9 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0">
-                    <span className="text-white text-2xs font-mono font-bold leading-none">ORBIZ</span>
-                  </div>
+                  <Logo />
                   <span className="text-sm font-semibold tracking-tight text-slate-900">Mockup & Motion Framework</span>
                 </Link>
                 <button

@@ -7,7 +7,7 @@
     "route": "/framework/visual-hierarchy",
     "relatedToolId": "visual-hierarchy-checklist",
     "relatedToolLabel": "Cek Aset dengan VH Checklist",
-    "icon": "👁️",
+    "icon": "/icons/framework/visual-hierarchy.png",
     "sections": [
       {
         "heading": "Apa itu Visual Hierarchy dalam Konteks Live Commerce?",
@@ -47,7 +47,7 @@
     "route": "/framework/complexity",
     "relatedToolId": "complexity-classifier",
     "relatedToolLabel": "Klasifikasikan Aset Ini",
-    "icon": "📊",
+    "icon": "/icons/framework/complexity.png",
     "sections": [
       {
         "heading": "Mengapa Perlu Klasifikasi Kompleksitas?",
@@ -78,7 +78,7 @@
     "summary": "Tiga fase produksi terstandarisasi (pra-produksi, produksi, pasca-produksi) dengan checklist per fase untuk memastikan tidak ada langkah kritis yang terlewat.",
     "route": "/framework/workflow",
     "relatedToolId": null,
-    "icon": "🔄",
+    "icon": "/icons/framework/workflow.png",
     "sections": [
       {
         "heading": "Gambaran Umum Workflow",
@@ -106,7 +106,7 @@
     "route": "/framework/asset-management",
     "relatedToolId": "naming-generator",
     "relatedToolLabel": "Generate Nama File",
-    "icon": "📁",
+    "icon": "/icons/framework/asset-management.png",
     "sections": [
       {
         "heading": "Mengapa Manajemen Aset Perlu Distandarisasi?",
@@ -134,7 +134,7 @@
     "route": "/framework/naming-convention",
     "relatedToolId": "naming-generator",
     "relatedToolLabel": "Generate Nama Aset Sekarang",
-    "icon": "🏷️",
+    "icon": "/icons/framework/naming-convention.png",
     "sections": [
       {
         "heading": "Format Display Name",
@@ -166,7 +166,7 @@
     "route": "/framework/render-standard",
     "relatedToolId": "render-calculator",
     "relatedToolLabel": "Cek Render Setting",
-    "icon": "🎬",
+    "icon": "/icons/framework/render-standard.png",
     "sections": [
       {
         "heading": "Mengapa Render Standard Penting?",
@@ -194,7 +194,7 @@
     "route": "/framework/quality-control",
     "relatedToolId": "visual-hierarchy-checklist",
     "relatedToolLabel": "Jalankan QC Checklist",
-    "icon": "✅",
+    "icon": "/icons/framework/quality-control.png",
     "sections": [
       {
         "heading": "Apa itu QC dalam Konteks Framework Ini?",
@@ -223,7 +223,7 @@
     "relatedToolId": null,
     "relatedToolLabel": null,
     "campaignScheduleLink": true,
-    "icon": "📅",
+    "icon": "/icons/framework/campaign-usage-management.png",
     "sections": [
       {
         "heading": "Apa itu Campaign Usage Management?",
@@ -254,7 +254,7 @@
     "summary": "Gambaran keseluruhan 8 komponen konstitutif Framework Produksi Motion Graphic Live Commerce Berbasis Visual Hierarchy.",
     "route": "/framework",
     "relatedToolId": null,
-    "icon": "🗺️",
+    "icon": "/icons/framework/framework-overview.png",
     "sections": [
       {
         "heading": "Tentang Framework Ini",

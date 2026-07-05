@@ -3,7 +3,7 @@ export const TOOLS = [
   {
     id: 'T01',
     to: '/tools/naming-generator',
-    icon: '🏷️',
+    icon: '/icons/tools/naming-generator.png',
     accent: 'sun',
     title: 'Naming Generator',
     desc: 'Generate nama file standar dari input terkontrol. Hilangkan inkonsistensi penamaan selamanya.',
@@ -13,7 +13,7 @@ export const TOOLS = [
   {
     id: 'T02',
     to: '/tools/complexity-classifier',
-    icon: '📊',
+    icon: '/icons/tools/complexity-classifier.png',
     accent: 'teal',
     title: 'Complexity Classifier',
     desc: 'Klasifikasikan level kompleksitas aset. Dapatkan estimasi waktu pengerjaan yang realistis.',
@@ -23,7 +23,7 @@ export const TOOLS = [
   {
     id: 'T03',
     to: '/tools/visual-hierarchy-checklist',
-    icon: '✅',
+    icon: '/icons/tools/visual-hierarchy-checklist.png',
     accent: 'pink',
     title: 'VH Checklist',
     desc: 'Review aset terhadap 6 prinsip visual hierarchy. Output: skor adherence terukur + daftar isu.',
@@ -33,7 +33,7 @@ export const TOOLS = [
   {
     id: 'T04',
     to: '/tools/render-calculator',
-    icon: '🎬',
+    icon: '/icons/tools/render-calculator.png',
     accent: 'brand',
     title: 'Render Calculator',
     desc: 'Rekomendasi render setting per platform — codec, resolusi, fps, alpha channel.',

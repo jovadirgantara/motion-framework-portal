@@ -261,7 +261,7 @@ export default function Home() {
           className="flex flex-col sm:flex-row sm:items-center gap-8"
         >
           <motion.div variants={revealUp} className="shrink-0">
-            <IconBlob icon="📅" accent="teal" size="lg" />
+            <IconBlob icon="/icons/framework/campaign-usage-management.png" accent="teal" size="lg" />
           </motion.div>
           <motion.div variants={revealUp} className="flex-1">
             <p className="font-mono text-2xs text-teal-600 tracking-widest uppercase mb-2">
