@@ -15,7 +15,7 @@ export default function Logo({ className = 'w-9 h-9' }) {
 
   return (
     <img
-      src="/logo-orbiz.png"
+      src={`${import.meta.env.BASE_URL}logo-orbiz.png`}
       alt="ORBIZ"
       className={`${className} rounded-2xl object-contain shrink-0`}
       onError={() => setFailed(true)}
