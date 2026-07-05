@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import PageLayout from '../components/layout/PageLayout'
-import FadeIn from '../components/ui/FadeIn'
+import PageHeader from '../components/ui/PageHeader'
+import Reveal from '../components/ui/Reveal'
 import { trackEvent } from '../utils/analytics'
 
 // Ganti URL ini dengan Google Form atau Typeform yang sesungguhnya
@@ -13,25 +14,22 @@ export default function Feedback() {
 
   return (
     <PageLayout>
-      <FadeIn>
+      <Reveal>
       <div className="max-w-2xl mx-auto">
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-          <p className="eyebrow mb-1">/ Feedback</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Feedback Penelitian</h1>
-          <p className="text-sm text-slate-500">
-            Feedback Anda membantu mengkalibrasi framework dan menyempurnakan portal ini
-            sebagai bagian dari penelitian Design and Development Research.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="/ Feedback"
+          title="Feedback Penelitian"
+          description="Feedback Anda membantu mengkalibrasi framework dan menyempurnakan portal ini sebagai bagian dari penelitian Design and Development Research."
+        />
 
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-800">
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 text-sm text-amber-800">
           <strong>Untuk Pilot Testing:</strong> Isi form setelah Anda selesai mencoba semua 4 tool.
           Form mencakup Likert 1–5 (usability, kejelasan konten, kegunaan tool, efektivitas keseluruhan)
           dan pertanyaan terbuka.
         </div>
 
         {/* Embedded Google Form placeholder */}
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
           <div className="bg-slate-50 border-b border-slate-200 px-5 py-3 text-sm text-slate-600">
             Form Feedback — Pilot Testing Portal
           </div>
@@ -63,7 +61,7 @@ export default function Feedback() {
           */}
         </div>
       </div>
-      </FadeIn>
+      </Reveal>
     </PageLayout>
   )
 }

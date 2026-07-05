@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import PageLayout from '../components/layout/PageLayout'
-import FadeIn from '../components/ui/FadeIn'
+import PageHeader from '../components/ui/PageHeader'
+import Reveal from '../components/ui/Reveal'
 import glossary from '../content/glossary.json'
 
 export default function About() {
@@ -13,15 +14,16 @@ export default function About() {
   return (
     <PageLayout>
       <div className="max-w-3xl mx-auto">
-        <FadeIn>
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
-          <p className="eyebrow mb-1">/ Tentang</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Tentang Portal</h1>
-          <p className="text-sm text-slate-500">Konteks penelitian, metodologi DDR, dan glosarium istilah framework.</p>
-        </div>
+        <Reveal>
+        <PageHeader
+          eyebrow="/ Tentang"
+          title="Tentang Portal"
+          description="Konteks penelitian, metodologi DDR, dan glosarium istilah framework."
+          accent="pink"
+        />
 
-        <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6">
-          <h2 className="text-base font-semibold text-slate-900 mb-3">Konteks Penelitian</h2>
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-6">
+          <h2 className="font-display text-xl font-bold text-slate-900 mb-3">Konteks Penelitian</h2>
           <div className="space-y-3 text-sm text-slate-700">
             <p>
               Portal ini adalah <strong>Produk 2</strong> dari penelitian Design and Development Research (DDR)
@@ -48,38 +50,38 @@ export default function About() {
             ['Metode', 'Design and Development Research (DDR)'],
             ['Tahun', '2026'],
           ].map(([label, value]) => (
-            <div key={label} className="bg-slate-50 rounded-lg px-4 py-3">
+            <div key={label} className="bg-brand-50/50 rounded-2xl px-4 py-3">
               <p className="text-xs text-slate-500">{label}</p>
               <p className="text-sm font-medium text-slate-900">{value}</p>
             </div>
           ))}
         </div>
 
-        </FadeIn>
+        </Reveal>
 
-        <FadeIn delay={80}>
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 text-sm text-amber-800">
+        <Reveal delay={80}>
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-8 text-sm text-amber-800">
           <strong>Catatan integritas data:</strong> Semua angka estimasi waktu, bobot skor, dan threshold
           yang ditampilkan dalam tools adalah nilai <em>default awal (SEED)</em> untuk diuji —
           bukan temuan final penelitian. Nilai ini akan dikalibrasi dari data pilot testing dan
           dilaporkan sebagai bagian dari Bab IV skripsi.
         </div>
 
-        </FadeIn>
+        </Reveal>
 
         {/* Glossary */}
-        <FadeIn delay={120}>
-        <h2 className="text-base font-semibold text-slate-900 mb-3">Glosarium</h2>
+        <Reveal delay={120}>
+        <h2 className="font-display text-xl font-bold text-slate-900 mb-3">Glosarium</h2>
         <input
           type="text"
           placeholder="Cari istilah..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full mb-4 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="w-full mb-4 rounded-full border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <div className="space-y-2">
           {filtered.map(g => (
-            <div key={g.term} className="bg-white border border-slate-200 rounded-lg px-4 py-3">
+            <div key={g.term} className="bg-white border border-slate-200 rounded-2xl px-4 py-3">
               <p className="text-sm font-semibold text-slate-900 mb-1">{g.term}</p>
               <p className="text-sm text-slate-600">{g.definition}</p>
             </div>
@@ -88,7 +90,7 @@ export default function About() {
             <p className="text-sm text-slate-400 text-center py-4">Tidak ada istilah yang cocok.</p>
           )}
         </div>
-        </FadeIn>
+        </Reveal>
       </div>
     </PageLayout>
   )
