@@ -10,10 +10,10 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-3 group">
               <div className="w-9 h-9 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0">
-                <span className="text-white font-mono font-bold text-xs leading-none">MG</span>
+                <span className="text-white font-mono font-bold text-2xs leading-none">ORBIZ</span>
               </div>
               <span className="text-sm font-semibold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors">
-                MGLC Framework
+                Mockup & Motion Framework
               </span>
             </Link>
             <p className="text-xs text-slate-500 leading-relaxed max-w-xs mb-3">
@@ -21,7 +21,7 @@ export default function Footer() {
               Dikembangkan sebagai bagian dari penelitian S1 Pendidikan Multimedia, UPI Cibiru.
             </p>
             <span className="font-mono text-2xs text-slate-400 border border-slate-200 rounded-full px-2 py-0.5">
-              v0.1-seed · Data belum dikalibrasi
+              © 2026 Jova Dirgantara Putra
             </span>
           </div>
 

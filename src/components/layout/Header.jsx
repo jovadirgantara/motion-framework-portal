@@ -38,14 +38,14 @@ export default function Header() {
               transition={{ type: 'spring', stiffness: 400, damping: 10 }}
               className="w-9 h-9 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0"
             >
-              <span className="text-white text-xs font-mono font-bold leading-none">MG</span>
+              <span className="text-white text-2xs font-mono font-bold leading-none">ORBIZ</span>
             </motion.div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors">
-                MGLC Framework
+                Mockup & Motion Framework
               </span>
               <span className="hidden sm:inline font-mono text-2xs text-slate-400 border border-slate-200 rounded-full px-1.5 py-0.5">
-                v0.1-seed
+                © 2026 Jova Dirgantara Putra
               </span>
             </div>
           </Link>
@@ -102,9 +102,9 @@ export default function Header() {
               <div className="flex items-center justify-between h-14">
                 <Link to="/" className="flex items-center gap-3" onClick={() => setMenuOpen(false)}>
                   <div className="w-9 h-9 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0">
-                    <span className="text-white text-xs font-mono font-bold leading-none">MG</span>
+                    <span className="text-white text-2xs font-mono font-bold leading-none">ORBIZ</span>
                   </div>
-                  <span className="text-sm font-semibold tracking-tight text-slate-900">MGLC Framework</span>
+                  <span className="text-sm font-semibold tracking-tight text-slate-900">Mockup & Motion Framework</span>
                 </Link>
                 <button
                   onClick={() => setMenuOpen(false)}
