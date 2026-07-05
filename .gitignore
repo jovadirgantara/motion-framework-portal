@@ -1,4 +1,5 @@
 node_modules
+dist
 
 # AI tooling / working notes — kept locally, synced via OneDrive
 CLAUDE.md
