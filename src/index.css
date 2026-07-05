@@ -7,8 +7,10 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply text-slate-800 bg-white;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    @apply text-slate-800 bg-white font-sans;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
   }
 }
 
@@ -18,17 +20,17 @@
     @apply font-mono text-2xs text-brand-600 tracking-widest uppercase;
   }
 
-  /* ── Section heading — left-aligned, tight ── */
+  /* ── Section heading — display font, besar ── */
   .section-heading {
-    @apply text-xl font-semibold tracking-tight text-slate-900;
+    @apply font-display text-3xl font-bold tracking-tight text-slate-900;
   }
 
-  /* ── Precision card — border only, no shadow ── */
+  /* ── Kartu playful — radius besar, shadow ungu saat hover ── */
   .card {
-    @apply bg-white border border-slate-200 rounded transition-all duration-200;
+    @apply bg-white border border-slate-200 rounded-2xl transition-all duration-200;
   }
   .card-hover {
-    @apply hover:border-brand-300 hover:-translate-y-1 hover:shadow-md;
+    @apply hover:border-brand-300 hover:-translate-y-1 hover:shadow-lift-sm;
   }
 
   /* ── Alternate section background ── */
@@ -58,7 +60,7 @@
     @apply text-slate-700 leading-relaxed;
   }
   .prose-framework h2 {
-    @apply text-xl font-semibold tracking-tight text-slate-900 mt-8 mb-3 first:mt-0;
+    @apply font-display text-2xl font-bold tracking-tight text-slate-900 mt-8 mb-3 first:mt-0;
   }
   .prose-framework h3 {
     @apply text-base font-semibold text-slate-800 mt-6 mb-2;
