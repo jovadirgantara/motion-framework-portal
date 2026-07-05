@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
-import FadeIn from '../../components/ui/FadeIn'
+import Reveal from '../../components/ui/Reveal'
 import SeedNote from '../../components/ui/SeedNote'
 import { trackEvent } from '../../utils/analytics'
 import config from '../../config/checklist-config.json'
@@ -128,15 +128,15 @@ export default function VHChecklist() {
   return (
     <PageLayout sidebar="tools">
       {/* Header */}
-      <FadeIn>
+      <Reveal>
         <div className="pb-6 border-b border-slate-200 mb-6">
           <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
             <Link to="/tools" className="hover:text-brand-600">Tools</Link>
             <span>/</span>
             <span>Visual Hierarchy Checklist</span>
           </div>
-          <p className="eyebrow mb-1">/ Tool 03 · Visual Hierarchy Checklist</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Visual Hierarchy Checklist</h1>
+          <p className="eyebrow text-pink-600 mb-1">/ Tool 03 · Visual Hierarchy Checklist</p>
+          <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 mb-2">Visual Hierarchy Checklist</h1>
           <p className="text-sm text-slate-500 max-w-xl">
             Quality control visual sebelum motion graphic digunakan pada live commerce.
             Nilai setiap indikator: <span className="font-mono text-green-700">PASS</span> ·{' '}
@@ -144,7 +144,7 @@ export default function VHChecklist() {
             <span className="font-mono text-slate-500">N/A</span>
           </p>
         </div>
-      </FadeIn>
+      </Reveal>
 
       {/* Progress + live score */}
       <div className="border border-slate-200 rounded p-4 mb-6">

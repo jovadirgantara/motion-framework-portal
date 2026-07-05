@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
-import FadeIn from '../../components/ui/FadeIn'
+import Reveal from '../../components/ui/Reveal'
 import SeedNote from '../../components/ui/SeedNote'
 import { buildDisplayName } from '../../utils/sanitize'
 import { trackEvent } from '../../utils/analytics'
@@ -116,23 +116,23 @@ export default function NamingGenerator() {
   return (
     <PageLayout sidebar="tools">
       {/* Header */}
-      <FadeIn>
+      <Reveal>
         <div className="pb-6 border-b border-slate-200 mb-6">
           <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
             <Link to="/tools" className="hover:text-brand-600">Tools</Link>
             <span>/</span>
             <span>Naming Generator</span>
           </div>
-          <p className="eyebrow mb-1">/ Tool 01 · Naming Convention Generator</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mb-1">Naming Convention Generator</h1>
+          <p className="eyebrow text-sun-600 mb-1">/ Tool 01 · Naming Convention Generator</p>
+          <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 mb-2">Naming Convention Generator</h1>
           <p className="text-sm text-slate-500">
             Generate nama aset standar sesuai konvensi framework. Format:{' '}
             <span className="font-mono text-brand-600">FileType [Platform] Brand MockupType Campaign (Periode) (Jam)</span>
           </p>
         </div>
-      </FadeIn>
+      </Reveal>
 
-      <FadeIn delay={80}>
+      <Reveal delay={80}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
         <div className="border border-slate-200 rounded p-5 space-y-4">
@@ -294,7 +294,7 @@ export default function NamingGenerator() {
           Beri feedback untuk penelitian →
         </Link>
       </div>
-      </FadeIn>
+      </Reveal>
     </PageLayout>
   )
 }
