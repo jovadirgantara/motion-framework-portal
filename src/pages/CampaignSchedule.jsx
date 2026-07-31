@@ -25,7 +25,6 @@ const COL_MAP = {
   hostBrief:     ['Host Brief', 'host brief', 'Briefing Host', 'briefing host', 'Host Briefing'],
 }
 
-// ─── BRAND LIST ──────────────────────────────────────────────────────────────
 const BRAND_LIST = [
   'FONTERRA', 'QUAKER', 'PHILIPS JAKARTA', 'WIZ', 'GREENFIELDS',
   'I-MEAL', 'KOEPOE-KOEPOE', 'DUA BELIBIS', 'BANANA BOAT',
@@ -40,7 +39,6 @@ const BRAND_LIST = [
   'HUNT4TOYS', 'L-MEN',
 ]
 
-// ─── SEED (fallback jika sheet kosong / belum public) ────────────────────────
 const SEED_DATA = [
   {
     id: 'seed-1',
@@ -99,11 +97,9 @@ const SEED_DATA = [
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/)
   if (lines.length < 2) return []
-
   function parseLine(line) {
     const cells = []
-    let cur = ''
-    let inQ = false
+    let cur = '', inQ = false
     for (let i = 0; i < line.length; i++) {
       const c = line[i]
       if (c === '"') {
@@ -111,36 +107,27 @@ function parseCSV(text) {
         else inQ = !inQ
       } else if (c === ',' && !inQ) {
         cells.push(cur.trim()); cur = ''
-      } else {
-        cur += c
-      }
+      } else { cur += c }
     }
     cells.push(cur.trim())
     return cells
   }
-
   const headers = parseLine(lines[0])
-
   function resolveField(header) {
     for (const [field, aliases] of Object.entries(COL_MAP)) {
       if (aliases.some(a => a.toLowerCase() === header.toLowerCase())) return field
     }
     return null
   }
-
   const fieldMap = headers.map(h => resolveField(h))
-
   return lines.slice(1).map((line, idx) => {
     const cells = parseLine(line)
     const row = { id: `sheet-${idx + 1}` }
-    fieldMap.forEach((field, i) => {
-      if (field) row[field] = cells[i] ?? ''
-    })
+    fieldMap.forEach((field, i) => { if (field) row[field] = cells[i] ?? '' })
     return row
   }).filter(r => r.namaAset)
 }
 
-// Normalisasi DD/MM/YYYY atau YYYY-MM-DD → YYYY-MM-DD
 function normalizeDate(str) {
   if (!str) return ''
   const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
@@ -148,7 +135,6 @@ function normalizeDate(str) {
   return str
 }
 
-// Normalisasi nama studio agar konsisten (Jakarta / Bandung)
 function normalizeStudio(str) {
   if (!str) return ''
   const s = str.trim().toLowerCase()
@@ -158,11 +144,9 @@ function normalizeStudio(str) {
 }
 
 function getStatus(periodeStart, periodeEnd, statusMockup) {
-  const today = new Date()
-  today.setHours(12, 0, 0, 0)
+  const today = new Date(); today.setHours(12, 0, 0, 0)
   const start = new Date(normalizeDate(periodeStart))
-  const end   = new Date(normalizeDate(periodeEnd))
-  end.setHours(23, 59, 59)
+  const end   = new Date(normalizeDate(periodeEnd)); end.setHours(23, 59, 59)
   const isReady = (statusMockup ?? '').toLowerCase() === 'ready'
   if (today < start) return 'akan-datang'
   if (today > end)   return isReady ? 'kedaluwarsa' : 'missing'
@@ -183,8 +167,7 @@ function getMonthKey(dateStr) {
 
 function formatMonthLabel(key) {
   const [year, month] = key.split('-').map(Number)
-  const d = new Date(year, month - 1, 1)
-  return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+  return new Date(year, month - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 }
 
 function monthOverlaps(periodeStart, periodeEnd, monthKey) {
@@ -197,57 +180,62 @@ function monthOverlaps(periodeStart, periodeEnd, monthKey) {
   return s <= mEnd && e >= mStart
 }
 
-// ─── STATUS CONFIG ────────────────────────────────────────────────────────────
+// ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
-  missing:      { label: 'Missing',      dot: '⚫', badge: 'bg-slate-200 text-slate-700 ring-1 ring-slate-400' },
-  'belum-siap': { label: 'Belum Siap',   dot: '🟠', badge: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300' },
-  aktif:        { label: 'Aktif',        dot: '🟢', badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
-  'akan-datang':{ label: 'Akan Datang',  dot: '🟡', badge: 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-300' },
-  kedaluwarsa:  { label: 'Kedaluwarsa',  dot: '🔴', badge: 'bg-red-100 text-red-800 ring-1 ring-red-300' },
+  missing:       { label: 'Missing',      dot: '⚫', badge: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200' },
+  'belum-siap':  { label: 'Belum Siap',   dot: '🟠', badge: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200' },
+  aktif:         { label: 'Aktif',        dot: '🟢', badge: 'bg-green-50 text-green-700 ring-1 ring-green-200' },
+  'akan-datang': { label: 'Akan Datang',  dot: '🟡', badge: 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-200' },
+  kedaluwarsa:   { label: 'Kedaluwarsa',  dot: '🔴', badge: 'bg-red-50 text-red-700 ring-1 ring-red-200' },
 }
 
-// Urutan default saat halaman dibuka: aktif → akan datang → belum siap → kedaluarsa → missing
 const STATUS_ORDER = { aktif: 0, 'akan-datang': 1, 'belum-siap': 2, kedaluwarsa: 3, missing: 4 }
 
-const ROW_HIGHLIGHT = {
-  missing:       'bg-slate-400/25 hover:bg-slate-400/40',
-  'belum-siap':  'bg-orange-300/5 hover:bg-orange-300/20',
-  aktif:         'bg-green-300/25 hover:bg-green-300/40',
-  'akan-datang': 'bg-yellow-300/5 hover:bg-yellow-300/20',
-  kedaluwarsa:   'bg-red-300/25 hover:bg-red-300/40',
+const ROW_STATUS_BG = {
+  missing:       'bg-slate-50/60',
+  'belum-siap':  '',
+  aktif:         'bg-green-50/40',
+  'akan-datang': '',
+  kedaluwarsa:   'bg-red-50/30',
 }
 
 const MOCKUP_STATUS_CONFIG = {
-  'On GD':    { badge: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' },
-  'On AE':    { badge: 'bg-purple-100 text-purple-800 ring-1 ring-purple-300' },
-  'On Strat': { badge: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300' },
-  'On Motion':{ badge: 'bg-indigo-100 text-indigo-800 ring-1 ring-indigo-300' },
-  'Revision': { badge: 'bg-amber-100 text-amber-800 ring-1 ring-amber-300' },
-  'Ready':    { badge: 'bg-green-100 text-green-800 ring-1 ring-green-300' },
+  'On GD':     { badge: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' },
+  'On AE':     { badge: 'bg-purple-50 text-purple-700 ring-1 ring-purple-200' },
+  'On Strat':  { badge: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200' },
+  'On Motion': { badge: 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200' },
+  'Revision':  { badge: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' },
+  'Ready':     { badge: 'bg-green-50 text-green-700 ring-1 ring-green-200' },
 }
 
-const DEFAULT_BADGE = 'bg-slate-100 text-slate-600 ring-1 ring-slate-300'
+const DEFAULT_BADGE = 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'
 
 function getPlatformBadge(platform) {
   const p = (platform ?? '').toLowerCase()
-  const hasShopee = p.includes('shopee')
-  const hasTiktok = p.includes('tiktok')
-  if (hasShopee && hasTiktok) return 'bg-purple-100 text-purple-800 ring-1 ring-purple-300'
-  if (hasShopee) return 'bg-orange-100 text-orange-800 ring-1 ring-orange-300'
-  if (hasTiktok) return 'bg-slate-300 text-slate-800 ring-1 ring-slate-400'
+  if (p.includes('shopee') && p.includes('tiktok')) return 'bg-purple-50 text-purple-700 ring-1 ring-purple-200'
+  if (p.includes('shopee')) return 'bg-orange-50 text-orange-700 ring-1 ring-orange-200'
+  if (p.includes('tiktok')) return 'bg-slate-100 text-slate-700 ring-1 ring-slate-200'
   return DEFAULT_BADGE
 }
 
 const STUDIO_CONFIG = {
-  bandung: 'bg-blue-100 text-blue-800 ring-1 ring-blue-300',
-  jakarta: 'bg-pink-100 text-pink-800 ring-1 ring-pink-300',
+  bandung: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+  jakarta: 'bg-pink-50 text-pink-700 ring-1 ring-pink-200',
 }
 
 const MOCKUP_TYPE_CONFIG = {
-  bau:    'bg-green-100 text-green-800 ring-1 ring-green-300',
-  dd:     'bg-blue-100 text-blue-800 ring-1 ring-blue-300',
-  payday: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300',
+  bau:    'bg-green-50 text-green-700 ring-1 ring-green-200',
+  dd:     'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+  payday: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
 }
+
+// Shared badge class — 6px top/bottom (py-1.5), 10px left/right (px-2.5), rounded-full, 12px/600
+const BADGE = 'inline-flex items-center gap-1 py-1.5 px-2.5 rounded-full text-[12px] font-semibold leading-none transition-colors duration-150'
+
+// Shared filter chip class
+const CHIP_BASE  = 'h-9 px-4 rounded-xl text-[13px] font-medium border transition-all duration-150 ease-out whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-1'
+const CHIP_OFF   = 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+const CHIP_ON    = 'bg-brand-600 text-white border-brand-600 shadow-sm'
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function CampaignSchedule() {
@@ -263,44 +251,35 @@ export default function CampaignSchedule() {
   const [brandOpen,          setBrandOpen]          = useState(false)
   const [brandSearch,        setBrandSearch]        = useState('')
   const brandRef = useRef(null)
-  // Default sort: status dengan urutan aktif → akan datang → belum siap → kedaluarsa → missing
   const [sortKey, setSortKey] = useState('status')
   const [sortDir, setSortDir] = useState('asc')
 
   useEffect(() => {
     let cancelled = false
     fetch(CSV_URL)
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
-        return r.text()
-      })
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text() })
       .then(text => {
         if (cancelled) return
         const rows = parseCSV(text)
         setRawData(rows.length > 0 ? rows : null)
         if (rows.length === 0) setFetchError('sheet-empty')
       })
-      .catch(err => {
-        if (cancelled) return
-        setFetchError(err.message)
-        setRawData(null)
-      })
+      .catch(err => { if (!cancelled) { setFetchError(err.message); setRawData(null) } })
     return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
     function handleOutside(e) {
       if (brandRef.current && !brandRef.current.contains(e.target)) {
-        setBrandOpen(false)
-        setBrandSearch('')
+        setBrandOpen(false); setBrandSearch('')
       }
     }
     document.addEventListener('mousedown', handleOutside)
     return () => document.removeEventListener('mousedown', handleOutside)
   }, [])
 
-  const isLoading  = rawData === null && fetchError === null
-  const isLive     = rawData !== null && rawData.length > 0
+  const isLoading   = rawData === null && fetchError === null
+  const isLive      = rawData !== null && rawData.length > 0
   const displayData = isLive ? rawData : SEED_DATA
 
   const enriched = useMemo(
@@ -315,10 +294,8 @@ export default function CampaignSchedule() {
   const allMonths = useMemo(() => {
     const seen = new Set()
     displayData.forEach(r => {
-      const sk = getMonthKey(r.periodeStart)
-      const ek = getMonthKey(r.periodeEnd)
-      if (sk) seen.add(sk)
-      if (ek) seen.add(ek)
+      const sk = getMonthKey(r.periodeStart), ek = getMonthKey(r.periodeEnd)
+      if (sk) seen.add(sk); if (ek) seen.add(ek)
     })
     return Array.from(seen).sort()
   }, [displayData])
@@ -334,12 +311,10 @@ export default function CampaignSchedule() {
       let matchC = true
       if (filterCampaign !== 'semua') {
         const k = (row.kampanye ?? '').toLowerCase()
-        const isPayDay = k.includes('payday')
-        const isBaU    = k.includes('bau')
-        const isDD     = k.includes('dd')
+        const isPayDay = k.includes('payday'), isBaU = k.includes('bau'), isDD = k.includes('dd')
         if (filterCampaign === 'PayDay') matchC = isPayDay
         else if (filterCampaign === 'BaU') matchC = isBaU
-        else if (filterCampaign === 'DD')  matchC = isDD
+        else if (filterCampaign === 'DD') matchC = isDD
         else if (filterCampaign === 'Other') matchC = !isPayDay && !isBaU && !isDD
       }
       return matchP && matchS && matchSM && matchSt && matchB && matchM && matchC
@@ -348,18 +323,13 @@ export default function CampaignSchedule() {
   )
 
   const platforms = ['semua', ...Array.from(new Set(displayData.map(r => r.platform).filter(Boolean)))]
-
   const filteredBrands = brandSearch.trim()
     ? BRAND_LIST.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
     : BRAND_LIST
 
   function handleSort(key) {
-    if (sortKey === key) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortKey(key)
-      setSortDir('asc')
-    }
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortKey(key); setSortDir('asc') }
   }
 
   const sorted = useMemo(() => {
@@ -367,18 +337,14 @@ export default function CampaignSchedule() {
     return [...filtered].sort((a, b) => {
       let av, bv
       if (sortKey === 'status') {
-        av = STATUS_ORDER[a.status] ?? 99
-        bv = STATUS_ORDER[b.status] ?? 99
+        av = STATUS_ORDER[a.status] ?? 99; bv = STATUS_ORDER[b.status] ?? 99
       } else if (sortKey === 'periodeStart' || sortKey === 'periodeEnd') {
         av = new Date(normalizeDate(a[sortKey] ?? '')).getTime() || 0
         bv = new Date(normalizeDate(b[sortKey] ?? '')).getTime() || 0
       } else {
-        av = (a[sortKey] ?? '').toString()
-        bv = (b[sortKey] ?? '').toString()
+        av = (a[sortKey] ?? '').toString(); bv = (b[sortKey] ?? '').toString()
       }
-      const cmp = typeof av === 'number'
-        ? av - bv
-        : av.localeCompare(bv, 'id', { sensitivity: 'base' })
+      const cmp = typeof av === 'number' ? av - bv : av.localeCompare(bv, 'id', { sensitivity: 'base' })
       return sortDir === 'asc' ? cmp : -cmp
     })
   }, [filtered, sortKey, sortDir])
@@ -390,565 +356,465 @@ export default function CampaignSchedule() {
   }, [enriched])
 
   const statusMockups = Object.keys(MOCKUP_STATUS_CONFIG)
-
   const mockupCounts = useMemo(() => {
-    const c = {}
-    statusMockups.forEach(s => { c[s] = 0 })
+    const c = {}; statusMockups.forEach(s => { c[s] = 0 })
     enriched.forEach(r => { if (r.statusMockup && c[r.statusMockup] !== undefined) c[r.statusMockup]++ })
     return c
   }, [enriched])
 
-  // Kolom tabel — tanpa Bulan (kolom dihapus, filter tetap ada)
-  const TABLE_COLS = [
-    { label: 'Nama Aset',   key: 'namaAset'   },
-    { label: 'Brand',       key: 'brand'       },
-    { label: 'Mockup Type', key: 'mockupType'  },
-    { label: 'Platform',    key: 'platform'    },
-    { label: 'Studio',      key: 'studio'      },
-    { label: 'Kampanye',    key: 'kampanye'    },
-    { label: 'Jam Tayang',  key: 'jamTayang'   },
-    { label: 'Catatan',     key: null          },
-    { label: 'Host Brief',  key: null          },
-    { label: 'File',        key: null          },
+  // ── STAT CARDS config ──
+  const STAT_CARDS = [
+    { key: 'aktif',       label: 'Aktif',       dot: '🟢', num: 'text-green-700',  bg: 'bg-white border-green-100',    sub: 'text-green-600'  },
+    { key: 'akan-datang', label: 'Akan Datang', dot: '🟡', num: 'text-yellow-700', bg: 'bg-white border-yellow-100',   sub: 'text-yellow-600' },
+    { key: 'belum-siap',  label: 'Belum Siap',  dot: '🟠', num: 'text-orange-700', bg: 'bg-white border-orange-100',   sub: 'text-orange-600' },
+    { key: 'kedaluwarsa', label: 'Kedaluwarsa', dot: '🔴', num: 'text-red-700',    bg: 'bg-white border-red-100',      sub: 'text-red-600'    },
+    { key: 'missing',     label: 'Missing',     dot: '⚫', num: 'text-slate-700',  bg: 'bg-white border-slate-200',    sub: 'text-slate-500'  },
   ]
 
   return (
     <PageLayout maxWidthClassName="max-w-none">
-      {/* Header */}
-      <Reveal>
-      <div className="pt-8 pb-6 border-b border-slate-200 mb-8">
-        <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-4">
-          <Link to="/" className="hover:text-brand-600">Home</Link>
-          <span>/</span>
-          <span>Jadwal Kampanye</span>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div>
-            <p className="eyebrow mb-1">/ Komponen 08 · Campaign Usage Management</p>
-            <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 mb-2">Jadwal Penggunaan Mockup</h1>
-            <p className="text-sm text-slate-500 max-w-xl">
-              Daftar aset motion graphic yang sedang aktif, akan datang, dan sudah kedaluwarsa.
-              Data dikelola Motion Designer Lead via Google Sheets. Operator: cek status dan buka file.
-            </p>
+      {/* ── SCOPED INTER FONT wrapper ── */}
+      <div className="font-inter">
+
+        {/* Header */}
+        <Reveal>
+          <div className="pt-8 pb-6 border-b border-[#E5E7EB] mb-8">
+            <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400 mb-4 tracking-wider">
+              <Link to="/" className="hover:text-brand-600 transition-colors duration-150">Home</Link>
+              <span>/</span>
+              <span>Jadwal Kampanye</span>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div>
+                <p className="font-mono text-[11px] text-brand-600 tracking-[0.12em] uppercase mb-2">
+                  / Komponen 08 · Campaign Usage Management
+                </p>
+                <h1 className="font-display text-[30px] font-bold tracking-tight text-slate-900 mb-2 leading-tight">
+                  Jadwal Penggunaan Mockup
+                </h1>
+                <p className="text-[14px] text-slate-500 max-w-xl leading-relaxed">
+                  Daftar aset motion graphic yang sedang aktif, akan datang, dan sudah kedaluwarsa.
+                  Data dikelola Motion Designer Lead via Google Sheets.
+                </p>
+              </div>
+              <Link
+                to="/framework/campaign-usage-management"
+                className="shrink-0 text-[13px] text-brand-600 hover:text-brand-700 font-medium border border-brand-200 bg-brand-50 hover:bg-brand-100 rounded-xl px-4 py-2.5 whitespace-nowrap transition-all duration-150 ease-out shadow-[0_1px_2px_rgba(16,24,40,.05)]"
+              >
+                Dokumentasi →
+              </Link>
+            </div>
           </div>
-          <Link
-            to="/framework/campaign-usage-management"
-            className="shrink-0 text-xs text-brand-600 hover:text-brand-800 font-medium border border-brand-200 bg-brand-50 rounded px-3 py-2 whitespace-nowrap"
-          >
+        </Reveal>
+
+        {/* Data source status */}
+        {isLoading && (
+          <div className="border border-[#E5E7EB] rounded-xl overflow-hidden mb-6 shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+            <div className="bg-slate-50 px-4 py-3 border-b border-[#E5E7EB] flex items-center gap-3">
+              <div className="h-2.5 bg-slate-200 rounded-full animate-pulse w-48" />
+              <div className="h-2.5 bg-slate-200 rounded-full animate-pulse w-32" />
+            </div>
+            {[1, 2, 3].map(i => (
+              <div key={i} className="flex gap-4 px-4 py-4 border-b border-slate-100 last:border-0">
+                <div className="h-4 bg-slate-100 rounded animate-pulse w-16 shrink-0" />
+                <div className="h-4 bg-slate-100 rounded animate-pulse flex-1" />
+                <div className="h-4 bg-slate-100 rounded animate-pulse w-24 shrink-0" />
+              </div>
+            ))}
+          </div>
+        )}
+        {!isLoading && isLive && (
+          <div className="flex items-center gap-2 border border-green-100 bg-green-50 rounded-xl px-4 py-3 mb-6 text-[13px] text-green-700 font-medium shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+            🟢 <strong>Data Live</strong> — ditarik dari Google Sheets. Refresh untuk memperbarui.
+          </div>
+        )}
+        {!isLoading && !isLive && (
+          <div className="border border-amber-100 bg-amber-50 rounded-xl px-4 py-3 mb-6 text-[13px] text-amber-700 font-medium shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+            {fetchError === 'sheet-empty'
+              ? <>Sheet masih kosong — tambahkan data di Google Sheets lalu refresh.</>
+              : <>SEED — gagal memuat dari Sheets ({fetchError}). Set sheet ke <em>Anyone with the link can view</em> lalu refresh.</>
+            }
+          </div>
+        )}
+
+        {/* ── STAT CARDS ── */}
+        <div className="grid grid-cols-5 gap-3 mb-8">
+          {STAT_CARDS.map(s => (
+            <div
+              key={s.key}
+              className={`border rounded-xl p-5 shadow-[0_1px_2px_rgba(16,24,40,.05)] transition-all duration-150 ease-out ${s.bg}`}
+            >
+              <div className={`text-[32px] font-bold leading-none mb-2 tracking-tight ${s.num}`}>
+                {counts[s.key]}
+              </div>
+              <div className={`text-[12px] font-medium ${s.sub}`}>
+                {s.dot} {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── FILTERS ── */}
+        <div className="space-y-3 mb-6">
+
+          {/* Status */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Status</span>
+            <div className="flex flex-wrap gap-1.5">
+              {(['semua', 'aktif', 'akan-datang', 'belum-siap', 'kedaluwarsa', 'missing']).map(s => {
+                const label = s === 'semua'
+                  ? `Semua (${enriched.length})`
+                  : `${STATUS_CONFIG[s].dot} ${STATUS_CONFIG[s].label} (${counts[s]})`
+                return (
+                  <button key={s} onClick={() => setFilterStatus(s)}
+                    className={`${CHIP_BASE} ${filterStatus === s ? CHIP_ON : CHIP_OFF}`}>
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Status Mockup */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Mockup</span>
+            <div className="flex flex-wrap gap-1.5">
+              {(['semua', ...statusMockups]).map(s => {
+                const label = s === 'semua'
+                  ? `Semua (${enriched.length})`
+                  : `${s} (${mockupCounts[s]})`
+                return (
+                  <button key={s} onClick={() => setFilterStatusMockup(s)}
+                    className={`${CHIP_BASE} ${filterStatusMockup === s ? CHIP_ON : CHIP_OFF}`}>
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Bulan — horizontal scrollable pills */}
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Bulan</span>
+            <div className="flex gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'thin' }}>
+              <button onClick={() => setFilterBulan('semua')}
+                className={`${CHIP_BASE} shrink-0 ${filterBulan === 'semua' ? CHIP_ON : CHIP_OFF}`}>
+                Semua
+              </button>
+              {allMonths.map(k => (
+                <button key={k} onClick={() => setFilterBulan(k)}
+                  className={`${CHIP_BASE} shrink-0 ${filterBulan === k ? CHIP_ON : CHIP_OFF}`}>
+                  {formatMonthLabel(k)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Brand dropdown */}
+          <div className="flex items-center gap-2" ref={brandRef}>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Brand</span>
+            <div className="relative">
+              <button
+                onClick={() => { setBrandOpen(o => !o); if (brandOpen) setBrandSearch('') }}
+                className={`${CHIP_BASE} flex items-center gap-1.5 ${filterBrand !== 'semua' ? CHIP_ON : CHIP_OFF}`}
+              >
+                {filterBrand === 'semua' ? 'Semua Brand' : filterBrand}
+                <span className="text-[10px] opacity-60">{brandOpen ? '▲' : '▼'}</span>
+              </button>
+              {brandOpen && (
+                <div className="absolute z-10 top-full left-0 mt-1.5 w-60 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
+                  <div className="p-2.5 border-b border-[#E5E7EB]">
+                    <input
+                      type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
+                      placeholder="Cari brand..." autoFocus
+                      className="w-full text-[13px] px-3 py-2 border border-[#E5E7EB] rounded-lg outline-none focus:border-brand-400 transition-colors duration-150"
+                    />
+                  </div>
+                  <ul className="max-h-52 overflow-y-auto py-1">
+                    {filterBrand !== 'semua' && !brandSearch && (
+                      <li>
+                        <button onClick={() => { setFilterBrand('semua'); setBrandOpen(false); setBrandSearch('') }}
+                          className="w-full text-left px-3 py-2 text-[13px] text-slate-500 hover:bg-slate-50 transition-colors duration-150">
+                          Semua Brand
+                        </button>
+                      </li>
+                    )}
+                    {filteredBrands.length === 0
+                      ? <li className="px-3 py-3 text-[13px] text-slate-400 italic">Tidak ditemukan</li>
+                      : filteredBrands.map(b => (
+                          <li key={b}>
+                            <button onClick={() => { setFilterBrand(b); setBrandOpen(false); setBrandSearch('') }}
+                              className={`w-full text-left px-3 py-2 text-[13px] transition-colors duration-150 ${
+                                filterBrand === b ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                              }`}>
+                              {b}
+                            </button>
+                          </li>
+                        ))
+                    }
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Platform */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Platform</span>
+            <div className="flex flex-wrap gap-1.5">
+              {platforms.map(p => (
+                <button key={p} onClick={() => setFilterPlatform(p)}
+                  className={`${CHIP_BASE} ${filterPlatform === p ? CHIP_ON : CHIP_OFF}`}>
+                  {p === 'semua' ? 'Semua' : p}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Studio */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Studio</span>
+            <div className="flex flex-wrap gap-1.5">
+              {(['semua', 'Jakarta', 'Bandung']).map(s => (
+                <button key={s} onClick={() => setFilterStudio(s)}
+                  className={`${CHIP_BASE} ${filterStudio === s ? CHIP_ON : CHIP_OFF}`}>
+                  {s === 'semua' ? 'Semua' : s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Campaign */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Campaign</span>
+            <div className="flex flex-wrap gap-1.5">
+              {(['semua', 'PayDay', 'BaU', 'DD', 'Other']).map(c => (
+                <button key={c} onClick={() => setFilterCampaign(c)}
+                  className={`${CHIP_BASE} ${filterCampaign === c ? CHIP_ON : CHIP_OFF}`}>
+                  {c === 'semua' ? 'Semua' : c}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── TABLE ── */}
+        {sorted.length === 0 ? (
+          <div className="text-center py-16 text-slate-400 text-[14px] border border-[#E5E7EB] rounded-xl bg-slate-50">
+            Tidak ada aset yang cocok dengan filter yang dipilih.
+          </div>
+        ) : (
+          <div className="overflow-x-auto border border-[#E5E7EB] rounded-xl shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-[#E5E7EB]">
+                  {/* Status — rowspan 2 */}
+                  <th rowSpan={2} onClick={() => handleSort('status')}
+                    className="align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
+                    <span className="flex items-center gap-1">
+                      Status
+                      <span className="text-[10px] opacity-50">{sortKey === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                    </span>
+                  </th>
+                  {/* Status Mockup — rowspan 2 */}
+                  <th rowSpan={2} onClick={() => handleSort('statusMockup')}
+                    className="align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
+                    <span className="flex items-center gap-1">
+                      Mockup
+                      <span className="text-[10px] opacity-50">{sortKey === 'statusMockup' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                    </span>
+                  </th>
+                  {/* Period group */}
+                  <th colSpan={2}
+                    className="px-4 py-2 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] text-center border-b border-[#E5E7EB]">
+                    Period
+                  </th>
+                  {/* Other columns */}
+                  {[
+                    { label: 'Nama Aset',   key: 'namaAset'  },
+                    { label: 'Brand',       key: 'brand'     },
+                    { label: 'Type',        key: 'mockupType'},
+                    { label: 'Platform',    key: 'platform'  },
+                    { label: 'Studio',      key: 'studio'    },
+                    { label: 'Kampanye',    key: 'kampanye'  },
+                    { label: 'Jam',         key: 'jamTayang' },
+                    { label: 'Catatan',     key: null        },
+                    { label: 'Host Brief',  key: null        },
+                    { label: 'File',        key: null        },
+                  ].map(col => (
+                    <th key={col.label} rowSpan={2}
+                      onClick={col.key ? () => handleSort(col.key) : undefined}
+                      className={`align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${
+                        col.key ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
+                      }`}>
+                      <span className="flex items-center gap-1">
+                        {col.label}
+                        {col.key && (
+                          <span className="text-[10px] opacity-50">
+                            {sortKey === col.key ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
+                          </span>
+                        )}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+                <tr className="bg-slate-50 border-b border-[#E5E7EB]">
+                  <th onClick={() => handleSort('periodeStart')}
+                    className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
+                    <span className="flex items-center gap-1">
+                      Start
+                      <span className="text-[10px] opacity-50">{sortKey === 'periodeStart' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                    </span>
+                  </th>
+                  <th className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">
+                    End
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {sorted.map((row, idx) => {
+                  const cfg = STATUS_CONFIG[row.status]
+                  const isEven = idx % 2 === 1
+                  return (
+                    <tr
+                      key={row.id}
+                      className={`transition-colors duration-150 ease-out hover:bg-slate-50 ${
+                        ROW_STATUS_BG[row.status] ?? ''
+                      } ${isEven ? 'bg-slate-50/30' : ''}`}
+                    >
+                      {/* Status badge */}
+                      <td className="px-4 py-0 h-[52px] align-middle">
+                        <span className={`${BADGE} ${cfg.badge}`}>
+                          {cfg.dot} {cfg.label}
+                        </span>
+                      </td>
+                      {/* Mockup status badge */}
+                      <td className="px-4 py-0 h-[52px] align-middle">
+                        {row.statusMockup
+                          ? <span className={`${BADGE} ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? DEFAULT_BADGE}`}>{row.statusMockup}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Periode Start */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-700 font-semibold">
+                        {formatDate(row.periodeStart)}
+                      </td>
+                      {/* Periode End */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-500">
+                        {formatDate(row.periodeEnd)}
+                      </td>
+                      {/* Nama Aset */}
+                      <td className="px-4 py-0 h-[52px] align-middle">
+                        <div className={`text-[14px] leading-snug ${row.status === 'aktif' ? 'font-semibold text-slate-900' : 'font-medium text-slate-800'}`}>
+                          {row.namaAset}
+                        </div>
+                      </td>
+                      {/* Brand */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.brand
+                          ? <span className={`${BADGE} bg-slate-100 text-slate-600 ring-1 ring-slate-200`}>{row.brand}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Mockup Type */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.mockupType
+                          ? <span className={`${BADGE} ${MOCKUP_TYPE_CONFIG[row.mockupType.toLowerCase()] ?? DEFAULT_BADGE}`}>{row.mockupType}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Platform */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.platform
+                          ? <span className={`${BADGE} ${getPlatformBadge(row.platform)}`}>{row.platform}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Studio */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.studio
+                          ? <span className={`${BADGE} ${STUDIO_CONFIG[row.studio.toLowerCase()] ?? DEFAULT_BADGE}`}>{row.studio}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Kampanye */}
+                      <td className="px-4 py-0 h-[52px] align-middle text-[14px] text-slate-600 font-medium">
+                        {row.kampanye || <span className="text-slate-300">—</span>}
+                      </td>
+                      {/* Jam Tayang */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-500">
+                        {row.jamTayang || <span className="text-slate-300">—</span>}
+                      </td>
+                      {/* Catatan */}
+                      <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-500 max-w-[160px]">
+                        {row.catatan || <span className="text-slate-300">—</span>}
+                      </td>
+                      {/* Host Brief */}
+                      <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-500 max-w-[160px]">
+                        {row.hostBrief || <span className="text-slate-300">—</span>}
+                      </td>
+                      {/* File */}
+                      <td className="px-4 py-0 h-[52px] align-middle">
+                        {row.linkFile
+                          ? <a href={row.linkFile} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center h-9 px-4 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-semibold rounded-lg transition-all duration-150 ease-out shadow-[0_1px_2px_rgba(16,24,40,.05)] whitespace-nowrap">
+                              Buka →
+                            </a>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Row count */}
+        <div className="mt-3 text-[12px] text-slate-400 flex items-center justify-between">
+          <span>{sorted.length} dari {enriched.length} aset ditampilkan</span>
+          <Link to="/framework/campaign-usage-management" className="text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
             Dokumentasi Campaign Usage Management →
           </Link>
         </div>
-      </div>
-      </Reveal>
 
-      {/* Status bar */}
-      {isLoading && (
-        <div className="border border-slate-200 rounded-lg overflow-hidden mb-6">
-          <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center gap-2">
-            <div className="h-3 bg-slate-200 rounded animate-pulse w-48" />
-            <div className="h-3 bg-slate-200 rounded animate-pulse w-32" />
-          </div>
-          {[1, 2, 3].map(i => (
-            <div key={i} className="flex gap-4 px-4 py-3 border-b border-slate-100 last:border-0">
-              <div className="h-4 bg-slate-100 rounded animate-pulse w-16 shrink-0" />
-              <div className="h-4 bg-slate-100 rounded animate-pulse flex-1" />
-              <div className="h-4 bg-slate-100 rounded animate-pulse w-24 shrink-0" />
-            </div>
-          ))}
-        </div>
-      )}
-      {!isLoading && isLive && (
-        <div className="flex items-center gap-2 border border-green-200 bg-green-50 rounded px-4 py-2.5 mb-6 text-xs text-green-800 font-mono">
-          🟢 <strong>Data Live</strong> — ditarik dari Google Sheets. Refresh untuk memperbarui.
-        </div>
-      )}
-      {!isLoading && !isLive && (
-        <div className="border border-amber-200 bg-amber-50 rounded px-4 py-2.5 mb-6 text-xs text-amber-800 font-mono">
-          {fetchError === 'sheet-empty'
-            ? <>Sheet masih kosong — tambahkan data di Google Sheets lalu refresh.</>
-            : <>SEED — gagal memuat dari Sheets ({fetchError}). Set sheet ke <em>Anyone with the link can view</em> lalu refresh.</>
-          }
-        </div>
-      )}
-
-      {/* Stat cards */}
-      <div className="grid grid-cols-5 gap-3 mb-6">
-        {[
-          { key: 'aktif',       label: 'Aktif',       dot: '🟢', bg: 'bg-green-50  border-green-200',  text: 'text-green-800'  },
-          { key: 'akan-datang', label: 'Akan Datang', dot: '🟡', bg: 'bg-yellow-50 border-yellow-200', text: 'text-yellow-800' },
-          { key: 'belum-siap',  label: 'Belum Siap',  dot: '🟠', bg: 'bg-orange-50 border-orange-200', text: 'text-orange-800' },
-          { key: 'kedaluwarsa', label: 'Kedaluwarsa', dot: '🔴', bg: 'bg-red-50    border-red-200',    text: 'text-red-800'    },
-          { key: 'missing',     label: 'Missing',     dot: '⚫', bg: 'bg-slate-100  border-slate-300',  text: 'text-slate-700'  },
-        ].map(s => (
-          <div key={s.key} className={`border rounded-lg p-4 text-center ${s.bg}`}>
-            <div className={`text-2xl font-bold mb-1 ${s.text}`}>{counts[s.key]}</div>
-            <div className={`text-xs font-mono ${s.text}`}>{s.dot} {s.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Status filter */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {(['semua', 'aktif', 'akan-datang', 'belum-siap', 'kedaluwarsa', 'missing']).map(s => {
-          const cfg = s === 'semua'
-            ? { label: `Semua (${enriched.length})`, badge: 'border border-slate-300 text-slate-600' }
-            : { label: `${STATUS_CONFIG[s].dot} ${STATUS_CONFIG[s].label} (${counts[s]})`, badge: STATUS_CONFIG[s].badge }
-          return (
-            <button
-              key={s}
-              onClick={() => setFilterStatus(s)}
-              className={`px-3 py-1.5 rounded text-xs font-mono transition-all ${cfg.badge} ${
-                filterStatus === s ? 'opacity-100 ring-1 ring-brand-400' : 'opacity-60 hover:opacity-100'
-              }`}
-            >
-              {cfg.label}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Status Mockup filter */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {(['semua', ...statusMockups]).map(s => {
-          const cfg = s === 'semua'
-            ? { label: `Semua (${enriched.length})`, badge: 'border border-slate-300 text-slate-600' }
-            : { label: `${s} (${mockupCounts[s]})`, badge: MOCKUP_STATUS_CONFIG[s].badge }
-          return (
-            <button
-              key={s}
-              onClick={() => setFilterStatusMockup(s)}
-              className={`px-3 py-1.5 rounded text-xs font-mono transition-all ${cfg.badge} ${
-                filterStatusMockup === s ? 'opacity-100 ring-1 ring-brand-400' : 'opacity-60 hover:opacity-100'
-              }`}
-            >
-              {cfg.label}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Bulan filter — horizontal scrollable pills, auto-generate dari data */}
-      <div className="mb-4">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin' }}>
-          <button
-            onClick={() => setFilterBulan('semua')}
-            className={`shrink-0 px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
-              filterBulan === 'semua'
-                ? 'bg-brand-600 text-white border-brand-600'
-                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            Semua Bulan
-          </button>
-          {allMonths.map(k => (
-            <button
-              key={k}
-              onClick={() => setFilterBulan(k)}
-              className={`shrink-0 px-3 py-1.5 rounded text-xs font-medium border transition-colors whitespace-nowrap ${
-                filterBulan === k
-                  ? 'bg-brand-600 text-white border-brand-600'
-                  : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
-              }`}
-            >
-              {formatMonthLabel(k)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Brand filter — di atas Platform */}
-      <div className="flex flex-wrap items-center gap-2 mb-3" ref={brandRef}>
-        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Brand:</span>
-        <div className="relative">
-          <button
-            onClick={() => {
-              setBrandOpen(o => !o)
-              if (brandOpen) setBrandSearch('')
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
-              filterBrand !== 'semua'
-                ? 'bg-brand-600 text-white border-brand-600'
-                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            {filterBrand === 'semua' ? 'Semua Brand' : filterBrand}
-            <span className="text-[10px] opacity-70">{brandOpen ? '▲' : '▼'}</span>
-          </button>
-
-          {brandOpen && (
-            <div className="absolute z-10 top-full left-0 mt-1 w-56 bg-white border border-slate-200 rounded shadow-lg">
-              <div className="p-2 border-b border-slate-100">
-                <input
-                  type="text"
-                  value={brandSearch}
-                  onChange={e => setBrandSearch(e.target.value)}
-                  placeholder="Cari brand..."
-                  autoFocus
-                  className="w-full text-xs px-2 py-1.5 border border-slate-200 rounded outline-none focus:border-brand-400"
-                />
+        {/* ── NOTES ── */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {[
+            { col: 'Status',       note: 'Dihitung otomatis: Aktif jika periode berjalan & statusMockup = Ready, Belum Siap jika berjalan tapi belum Ready, Akan Datang jika belum mulai, Kedaluwarsa jika sudah lewat & Ready, Missing jika lewat & belum Ready.' },
+            { col: 'Nama Aset',    note: 'Nama display aset — biasanya format: Preview [Platform] Brand Tipe.' },
+            { col: 'Brand',        note: 'Nama brand kampanye, mis. SNICKERS, L-MEN, dsb.' },
+            { col: 'Mockup Type',  note: 'Tipe kampanye aset: BaU (Business as Usual), PayDay, Period, DD, dsb.' },
+            { col: 'Platform',     note: 'Platform siaran live: Shopee Live, TikTok Shop, dsb.' },
+            { col: 'Studio',       note: 'Lokasi studio produksi mockup: Jakarta atau Bandung.' },
+            { col: 'Status Mockup',note: 'Tahap produksi mockup di pipeline. Nilai valid: On GD, On AE, On Strat, On Motion, Revision, Ready.' },
+            { col: 'Kampanye',     note: 'Nama kampanye atau periode dari Google Sheets, dipakai untuk filter Campaign (PayDay / BaU / DD / Other).' },
+            { col: 'Period',       note: 'Header "Period" menaungi 2 sub-kolom: Start (tanggal mulai) & End (tanggal selesai). Sort tabel mengikuti Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.' },
+            { col: 'Jam Tayang',   note: 'Jam siaran live sesuai jadwal kampanye, mis. 09:00–10:00 atau "Sepanjang hari".' },
+            { col: 'Catatan',      note: 'Keterangan tambahan bebas — kolaborasi talent, informasi level, dsb.' },
+            { col: 'Host Brief',   note: 'Ringkasan briefing untuk host siaran live. Diisi oleh Motion Designer atau tim strategis.' },
+            { col: 'File',         note: 'Tautan Google Drive ke file mockup. Kosong jika file belum diupload.' },
+            { col: 'Filter Bulan', note: 'Tampil otomatis dari data — tiap bulan baru di sheet muncul sebagai pill baru ke kanan. Filter menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.' },
+            {
+              col: 'Setup Sheets',
+              note: (
+                <>
+                  Sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong> agar fetch berjalan.{' '}
+                  <a href="https://docs.google.com/spreadsheets/d/17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ/edit"
+                    target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline transition-colors duration-150">
+                    Buka Google Sheets Campaign 2026 →
+                  </a>
+                </>
+              ),
+            },
+          ].map(({ col, note }) => (
+            <div key={col} className="flex gap-2.5 bg-slate-50 border border-[#E5E7EB] rounded-xl px-3.5 py-3 text-[12px] text-slate-600">
+              <span className="font-mono text-slate-300 shrink-0 pt-px">#</span>
+              <div>
+                <span className="font-semibold text-slate-700">{col}</span>
+                <span className="text-slate-300 mx-1.5">—</span>
+                <span>{note}</span>
               </div>
-              <ul className="max-h-52 overflow-y-auto py-1">
-                {filterBrand !== 'semua' && !brandSearch && (
-                  <li>
-                    <button
-                      onClick={() => { setFilterBrand('semua'); setBrandOpen(false); setBrandSearch('') }}
-                      className="w-full text-left px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-50"
-                    >
-                      Semua Brand
-                    </button>
-                  </li>
-                )}
-                {filteredBrands.length === 0 ? (
-                  <li className="px-3 py-2 text-xs text-slate-400 italic">Tidak ditemukan</li>
-                ) : (
-                  filteredBrands.map(b => (
-                    <li key={b}>
-                      <button
-                        onClick={() => { setFilterBrand(b); setBrandOpen(false); setBrandSearch('') }}
-                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
-                          filterBrand === b
-                            ? 'bg-brand-50 text-brand-700 font-medium'
-                            : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        {b}
-                      </button>
-                    </li>
-                  ))
-                )}
-              </ul>
             </div>
-          )}
+          ))}
         </div>
-      </div>
 
-      {/* Platform filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Platform:</span>
-        {platforms.map(p => (
-          <button
-            key={p}
-            onClick={() => setFilterPlatform(p)}
-            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
-              filterPlatform === p
-                ? 'bg-brand-600 text-white border-brand-600'
-                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            {p === 'semua' ? 'Semua' : p}
-          </button>
-        ))}
-      </div>
-
-      {/* Studio filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Studio:</span>
-        {(['semua', 'Jakarta', 'Bandung']).map(s => (
-          <button
-            key={s}
-            onClick={() => setFilterStudio(s)}
-            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
-              filterStudio === s
-                ? 'bg-brand-600 text-white border-brand-600'
-                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            {s === 'semua' ? 'Semua' : s}
-          </button>
-        ))}
-      </div>
-
-      {/* Campaign filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-6">
-        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Campaign:</span>
-        {(['semua', 'PayDay', 'BaU', 'DD', 'Other']).map(c => (
-          <button
-            key={c}
-            onClick={() => setFilterCampaign(c)}
-            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
-              filterCampaign === c
-                ? 'bg-brand-600 text-white border-brand-600'
-                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            {c === 'semua' ? 'Semua' : c}
-          </button>
-        ))}
-      </div>
-
-      {/* Table */}
-      {sorted.length === 0 ? (
-        <div className="text-center py-12 text-slate-500 text-sm">
-          Tidak ada aset yang cocok dengan filter yang dipilih.
-        </div>
-      ) : (
-        <div className="overflow-x-auto border border-slate-200 rounded">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                {/* Status */}
-                <th
-                  rowSpan={2}
-                  onClick={() => handleSort('status')}
-                  className="align-middle px-3 py-2.5 font-mono text-xs text-slate-500 tracking-wider uppercase select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100"
-                >
-                  <span className="flex items-center gap-1 whitespace-nowrap">
-                    Status
-                    <span className="text-[10px]">
-                      {sortKey === 'status'
-                        ? sortDir === 'asc' ? '↑' : '↓'
-                        : <span className="opacity-30">↕</span>
-                      }
-                    </span>
-                  </span>
-                </th>
-                {/* Status Mockup */}
-                <th
-                  rowSpan={2}
-                  onClick={() => handleSort('statusMockup')}
-                  className="align-middle px-3 py-2.5 font-mono text-xs text-slate-500 tracking-wider uppercase select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100"
-                >
-                  <span className="flex items-center gap-1 whitespace-nowrap">
-                    Status Mockup
-                    <span className="text-[10px]">
-                      {sortKey === 'statusMockup'
-                        ? sortDir === 'asc' ? '↑' : '↓'
-                        : <span className="opacity-30">↕</span>
-                      }
-                    </span>
-                  </span>
-                </th>
-                {/* Period group header */}
-                <th
-                  colSpan={2}
-                  className="px-3 py-1.5 font-mono text-xs text-slate-500 tracking-wider uppercase select-none text-center border-b border-slate-200"
-                >
-                  Period
-                </th>
-                {/* Rest of columns */}
-                {TABLE_COLS.map(col => (
-                  <th
-                    key={col.label}
-                    rowSpan={2}
-                    onClick={col.key ? () => handleSort(col.key) : undefined}
-                    className={`align-middle px-3 py-2.5 font-mono text-xs text-slate-500 tracking-wider uppercase select-none ${
-                      col.key ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
-                    }`}
-                  >
-                    <span className="flex items-center gap-1 whitespace-nowrap">
-                      {col.label}
-                      {col.key && (
-                        <span className="text-[10px]">
-                          {sortKey === col.key
-                            ? sortDir === 'asc' ? '↑' : '↓'
-                            : <span className="opacity-30">↕</span>
-                          }
-                        </span>
-                      )}
-                    </span>
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                {/* Start */}
-                <th
-                  onClick={() => handleSort('periodeStart')}
-                  className="px-3 py-2 font-mono text-xs text-slate-500 tracking-wider uppercase select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100"
-                >
-                  <span className="flex items-center gap-1 whitespace-nowrap">
-                    Start
-                    <span className="text-[10px]">
-                      {sortKey === 'periodeStart'
-                        ? sortDir === 'asc' ? '↑' : '↓'
-                        : <span className="opacity-30">↕</span>
-                      }
-                    </span>
-                  </span>
-                </th>
-                {/* End */}
-                <th className="px-3 py-2 font-mono text-xs text-slate-500 tracking-wider uppercase select-none">
-                  <span className="whitespace-nowrap">End</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 bg-white">
-              {sorted.map(row => {
-                const cfg = STATUS_CONFIG[row.status]
-                return (
-                  <tr
-                    key={row.id}
-                    className={`transition-colors ${ROW_HIGHLIGHT[row.status] ?? 'hover:bg-slate-50'}`}
-                  >
-                    <td className="px-3 py-3">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-bold ${cfg.badge}`}>
-                        {cfg.dot} {cfg.label}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3">
-                      {row.statusMockup ? (
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? DEFAULT_BADGE}`}>
-                          {row.statusMockup}
-                        </span>
-                      ) : <span className="font-mono text-xs text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3 text-slate-900 whitespace-nowrap font-mono text-xs font-bold">
-                      {formatDate(row.periodeStart)}
-                    </td>
-                    <td className="px-3 py-3 text-slate-900 whitespace-nowrap font-mono text-xs font-bold">
-                      {formatDate(row.periodeEnd)}
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className={`text-slate-900 leading-snug text-sm ${row.status === 'aktif' ? 'font-bold' : 'font-normal'}`}>{row.namaAset}</div>
-                    </td>
-                    <td className="px-3 py-3 whitespace-nowrap">
-                      {row.brand ? (
-                        <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700 ring-1 ring-slate-300">
-                          {row.brand}
-                        </span>
-                      ) : <span className="text-xs text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3 whitespace-nowrap">
-                      {row.mockupType ? (
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_TYPE_CONFIG[row.mockupType.toLowerCase()] ?? DEFAULT_BADGE}`}>
-                          {row.mockupType}
-                        </span>
-                      ) : <span className="font-mono text-xs text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3 whitespace-nowrap">
-                      {row.platform ? (
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${getPlatformBadge(row.platform)}`}>
-                          {row.platform}
-                        </span>
-                      ) : <span className="text-xs text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3 whitespace-nowrap">
-                      {row.studio ? (
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${STUDIO_CONFIG[row.studio.toLowerCase()] ?? DEFAULT_BADGE}`}>
-                          {row.studio}
-                        </span>
-                      ) : <span className="text-xs text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3 text-slate-600 text-sm">{row.kampanye}</td>
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{row.jamTayang}</td>
-                    <td className="px-3 py-3 text-slate-500 text-xs max-w-[160px]">
-                      {row.catatan || <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3 text-slate-500 text-xs max-w-[160px]">
-                      {row.hostBrief || <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="px-3 py-3">
-                      {row.linkFile ? (
-                        <a
-                          href={row.linkFile}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-2.5 py-1 bg-brand-600 text-white text-xs font-medium rounded hover:bg-brand-700 transition-colors whitespace-nowrap"
-                        >
-                          Buka →
-                        </a>
-                      ) : (
-                        <span className="font-mono text-xs text-slate-300">—</span>
-                      )}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Row notes */}
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {[
-          {
-            col: 'Status',
-            note: 'Dihitung otomatis: Aktif jika periode berjalan & statusMockup = Ready, Belum Siap jika berjalan tapi belum Ready, Akan Datang jika belum mulai, Kedaluwarsa jika sudah lewat & Ready, Missing jika lewat & belum Ready.',
-          },
-          {
-            col: 'Nama Aset',
-            note: 'Nama display aset — biasanya format: Preview [Platform] Brand Tipe.',
-          },
-          {
-            col: 'Brand',
-            note: 'Nama brand kampanye, mis. SNICKERS, L-MEN, dsb.',
-          },
-          {
-            col: 'Mockup Type',
-            note: 'Tipe kampanye aset: BaU (Business as Usual), PayDay, Period, DD, dsb.',
-          },
-          {
-            col: 'Platform',
-            note: 'Platform siaran live: Shopee Live, TikTok Shop, dsb.',
-          },
-          {
-            col: 'Studio',
-            note: 'Lokasi studio produksi mockup: Jakarta atau Bandung.',
-          },
-          {
-            col: 'Status Mockup',
-            note: 'Tahap produksi mockup di pipeline. Nilai valid: On GD, On AE, On Strat, On Motion, Revision, Ready.',
-          },
-          {
-            col: 'Kampanye',
-            note: 'Nama kampanye atau periode dari Google Sheets, dipakai untuk filter Campaign (PayDay / BaU / DD / Other).',
-          },
-          {
-            col: 'Period (Start / End)',
-            note: 'Header "Period" menaungi 2 sub-kolom: Start (tanggal mulai) & End (tanggal selesai). Sort tabel mengikuti Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
-          },
-          {
-            col: 'Jam Tayang',
-            note: 'Jam siaran live sesuai jadwal kampanye, mis. 09:00–10:00 atau "Sepanjang hari".',
-          },
-          {
-            col: 'Catatan',
-            note: 'Keterangan tambahan bebas — kolaborasi talent, informasi level, dsb.',
-          },
-          {
-            col: 'Host Brief',
-            note: 'Ringkasan briefing untuk host siaran live. Diisi oleh Motion Designer atau tim strategis.',
-          },
-          {
-            col: 'File',
-            note: 'Tautan Google Drive ke file mockup. Kosong jika file belum diupload.',
-          },
-          {
-            col: 'Filter Bulan',
-            note: 'Tampil otomatis dari data — tiap bulan baru di sheet muncul sebagai pill baru ke kanan. Filter menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.',
-          },
-          {
-            col: 'Setup Sheets',
-            note: (
-              <>
-                Sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong> agar fetch berjalan.{' '}
-                <a
-                  href="https://docs.google.com/spreadsheets/d/17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ/edit"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-brand-600 hover:underline"
-                >
-                  Buka Google Sheets Campaign 2026 →
-                </a>
-              </>
-            ),
-          },
-        ].map(({ col, note }) => (
-          <div key={col} className="flex gap-2.5 bg-slate-50 border border-slate-200 rounded px-3 py-2.5 text-xs text-slate-600">
-            <span className="font-mono text-slate-400 shrink-0 pt-px">#</span>
-            <div>
-              <span className="font-semibold text-slate-700">{col}</span>
-              <span className="text-slate-400 mx-1">—</span>
-              <span>{note}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 text-xs text-slate-400 text-right">
-        <Link to="/framework/campaign-usage-management" className="text-brand-600 hover:underline">
-          Dokumentasi lengkap Campaign Usage Management →
-        </Link>
-      </div>
+      </div>{/* end font-inter wrapper */}
     </PageLayout>
   )
 }
