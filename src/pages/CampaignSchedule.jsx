@@ -4,15 +4,13 @@ import PageLayout from '../components/layout/PageLayout'
 import Reveal from '../components/ui/Reveal'
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
-// Sheet harus di-set "Anyone with the link can view" agar fetch bisa berjalan.
 const SHEET_ID = '17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ'
 const GID      = '0'
 const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`
 
-// Mapping nama kolom header di Google Sheets → field internal.
-// Jika nama kolom di sheet kamu berbeda, ubah di sini.
 const COL_MAP = {
   namaAset:      ['Nama Aset', 'nama aset', 'Nama', 'nama', 'Display Name'],
+  brand:         ['Brand', 'brand', 'Merek', 'merek'],
   platform:      ['Platform', 'platform'],
   studio:        ['Studio', 'studio'],
   mockupType:    ['Tipe', 'tipe', 'Mockup Type', 'Type', 'type'],
@@ -24,7 +22,7 @@ const COL_MAP = {
   statusMotion:  ['Status Motion', 'status motion', 'Motion Status', 'motion status'],
   linkFile:      ['Link File', 'link file', 'Link', 'link', 'File', 'Drive Link', 'drive link'],
   catatan:       ['Catatan', 'catatan', 'Notes', 'notes', 'Keterangan', 'keterangan'],
-  brand:         ['Brand', 'brand', 'Merek', 'merek'],
+  hostBrief:     ['Host Brief', 'host brief', 'Briefing Host', 'briefing host', 'Host Briefing'],
 }
 
 // ─── BRAND LIST ──────────────────────────────────────────────────────────────
@@ -47,6 +45,7 @@ const SEED_DATA = [
   {
     id: 'seed-1',
     namaAset: 'Preview [Shopee] Snickers Mingyu BaU',
+    brand: 'SNICKERS',
     platform: 'Shopee Live',
     studio: 'Jakarta',
     mockupType: 'BaU',
@@ -58,11 +57,12 @@ const SEED_DATA = [
     statusMotion: 'On Progress',
     linkFile: '',
     catatan: 'Kolaborasi Mingyu ENHYPEN',
-    brand: 'SNICKERS',
+    hostBrief: '',
   },
   {
     id: 'seed-2',
     namaAset: 'BG Sweety Festive PayDay',
+    brand: '',
     platform: 'Shopee Live',
     studio: 'Bandung',
     mockupType: 'PayDay',
@@ -74,11 +74,12 @@ const SEED_DATA = [
     statusMotion: 'Revision',
     linkFile: '',
     catatan: '',
-    brand: '',
+    hostBrief: '',
   },
   {
     id: 'seed-3',
     namaAset: 'Preview [TikTok] L-MEN Period Pack',
+    brand: 'L-MEN',
     platform: 'TikTok Shop',
     studio: 'Jakarta',
     mockupType: 'Period',
@@ -90,7 +91,7 @@ const SEED_DATA = [
     statusMotion: 'Ready',
     linkFile: '',
     catatan: 'LVL 4 – multiple usage date',
-    brand: 'L-MEN',
+    hostBrief: '',
   },
 ]
 
@@ -99,7 +100,6 @@ function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/)
   if (lines.length < 2) return []
 
-  // Parse satu baris CSV (handle quoted commas)
   function parseLine(line) {
     const cells = []
     let cur = ''
@@ -121,7 +121,6 @@ function parseCSV(text) {
 
   const headers = parseLine(lines[0])
 
-  // Resolve header → field name
   function resolveField(header) {
     for (const [field, aliases] of Object.entries(COL_MAP)) {
       if (aliases.some(a => a.toLowerCase() === header.toLowerCase())) return field
@@ -138,16 +137,24 @@ function parseCSV(text) {
       if (field) row[field] = cells[i] ?? ''
     })
     return row
-  }).filter(r => r.namaAset) // skip baris kosong
+  }).filter(r => r.namaAset)
 }
 
-// Normalisasi format tanggal dari sheet (DD/MM/YYYY atau YYYY-MM-DD) → YYYY-MM-DD
+// Normalisasi DD/MM/YYYY atau YYYY-MM-DD → YYYY-MM-DD
 function normalizeDate(str) {
   if (!str) return ''
-  // DD/MM/YYYY
   const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
   if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`
   return str
+}
+
+// Normalisasi nama studio agar konsisten (Jakarta / Bandung)
+function normalizeStudio(str) {
+  if (!str) return ''
+  const s = str.trim().toLowerCase()
+  if (s === 'jakarta') return 'Jakarta'
+  if (s === 'bandung') return 'Bandung'
+  return str.trim()
 }
 
 function getStatus(periodeStart, periodeEnd, statusMockup) {
@@ -168,21 +175,18 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-// Returns "YYYY-MM" key from a date string, or null if invalid
 function getMonthKey(dateStr) {
   const d = new Date(normalizeDate(dateStr))
   if (isNaN(d)) return null
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
-// "2026-06" → "Juni 2026"
 function formatMonthLabel(key) {
   const [year, month] = key.split('-').map(Number)
   const d = new Date(year, month - 1, 1)
   return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 }
 
-// True if the row's period overlaps with the given monthKey ("YYYY-MM")
 function monthOverlaps(periodeStart, periodeEnd, monthKey) {
   const [year, month] = monthKey.split('-').map(Number)
   const mStart = new Date(year, month - 1, 1)
@@ -201,6 +205,9 @@ const STATUS_CONFIG = {
   'akan-datang':{ label: 'Akan Datang',  dot: '🟡', badge: 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-300' },
   kedaluwarsa:  { label: 'Kedaluwarsa',  dot: '🔴', badge: 'bg-red-100 text-red-800 ring-1 ring-red-300' },
 }
+
+// Urutan default saat halaman dibuka: aktif → akan datang → belum siap → kedaluarsa → missing
+const STATUS_ORDER = { aktif: 0, 'akan-datang': 1, 'belum-siap': 2, kedaluwarsa: 3, missing: 4 }
 
 const ROW_HIGHLIGHT = {
   missing:       'bg-slate-400/25 hover:bg-slate-400/40',
@@ -221,7 +228,6 @@ const MOCKUP_STATUS_CONFIG = {
 
 const DEFAULT_BADGE = 'bg-slate-100 text-slate-600 ring-1 ring-slate-300'
 
-// Shopee & TikTok → ungu, Shopee saja → orange, TikTok saja → abu-abu gelap ("hitam muda")
 function getPlatformBadge(platform) {
   const p = (platform ?? '').toLowerCase()
   const hasShopee = p.includes('shopee')
@@ -245,22 +251,20 @@ const MOCKUP_TYPE_CONFIG = {
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function CampaignSchedule() {
-  const [rawData, setRawData]       = useState(null)   // null = loading
+  const [rawData, setRawData]       = useState(null)
   const [fetchError, setFetchError] = useState(null)
-  const [filterPlatform,  setFilterPlatform]  = useState('semua')
-  const [filterStatus,    setFilterStatus]    = useState('semua')
+  const [filterPlatform,     setFilterPlatform]     = useState('semua')
+  const [filterStatus,       setFilterStatus]       = useState('semua')
   const [filterStatusMockup, setFilterStatusMockup] = useState('semua')
-  const [filterStudio,   setFilterStudio]     = useState('semua')
-  const [filterBrand,     setFilterBrand]     = useState('semua')
-  const [filterBulan,     setFilterBulan]     = useState('semua')
-  const [filterCampaign,  setFilterCampaign]  = useState('semua')
-  const [brandOpen,       setBrandOpen]       = useState(false)
-  const [brandSearch,     setBrandSearch]     = useState('')
-  const [bulanOpen,       setBulanOpen]       = useState(false)
-  const [bulanSearch,     setBulanSearch]     = useState('')
+  const [filterStudio,       setFilterStudio]       = useState('semua')
+  const [filterBrand,        setFilterBrand]        = useState('semua')
+  const [filterBulan,        setFilterBulan]        = useState('semua')
+  const [filterCampaign,     setFilterCampaign]     = useState('semua')
+  const [brandOpen,          setBrandOpen]          = useState(false)
+  const [brandSearch,        setBrandSearch]        = useState('')
   const brandRef = useRef(null)
-  const bulanRef = useRef(null)
-  const [sortKey, setSortKey] = useState(null)
+  // Default sort: status dengan urutan aktif → akan datang → belum siap → kedaluarsa → missing
+  const [sortKey, setSortKey] = useState('status')
   const [sortDir, setSortDir] = useState('asc')
 
   useEffect(() => {
@@ -290,10 +294,6 @@ export default function CampaignSchedule() {
         setBrandOpen(false)
         setBrandSearch('')
       }
-      if (bulanRef.current && !bulanRef.current.contains(e.target)) {
-        setBulanOpen(false)
-        setBulanSearch('')
-      }
     }
     document.addEventListener('mousedown', handleOutside)
     return () => document.removeEventListener('mousedown', handleOutside)
@@ -304,7 +304,11 @@ export default function CampaignSchedule() {
   const displayData = isLive ? rawData : SEED_DATA
 
   const enriched = useMemo(
-    () => displayData.map(row => ({ ...row, status: getStatus(row.periodeStart, row.periodeEnd, row.statusMockup) })),
+    () => displayData.map(row => ({
+      ...row,
+      studio: normalizeStudio(row.studio),
+      status: getStatus(row.periodeStart, row.periodeEnd, row.statusMockup),
+    })),
     [displayData],
   )
 
@@ -324,7 +328,7 @@ export default function CampaignSchedule() {
       const matchP  = filterPlatform === 'semua' || row.platform === filterPlatform
       const matchS  = filterStatus   === 'semua' || row.status   === filterStatus
       const matchSM = filterStatusMockup === 'semua' || row.statusMockup === filterStatusMockup
-      const matchSt = filterStudio  === 'semua' || (row.studio ?? '').toLowerCase() === filterStudio.toLowerCase()
+      const matchSt = filterStudio  === 'semua' || row.studio.toLowerCase() === filterStudio.toLowerCase()
       const matchB  = filterBrand   === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
       const matchM  = filterBulan   === 'semua' || monthOverlaps(row.periodeStart, row.periodeEnd, filterBulan)
       let matchC = true
@@ -349,10 +353,6 @@ export default function CampaignSchedule() {
     ? BRAND_LIST.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
     : BRAND_LIST
 
-  const filteredBulans = bulanSearch.trim()
-    ? allMonths.filter(k => formatMonthLabel(k).toLowerCase().includes(bulanSearch.toLowerCase()))
-    : allMonths
-
   function handleSort(key) {
     if (sortKey === key) {
       setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -362,8 +362,6 @@ export default function CampaignSchedule() {
     }
   }
 
-  const STATUS_ORDER = { missing: 0, 'belum-siap': 1, aktif: 2, 'akan-datang': 3, kedaluwarsa: 4 }
-
   const sorted = useMemo(() => {
     if (!sortKey) return filtered
     return [...filtered].sort((a, b) => {
@@ -371,6 +369,9 @@ export default function CampaignSchedule() {
       if (sortKey === 'status') {
         av = STATUS_ORDER[a.status] ?? 99
         bv = STATUS_ORDER[b.status] ?? 99
+      } else if (sortKey === 'periodeStart' || sortKey === 'periodeEnd') {
+        av = new Date(normalizeDate(a[sortKey] ?? '')).getTime() || 0
+        bv = new Date(normalizeDate(b[sortKey] ?? '')).getTime() || 0
       } else {
         av = (a[sortKey] ?? '').toString()
         bv = (b[sortKey] ?? '').toString()
@@ -396,6 +397,20 @@ export default function CampaignSchedule() {
     enriched.forEach(r => { if (r.statusMockup && c[r.statusMockup] !== undefined) c[r.statusMockup]++ })
     return c
   }, [enriched])
+
+  // Kolom tabel — tanpa Bulan (kolom dihapus, filter tetap ada)
+  const TABLE_COLS = [
+    { label: 'Nama Aset',   key: 'namaAset'   },
+    { label: 'Brand',       key: 'brand'       },
+    { label: 'Mockup Type', key: 'mockupType'  },
+    { label: 'Platform',    key: 'platform'    },
+    { label: 'Studio',      key: 'studio'      },
+    { label: 'Kampanye',    key: 'kampanye'    },
+    { label: 'Jam Tayang',  key: 'jamTayang'   },
+    { label: 'Catatan',     key: null          },
+    { label: 'Host Brief',  key: null          },
+    { label: 'File',        key: null          },
+  ]
 
   return (
     <PageLayout maxWidthClassName="max-w-none">
@@ -459,11 +474,11 @@ export default function CampaignSchedule() {
       {/* Stat cards */}
       <div className="grid grid-cols-5 gap-3 mb-6">
         {[
-          { key: 'missing',     label: 'Missing',     dot: '⚫', bg: 'bg-slate-100  border-slate-300',  text: 'text-slate-700'  },
-          { key: 'belum-siap',  label: 'Belum Siap',  dot: '🟠', bg: 'bg-orange-50 border-orange-200', text: 'text-orange-800' },
           { key: 'aktif',       label: 'Aktif',       dot: '🟢', bg: 'bg-green-50  border-green-200',  text: 'text-green-800'  },
           { key: 'akan-datang', label: 'Akan Datang', dot: '🟡', bg: 'bg-yellow-50 border-yellow-200', text: 'text-yellow-800' },
+          { key: 'belum-siap',  label: 'Belum Siap',  dot: '🟠', bg: 'bg-orange-50 border-orange-200', text: 'text-orange-800' },
           { key: 'kedaluwarsa', label: 'Kedaluwarsa', dot: '🔴', bg: 'bg-red-50    border-red-200',    text: 'text-red-800'    },
+          { key: 'missing',     label: 'Missing',     dot: '⚫', bg: 'bg-slate-100  border-slate-300',  text: 'text-slate-700'  },
         ].map(s => (
           <div key={s.key} className={`border rounded-lg p-4 text-center ${s.bg}`}>
             <div className={`text-2xl font-bold mb-1 ${s.text}`}>{counts[s.key]}</div>
@@ -474,7 +489,7 @@ export default function CampaignSchedule() {
 
       {/* Status filter */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {(['semua', 'missing', 'belum-siap', 'aktif', 'akan-datang', 'kedaluwarsa']).map(s => {
+        {(['semua', 'aktif', 'akan-datang', 'belum-siap', 'kedaluwarsa', 'missing']).map(s => {
           const cfg = s === 'semua'
             ? { label: `Semua (${enriched.length})`, badge: 'border border-slate-300 text-slate-600' }
             : { label: `${STATUS_CONFIG[s].dot} ${STATUS_CONFIG[s].label} (${counts[s]})`, badge: STATUS_CONFIG[s].badge }
@@ -512,43 +527,36 @@ export default function CampaignSchedule() {
         })}
       </div>
 
-      {/* Platform filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Platform:</span>
-        {platforms.map(p => (
+      {/* Bulan filter — horizontal scrollable pills, auto-generate dari data */}
+      <div className="mb-4">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin' }}>
           <button
-            key={p}
-            onClick={() => setFilterPlatform(p)}
-            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
-              filterPlatform === p
+            onClick={() => setFilterBulan('semua')}
+            className={`shrink-0 px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              filterBulan === 'semua'
                 ? 'bg-brand-600 text-white border-brand-600'
                 : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
             }`}
           >
-            {p === 'semua' ? 'Semua' : p}
+            Semua Bulan
           </button>
-        ))}
+          {allMonths.map(k => (
+            <button
+              key={k}
+              onClick={() => setFilterBulan(k)}
+              className={`shrink-0 px-3 py-1.5 rounded text-xs font-medium border transition-colors whitespace-nowrap ${
+                filterBulan === k
+                  ? 'bg-brand-600 text-white border-brand-600'
+                  : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+              }`}
+            >
+              {formatMonthLabel(k)}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Studio filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Studio:</span>
-        {(['semua', 'Jakarta', 'Bandung']).map(s => (
-          <button
-            key={s}
-            onClick={() => setFilterStudio(s)}
-            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
-              filterStudio === s
-                ? 'bg-brand-600 text-white border-brand-600'
-                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
-            }`}
-          >
-            {s === 'semua' ? 'Semua' : s}
-          </button>
-        ))}
-      </div>
-
-      {/* Brand filter */}
+      {/* Brand filter — di atas Platform */}
       <div className="flex flex-wrap items-center gap-2 mb-3" ref={brandRef}>
         <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Brand:</span>
         <div className="relative">
@@ -614,70 +622,40 @@ export default function CampaignSchedule() {
         </div>
       </div>
 
-      {/* Bulan filter */}
-      <div className="flex flex-wrap items-center gap-2 mb-3" ref={bulanRef}>
-        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Bulan:</span>
-        <div className="relative">
+      {/* Platform filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Platform:</span>
+        {platforms.map(p => (
           <button
-            onClick={() => {
-              setBulanOpen(o => !o)
-              if (bulanOpen) setBulanSearch('')
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
-              filterBulan !== 'semua'
+            key={p}
+            onClick={() => setFilterPlatform(p)}
+            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              filterPlatform === p
                 ? 'bg-brand-600 text-white border-brand-600'
                 : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
             }`}
           >
-            {filterBulan === 'semua' ? 'Semua Bulan' : formatMonthLabel(filterBulan)}
-            <span className="text-[10px] opacity-70">{bulanOpen ? '▲' : '▼'}</span>
+            {p === 'semua' ? 'Semua' : p}
           </button>
+        ))}
+      </div>
 
-          {bulanOpen && (
-            <div className="absolute z-10 top-full left-0 mt-1 w-48 bg-white border border-slate-200 rounded shadow-lg">
-              <div className="p-2 border-b border-slate-100">
-                <input
-                  type="text"
-                  value={bulanSearch}
-                  onChange={e => setBulanSearch(e.target.value)}
-                  placeholder="Cari bulan..."
-                  autoFocus
-                  className="w-full text-xs px-2 py-1.5 border border-slate-200 rounded outline-none focus:border-brand-400"
-                />
-              </div>
-              <ul className="max-h-52 overflow-y-auto py-1">
-                {filterBulan !== 'semua' && !bulanSearch && (
-                  <li>
-                    <button
-                      onClick={() => { setFilterBulan('semua'); setBulanOpen(false); setBulanSearch('') }}
-                      className="w-full text-left px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-50"
-                    >
-                      Semua Bulan
-                    </button>
-                  </li>
-                )}
-                {filteredBulans.length === 0 ? (
-                  <li className="px-3 py-2 text-xs text-slate-400 italic">Tidak ditemukan</li>
-                ) : (
-                  filteredBulans.map(k => (
-                    <li key={k}>
-                      <button
-                        onClick={() => { setFilterBulan(k); setBulanOpen(false); setBulanSearch('') }}
-                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
-                          filterBulan === k
-                            ? 'bg-brand-50 text-brand-700 font-medium'
-                            : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        {formatMonthLabel(k)}
-                      </button>
-                    </li>
-                  ))
-                )}
-              </ul>
-            </div>
-          )}
-        </div>
+      {/* Studio filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <span className="font-mono text-2xs text-slate-400 tracking-widest uppercase mr-1">Studio:</span>
+        {(['semua', 'Jakarta', 'Bandung']).map(s => (
+          <button
+            key={s}
+            onClick={() => setFilterStudio(s)}
+            className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              filterStudio === s
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            {s === 'semua' ? 'Semua' : s}
+          </button>
+        ))}
       </div>
 
       {/* Campaign filter */}
@@ -708,10 +686,11 @@ export default function CampaignSchedule() {
           <table className="w-full text-sm text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
+                {/* Status */}
                 <th
                   rowSpan={2}
                   onClick={() => handleSort('status')}
-                  className="align-middle px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
+                  className="align-middle px-3 py-2.5 font-mono text-xs text-slate-500 tracking-wider uppercase select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100"
                 >
                   <span className="flex items-center gap-1 whitespace-nowrap">
                     Status
@@ -723,47 +702,37 @@ export default function CampaignSchedule() {
                     </span>
                   </span>
                 </th>
-                {[{ label: 'Status Mockup', key: 'statusMockup' }].map(col => (
-                  <th
-                    key={col.label}
-                    rowSpan={2}
-                    onClick={() => handleSort(col.key)}
-                    className="align-middle px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
-                  >
-                    <span className="flex items-center gap-1 whitespace-nowrap">
-                      {col.label}
-                      <span className="text-[10px]">
-                        {sortKey === col.key
-                          ? sortDir === 'asc' ? '↑' : '↓'
-                          : <span className="opacity-30">↕</span>
-                        }
-                      </span>
+                {/* Status Mockup */}
+                <th
+                  rowSpan={2}
+                  onClick={() => handleSort('statusMockup')}
+                  className="align-middle px-3 py-2.5 font-mono text-xs text-slate-500 tracking-wider uppercase select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100"
+                >
+                  <span className="flex items-center gap-1 whitespace-nowrap">
+                    Status Mockup
+                    <span className="text-[10px]">
+                      {sortKey === 'statusMockup'
+                        ? sortDir === 'asc' ? '↑' : '↓'
+                        : <span className="opacity-30">↕</span>
+                      }
                     </span>
-                  </th>
-                ))}
+                  </span>
+                </th>
+                {/* Period group header */}
                 <th
                   colSpan={2}
-                  className="px-3 py-1.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none text-center border-b border-slate-200"
+                  className="px-3 py-1.5 font-mono text-xs text-slate-500 tracking-wider uppercase select-none text-center border-b border-slate-200"
                 >
                   Period
                 </th>
-                {[
-                  { label: 'Bulan',         key: null           },
-                  { label: 'Nama Aset',     key: 'namaAset'     },
-                  { label: 'Mockup Type',   key: 'mockupType'   },
-                  { label: 'Platform',      key: 'platform'     },
-                  { label: 'Studio',        key: 'studio'       },
-                  { label: 'Kampanye',      key: 'kampanye'     },
-                  { label: 'Jam Tayang',    key: 'jamTayang'    },
-                  { label: 'Catatan',       key: null           },
-                  { label: 'File',          key: null           },
-                ].map(col => (
+                {/* Rest of columns */}
+                {TABLE_COLS.map(col => (
                   <th
                     key={col.label}
                     rowSpan={2}
                     onClick={col.key ? () => handleSort(col.key) : undefined}
-                    className={`align-middle px-3 py-2.5 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none ${
-                      col.key ? 'cursor-pointer hover:text-slate-600 hover:bg-slate-100' : ''
+                    className={`align-middle px-3 py-2.5 font-mono text-xs text-slate-500 tracking-wider uppercase select-none ${
+                      col.key ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
                     }`}
                   >
                     <span className="flex items-center gap-1 whitespace-nowrap">
@@ -781,9 +750,10 @@ export default function CampaignSchedule() {
                 ))}
               </tr>
               <tr>
+                {/* Start */}
                 <th
                   onClick={() => handleSort('periodeStart')}
-                  className="px-3 py-2 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none cursor-pointer hover:text-slate-600 hover:bg-slate-100"
+                  className="px-3 py-2 font-mono text-xs text-slate-500 tracking-wider uppercase select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100"
                 >
                   <span className="flex items-center gap-1 whitespace-nowrap">
                     Start
@@ -795,7 +765,8 @@ export default function CampaignSchedule() {
                     </span>
                   </span>
                 </th>
-                <th className="px-3 py-2 font-mono text-2xs text-slate-400 tracking-widest uppercase select-none">
+                {/* End */}
+                <th className="px-3 py-2 font-mono text-xs text-slate-500 tracking-wider uppercase select-none">
                   <span className="whitespace-nowrap">End</span>
                 </th>
               </tr>
@@ -815,7 +786,7 @@ export default function CampaignSchedule() {
                     </td>
                     <td className="px-3 py-3">
                       {row.statusMockup ? (
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? 'bg-slate-100 text-slate-600'}`}>
+                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-mono ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? DEFAULT_BADGE}`}>
                           {row.statusMockup}
                         </span>
                       ) : <span className="font-mono text-xs text-slate-300">—</span>}
@@ -826,11 +797,15 @@ export default function CampaignSchedule() {
                     <td className="px-3 py-3 text-slate-900 whitespace-nowrap font-mono text-xs font-bold">
                       {formatDate(row.periodeEnd)}
                     </td>
-                    <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">
-                      {getMonthKey(row.periodeStart) ? formatMonthLabel(getMonthKey(row.periodeStart)) : <span className="text-slate-300">—</span>}
-                    </td>
                     <td className="px-3 py-3">
                       <div className={`text-slate-900 leading-snug text-sm ${row.status === 'aktif' ? 'font-bold' : 'font-normal'}`}>{row.namaAset}</div>
+                    </td>
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      {row.brand ? (
+                        <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700 ring-1 ring-slate-300">
+                          {row.brand}
+                        </span>
+                      ) : <span className="text-xs text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
                       {row.mockupType ? (
@@ -857,6 +832,9 @@ export default function CampaignSchedule() {
                     <td className="px-3 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{row.jamTayang}</td>
                     <td className="px-3 py-3 text-slate-500 text-xs max-w-[160px]">
                       {row.catatan || <span className="text-slate-300">—</span>}
+                    </td>
+                    <td className="px-3 py-3 text-slate-500 text-xs max-w-[160px]">
+                      {row.hostBrief || <span className="text-slate-300">—</span>}
                     </td>
                     <td className="px-3 py-3">
                       {row.linkFile ? (
@@ -892,6 +870,10 @@ export default function CampaignSchedule() {
             note: 'Nama display aset — biasanya format: Preview [Platform] Brand Tipe.',
           },
           {
+            col: 'Brand',
+            note: 'Nama brand kampanye, mis. SNICKERS, L-MEN, dsb.',
+          },
+          {
             col: 'Mockup Type',
             note: 'Tipe kampanye aset: BaU (Business as Usual), PayDay, Period, DD, dsb.',
           },
@@ -912,10 +894,6 @@ export default function CampaignSchedule() {
             note: 'Nama kampanye atau periode dari Google Sheets, dipakai untuk filter Campaign (PayDay / BaU / DD / Other).',
           },
           {
-            col: 'Bulan',
-            note: 'Dihitung otomatis dari Periode Mulai — bukan kolom terpisah di Sheets. Filter Bulan menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.',
-          },
-          {
             col: 'Period (Start / End)',
             note: 'Header "Period" menaungi 2 sub-kolom: Start (tanggal mulai) & End (tanggal selesai). Sort tabel mengikuti Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.',
           },
@@ -928,8 +906,16 @@ export default function CampaignSchedule() {
             note: 'Keterangan tambahan bebas — kolaborasi talent, informasi level, dsb.',
           },
           {
+            col: 'Host Brief',
+            note: 'Ringkasan briefing untuk host siaran live. Diisi oleh Motion Designer atau tim strategis.',
+          },
+          {
             col: 'File',
             note: 'Tautan Google Drive ke file mockup. Kosong jika file belum diupload.',
+          },
+          {
+            col: 'Filter Bulan',
+            note: 'Tampil otomatis dari data — tiap bulan baru di sheet muncul sebagai pill baru ke kanan. Filter menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.',
           },
           {
             col: 'Setup Sheets',
