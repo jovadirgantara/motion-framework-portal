@@ -40,14 +40,9 @@ export default function Header() {
             >
               <Logo />
             </motion.div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors">
-                Mockup & Motion Framework
-              </span>
-              <span className="hidden sm:inline font-mono text-2xs text-slate-400 border border-slate-200 rounded-full px-1.5 py-0.5">
-                © 2026 Jova Dirgantara Putra
-              </span>
-            </div>
+            <span className="text-sm font-semibold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors">
+              Mockup & Motion Framework
+            </span>
           </Link>
 
           {/* Desktop Nav */}
@@ -57,9 +52,9 @@ export default function Header() {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `px-3 py-1.5 text-sm rounded-2xl transition-colors font-medium ${
+                  `px-3 py-1.5 text-sm rounded-full transition-colors font-medium ${
                     isActive || location.pathname.startsWith(item.to)
-                      ? 'text-brand-700 bg-brand-50 font-semibold'
+                      ? 'text-brand-700 bg-brand-50 font-semibold ring-1 ring-inset ring-brand-200'
                       : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                   }`
                 }
