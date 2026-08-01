@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import PageLayout from '../components/layout/PageLayout'
-import PlaceholderImage from '../components/ui/PlaceholderImage'
+import ProductMockup from '../components/ui/ProductMockup'
+import IndexRow from '../components/ui/IndexRow'
 import IconBlob from '../components/ui/IconBlob'
-import { revealUp, revealScale, stagger, viewportOnce, cardHover, buttonHover, buttonTap } from '../utils/motion'
+import { revealUp, stagger, viewportOnce, cardHover, buttonHover, buttonTap } from '../utils/motion'
 import { TOOLS, FRAMEWORK_ACCENTS } from '../content/tools-meta'
 import frameworkComponents from '../content/framework-components.json'
 
@@ -20,44 +21,28 @@ const mainComponents = frameworkComponents
   .filter(c => c.id !== 'framework-overview')
   .sort((a, b) => a.order - b.order)
 
-const PROBLEM_CODE_COLORS = [
-  'bg-brand-100 text-brand-700',
-  'bg-sun-100 text-sun-700',
-  'bg-teal-100 text-teal-700',
-  'bg-pink-100 text-pink-700',
+const STATS = [
+  { value: '8', label: 'Komponen Framework' },
+  { value: '4', label: 'Tools Interaktif' },
+  { value: 'S1', label: 'Pendidikan Multimedia' },
+  { value: 'UPI', label: 'Cibiru' },
 ]
 
-function SectionHeading({ eyebrow, title, subtitle, accentClass = 'text-brand-600' }) {
+function SectionHeader({ eyebrow, title, accentClass = 'text-brand-600' }) {
   return (
-    <motion.div variants={revealUp} className="mb-10 text-center">
-      <p className={`font-mono text-2xs tracking-widest uppercase mb-3 ${accentClass}`}>{eyebrow}</p>
-      <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 mb-2">{title}</h2>
-      <p className="text-base text-slate-500">{subtitle}</p>
+    <motion.div variants={revealUp} className="mb-6">
+      <p className={`font-mono text-2xs tracking-widest uppercase mb-1.5 ${accentClass}`}>{eyebrow}</p>
+      <h2 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-slate-900">{title}</h2>
     </motion.div>
   )
 }
 
-function HeroBlobs() {
-  const reduce = useReducedMotion()
-  const float = reduce
-    ? {}
-    : { animate: { y: [0, -16, 0], x: [0, 10, 0] }, transition: { duration: 9, repeat: Infinity, ease: 'easeInOut' } }
-  const floatAlt = reduce
-    ? {}
-    : { animate: { y: [0, 14, 0], x: [0, -12, 0] }, transition: { duration: 11, repeat: Infinity, ease: 'easeInOut' } }
+function HeroBackground() {
   return (
-    <>
-      <motion.div
-        aria-hidden="true"
-        {...float}
-        className="absolute -top-10 -left-16 w-72 h-72 rounded-full bg-gradient-to-br from-brand-200/60 to-pink-200/40 blur-3xl pointer-events-none"
-      />
-      <motion.div
-        aria-hidden="true"
-        {...floatAlt}
-        className="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-gradient-to-tr from-sun-200/50 to-teal-200/40 blur-3xl pointer-events-none"
-      />
-    </>
+    <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+      <div className="absolute -top-24 -left-20 w-[28rem] h-[28rem] rounded-full bg-brand-100/70 blur-3xl" />
+      <div className="absolute -bottom-32 -right-10 w-[24rem] h-[24rem] rounded-full bg-sun-100/50 blur-3xl" />
+    </div>
   )
 }
 
@@ -65,35 +50,28 @@ export default function Home() {
   return (
     <PageLayout>
 
-      {/* Hero — terbuka, tanpa kotak, blob dekoratif di belakang */}
-      <section className="relative py-14 md:py-20">
-        <HeroBlobs />
-        <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-12 items-center">
+      {/* Hero */}
+      <section className="relative py-16 md:py-24 overflow-hidden">
+        <HeroBackground />
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_420px] gap-10 lg:gap-16 items-center">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={stagger}
             className="flex flex-col justify-center space-y-6"
           >
-            <motion.div
-              variants={revealScale}
-              className="inline-flex self-start items-center rounded-full bg-brand-100 px-3 py-1 font-mono text-2xs text-brand-700 tracking-widest uppercase"
-            >
-              DDR Research · S1 Pendidikan Multimedia · UPI Cibiru
-            </motion.div>
             <motion.h1
               variants={revealUp}
-              className="font-display text-5xl md:text-6xl font-bold tracking-tight text-slate-900 leading-[1.05]"
+              className="font-display text-6xl md:text-7xl font-bold tracking-tight text-slate-900 leading-[0.95]"
             >
               Framework Produksi Motion Graphic{' '}
-              <span className="text-brand-500">Live Commerce</span>{' '}
-              Berbasis Visual Hierarchy
+              <span className="text-brand-500">Live Commerce</span>
             </motion.h1>
-            <motion.p variants={revealUp} className="text-lg text-slate-500 leading-relaxed max-w-xl">
+            <motion.p variants={revealUp} className="text-lg text-slate-500 leading-relaxed max-w-lg">
               Sebuah framework yang membantu tim live commerce menentukan prioritas informasi visual,
               mempercepat produksi aset, serta menjaga konsistensi kualitas motion graphic pada berbagai campaign marketplace.
             </motion.p>
-            <motion.div variants={revealUp} className="flex flex-col gap-3 sm:flex-row">
+            <motion.div variants={revealUp} className="flex items-center gap-6 pt-1">
               <motion.div whileHover={buttonHover} whileTap={buttonTap}>
                 <Link
                   to="/framework"
@@ -103,57 +81,52 @@ export default function Home() {
                   <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </motion.div>
-              <motion.div whileHover={buttonHover} whileTap={buttonTap}>
-                <Link
-                  to="/tools"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-slate-700 border border-slate-300 rounded-full hover:bg-slate-50 transition-colors"
-                >
-                  Langsung ke Tools
-                </Link>
-              </motion.div>
+              <Link
+                to="/tools"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-brand-600 transition-colors group"
+              >
+                Langsung ke Tools
+                <span className="transition-transform group-hover:translate-x-1">→</span>
+              </Link>
             </motion.div>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={revealScale}
-            className="hidden lg:flex items-center justify-center"
-          >
-            <PlaceholderImage
-              label="Foto: Suasana produksi live streaming e-commerce"
-              aspect="4/3"
-              className="w-full rounded-2xl"
-            />
+          <motion.div initial="hidden" animate="visible" variants={revealUp} className="hidden lg:block">
+            <ProductMockup />
           </motion.div>
         </div>
       </section>
 
-      {/* Problem Statement — pita lembut tanpa border */}
-      <section className="py-8">
+      {/* Stats bar */}
+      <section className="py-6 border-y border-slate-100">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
           variants={stagger}
-          className="rounded-[2.5rem] bg-brand-50/40 px-6 md:px-12 py-14"
+          className="flex flex-wrap items-center gap-x-8 gap-y-3"
         >
-          <SectionHeading
-            eyebrow="/ Problem Statement"
-            title="6 Masalah yang Diselesaikan"
-            subtitle="Kondisi aktual produksi motion graphic live commerce di Indonesia"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {problems.map((p, i) => (
+          {STATS.map(s => (
+            <motion.div key={s.label} variants={revealUp} className="flex items-baseline gap-2">
+              <span className="font-mono text-lg font-bold text-brand-600">{s.value}</span>
+              <span className="text-sm text-slate-500">{s.label}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* Problem Statement */}
+      <section className="py-14">
+        <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger}>
+          <SectionHeader eyebrow="/ Problem Statement" title="6 Masalah yang Diselesaikan" />
+          <div>
+            {problems.map(p => (
               <motion.div
                 key={p.code}
                 variants={revealUp}
-                whileHover={cardHover}
-                className="flex items-start gap-4 p-5 bg-white rounded-2xl shadow-sm hover:shadow-lift-sm transition-shadow"
+                className="flex items-start gap-4 py-4 border-b border-slate-100 last:border-b-0"
               >
-                <span className={`font-mono text-2xs px-2 py-0.5 rounded-lg font-semibold shrink-0 mt-0.5 ${PROBLEM_CODE_COLORS[i % 4]}`}>
-                  {p.code}
-                </span>
+                <span className="font-mono text-sm text-slate-400 shrink-0 pt-0.5 w-10">{p.code}</span>
                 <p className="text-sm text-slate-700 leading-relaxed">{p.text}</p>
               </motion.div>
             ))}
@@ -161,77 +134,57 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Framework Components — terbuka, tanpa pita */}
+      {/* Framework Index */}
       <section className="py-14">
         <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger}>
-          <SectionHeading
-            eyebrow="/ Framework"
-            title="8 Komponen Konstitutif"
-            subtitle="Klik komponen untuk baca dokumentasi lengkap"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <SectionHeader eyebrow="/ Framework" title="8 Komponen Konstitutif" />
+          <div>
             {mainComponents.map(comp => {
               const accent = FRAMEWORK_ACCENTS[(comp.order - 1) % 4]
               return (
-                <motion.div key={comp.id} variants={revealUp} whileHover={cardHover}>
-                  <Link
+                <motion.div key={comp.id} variants={revealUp}>
+                  <IndexRow
+                    number={String(comp.order).padStart(2, '0')}
+                    title={comp.title}
+                    summary={comp.summary}
                     to={comp.route}
-                    className="group rounded-2xl border border-slate-200 bg-white hover:border-brand-300 hover:shadow-lift-sm transition-all block h-full p-5"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <IconBlob icon={comp.icon} accent={accent} size="md" />
-                      <span className="font-mono text-2xs text-slate-400">
-                        {String(comp.order).padStart(2, '0')}
-                      </span>
-                    </div>
-                    <h3 className="font-display text-base font-bold tracking-tight text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors leading-snug">
-                      {comp.title}
-                    </h3>
-                    <p className="text-sm text-slate-500 leading-relaxed line-clamp-3">{comp.summary}</p>
-                    <div className="mt-4">
-                      <span className="text-sm font-semibold text-brand-600 group-hover:underline underline-offset-4">
-                        Baca lebih →
-                      </span>
-                    </div>
-                  </Link>
+                    accent={accent}
+                  />
                 </motion.div>
               )
             })}
           </div>
-          <motion.div variants={revealUp} className="mt-8 flex justify-center">
-            <motion.div whileHover={buttonHover} whileTap={buttonTap}>
-              <Link
-                to="/framework"
-                className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-brand-700 border border-brand-200 rounded-full hover:bg-brand-50 transition-colors"
-              >
-                Lihat semua komponen →
-              </Link>
-            </motion.div>
+          <motion.div variants={revealUp} className="mt-6">
+            <Link
+              to="/framework"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-800 transition-colors group"
+            >
+              Lihat semua komponen
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </Link>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* Tools — pita lembut */}
+      {/* Tools */}
       <section className="py-8">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
           variants={stagger}
-          className="rounded-[2.5rem] bg-slate-50 px-6 md:px-12 py-14"
+          className="rounded-[2rem] bg-slate-50 px-6 md:px-12 py-14"
         >
-          <SectionHeading
-            eyebrow="/ Interactive Tools"
-            title="4 Tools Interaktif"
-            subtitle="Berjalan sepenuhnya di browser — tidak ada data yang dikirim ke server"
-            accentClass="text-teal-600"
-          />
+          <SectionHeader eyebrow="/ Interactive Tools" title="4 Tools Interaktif" accentClass="text-teal-600" />
+          <p className="text-sm text-slate-500 -mt-4 mb-8 max-w-md">
+            Berjalan sepenuhnya di browser — tidak ada data yang dikirim ke server.
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {TOOLS.map(tool => (
               <motion.div key={tool.to} variants={revealUp} whileHover={cardHover}>
                 <Link
                   to={tool.to}
-                  className="group flex gap-5 rounded-2xl bg-white p-5 shadow-sm hover:shadow-lift-sm transition-shadow h-full"
+                  className="group flex gap-5 rounded-2xl bg-white border border-slate-200 p-5 hover:border-brand-300 hover:shadow-lift-sm transition-all h-full"
                 >
                   <IconBlob icon={tool.icon} accent={tool.accent} size="lg" />
                   <div className="flex-1 flex flex-col">
@@ -251,7 +204,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Campaign Schedule — bagian ringan, bukan band CTA */}
+      {/* Campaign Schedule */}
       <section className="py-14">
         <motion.div
           initial="hidden"
@@ -286,7 +239,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* CTA Feedback — satu-satunya blok ungu solid, penutup kuat */}
+      {/* CTA Feedback */}
       <section className="py-8 pb-16">
         <motion.div
           initial="hidden"
