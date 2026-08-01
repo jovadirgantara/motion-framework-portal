@@ -41,7 +41,7 @@ export default function About() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-8 pb-6 border-b border-slate-100">
           {[
             ['Peneliti', 'Jova Dirgantara Putra'],
             ['NIM', '2201632'],
@@ -50,12 +50,12 @@ export default function About() {
             ['Metode', 'Design and Development Research (DDR)'],
             ['Tahun', '2026'],
           ].map(([label, value]) => (
-            <div key={label} className="bg-brand-50/50 rounded-2xl px-4 py-3">
-              <p className="text-xs text-slate-500">{label}</p>
-              <p className="text-sm font-medium text-slate-900">{value}</p>
+            <div key={label}>
+              <dt className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">{label}</dt>
+              <dd className="text-sm font-medium text-slate-900">{value}</dd>
             </div>
           ))}
-        </div>
+        </dl>
 
         </Reveal>
 
@@ -79,9 +79,9 @@ export default function About() {
           onChange={e => setSearch(e.target.value)}
           className="w-full mb-4 rounded-full border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
-        <div className="space-y-2">
+        <div className="border-t border-slate-100 divide-y divide-slate-100">
           {filtered.map(g => (
-            <div key={g.term} className="bg-white border border-slate-200 rounded-2xl px-4 py-3">
+            <div key={g.term} className="py-3">
               <p className="text-sm font-semibold text-slate-900 mb-1">{g.term}</p>
               <p className="text-sm text-slate-600">{g.definition}</p>
             </div>
