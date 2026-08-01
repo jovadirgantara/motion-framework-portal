@@ -289,7 +289,7 @@ export default function RenderCalculator() {
                 onClick={handleDownload}
                 className="w-full py-2.5 text-sm font-medium rounded border border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors"
               >
-                {downloaded ? '✓ Terunduh!' : 'Download Preset Card (.txt)'}
+                {downloaded ? 'File berhasil diunduh' : 'Download Preset Card (.txt)'}
               </button>
             </>
           ) : (
@@ -315,13 +315,13 @@ export default function RenderCalculator() {
       </div>
 
       <div className="mt-8 p-4 border border-slate-200 rounded text-center text-sm">
-        <span className="text-slate-500">Tool ini berguna? </span>
+        <span className="text-slate-500">Setting rendernya membantu? </span>
         <Link
           to="/feedback"
           className="text-brand-600 font-medium hover:underline"
           onClick={() => trackEvent('feedback_opened', { source: 'render_calculator' })}
         >
-          Beri feedback untuk penelitian →
+          Beri feedback →
         </Link>
       </div>
       </Reveal>

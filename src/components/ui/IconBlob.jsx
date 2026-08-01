@@ -30,9 +30,7 @@ export default function IconBlob({ icon, accent = 'brand', size = 'md', classNam
           className="w-full h-full object-cover"
           onError={() => setFailed(true)}
         />
-      ) : (
-        <span aria-hidden="true" className="opacity-50 text-[0.85em]">🖼️</span>
-      )}
+      ) : null}
     </div>
   )
 }

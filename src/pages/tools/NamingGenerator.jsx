@@ -242,7 +242,7 @@ export default function NamingGenerator() {
                   onClick={handleCopy}
                   className="w-full py-2 text-sm font-medium rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
                 >
-                  {copied ? '✓ Tersalin!' : 'Copy ke Clipboard'}
+                  {copied ? 'Tersalin ke clipboard' : 'Copy ke Clipboard'}
                 </button>
               </>
             ) : (
