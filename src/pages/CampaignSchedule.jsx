@@ -4,99 +4,111 @@ import PageLayout from '../components/layout/PageLayout'
 import Reveal from '../components/ui/Reveal'
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
-const SHEET_ID = '17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ'
-const GID      = '0'
+const SHEET_ID = '1aXZ2STMDwPa-zFeZj37aa_Ko4-IE5WYzIKKe3EMm8rs'
+const GID      = '1476491661'
 const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`
 
+// Row 1 of the sheet is a grouping label row ("by Design" / "by Strategic" /
+// etc). Row 2 holds the actual column names — that's what COL_MAP matches.
 const COL_MAP = {
-  namaAset:      ['Nama Aset', 'nama aset', 'Nama', 'nama', 'Display Name'],
-  brand:         ['Brand', 'brand', 'Merek', 'merek'],
-  platform:      ['Platform', 'platform'],
-  studio:        ['Studio', 'studio'],
-  mockupType:    ['Tipe', 'tipe', 'Mockup Type', 'Type', 'type'],
-  kampanye:      ['Kampanye', 'kampanye', 'Campaign', 'campaign'],
-  periodeStart:  ['Periode Mulai', 'periode mulai', 'Mulai', 'mulai', 'Start', 'start', 'Tanggal Mulai'],
-  periodeEnd:    ['Periode Selesai', 'periode selesai', 'Selesai', 'selesai', 'End', 'end', 'Tanggal Selesai'],
-  jamTayang:     ['Jam Tayang', 'jam tayang', 'Jam', 'jam', 'Time', 'time'],
-  statusMockup:  ['Status Mockup', 'status mockup', 'Mockup Status', 'mockup status'],
-  statusMotion:  ['Status Motion', 'status motion', 'Motion Status', 'motion status'],
-  linkFile:      ['Link File', 'link file', 'Link', 'link', 'File', 'Drive Link', 'drive link'],
-  catatan:       ['Catatan', 'catatan', 'Notes', 'notes', 'Keterangan', 'keterangan'],
-  hostBrief:     ['Host Brief', 'host brief', 'Briefing Host', 'briefing host', 'Host Briefing'],
+  reqDate:               ['Req. Date'],
+  brand:                 ['Brand'],
+  withStrategic:         ['With Strategic Concept'],
+  stratPIC:              ['Strat PIC'],
+  designPIC:             ['Design PIC'],
+  typeOfContent:         ['Type of Content'],
+  taksSource:            ['Taks Source'],
+  dueDate:               ['Due Date'],
+  operationalExcellence: ['Operational Exellence'],
+  designDifficulty:      ['Design Difficulty'],
+  statusStrat:           ['Status Strat'],
+  statusDesign:          ['Status Design'],
+  finalAssetName:        ['Final Asset Name'],
+  motionPIC:             ['Motion PIC'],
+  typeOfCampaign:        ['Type of Campaign'],
+  applyDate:             ['Apply Date'],
+  motionDifficulty:      ['Motion Difficulty'],
+  statusMotion:          ['Status Motion'],
+  linkMotion:            ['Link Motion'],
+  remark:                ['Remark (Wardrobe, Gimmick, Concern on Live)'],
 }
-
-const BRAND_LIST = [
-  'FONTERRA', 'QUAKER', 'PHILIPS JAKARTA', 'WIZ', 'GREENFIELDS',
-  'I-MEAL', 'KOEPOE-KOEPOE', 'DUA BELIBIS', 'BANANA BOAT',
-  'SCHICK & INTUITION', 'PHILIPS SURABAYA', 'PCI', 'BATISTE',
-  'MOIST DIANE', 'MUTOUCH', 'SCHWARZKOPF', 'PSL JAKARTA',
-  'PSL SURABAYA', 'PURE PREMIUM', 'PRO BABY', 'DELFI', 'KOSE',
-  'KCS', 'ALKAHFI', 'TWININGS', 'SOSRO', 'RUMAH TEH', 'SNICKERS',
-  'OCTOPUS', 'NUTRIMART', 'MAMA HILO', 'SLEEK BABY', 'ELLIPS',
-  'HILO TEEN', 'Hilo Official', 'MOMYPOKO ROYAL SOFT',
-  'MOMYPOKO NEW BORN', 'CLICKS', 'KINO HAIR & BEAUTY CARE',
-  'RECLOWW', 'BETADINE', 'PLOSSA', 'ASTRA OTOSHOP', 'UFS',
-  'HUNT4TOYS', 'L-MEN',
-]
 
 const SEED_DATA = [
   {
     id: 'seed-1',
-    namaAset: 'Preview [Shopee] Snickers Mingyu BaU',
-    brand: 'SNICKERS',
-    platform: 'Shopee Live',
-    studio: 'Jakarta',
-    mockupType: 'BaU',
-    kampanye: 'Business as Usual – Juni',
-    periodeStart: '2026-06-07',
-    periodeEnd: '2026-06-24',
-    jamTayang: '09:00 – 10:00',
-    statusMockup: 'On AE',
-    statusMotion: 'On Progress',
-    linkFile: '',
-    catatan: 'Kolaborasi Mingyu ENHYPEN',
-    hostBrief: '',
+    reqDate: '03/11/2025',
+    brand: 'Greenfields',
+    withStrategic: '',
+    stratPIC: '',
+    designPIC: 'Alfie',
+    typeOfContent: 'Mockup',
+    taksSource: 'Orca',
+    dueDate: '06/11/2025',
+    operationalExcellence: 'Excellence',
+    designDifficulty: 'High',
+    statusStrat: '',
+    statusDesign: '',
+    finalAssetName: '',
+    motionPIC: '',
+    typeOfCampaign: '',
+    applyDate: '',
+    motionDifficulty: '',
+    statusMotion: '',
+    linkMotion: '',
+    remark: '',
   },
   {
     id: 'seed-2',
-    namaAset: 'BG Sweety Festive PayDay',
-    brand: '',
-    platform: 'Shopee Live',
-    studio: 'Bandung',
-    mockupType: 'PayDay',
-    kampanye: 'PayDay Juni',
-    periodeStart: '2026-06-25',
-    periodeEnd: '2026-06-30',
-    jamTayang: '20:00 – 22:00',
-    statusMockup: 'On Strat',
-    statusMotion: 'Revision',
-    linkFile: '',
-    catatan: '',
-    hostBrief: '',
+    reqDate: '07/11/2025',
+    brand: 'Quaker',
+    withStrategic: '',
+    stratPIC: '',
+    designPIC: 'Nadya A',
+    typeOfContent: 'Mockup',
+    taksSource: 'Orca',
+    dueDate: '10/11/2025',
+    operationalExcellence: 'Good',
+    designDifficulty: 'High',
+    statusStrat: 'Done',
+    statusDesign: '',
+    finalAssetName: '',
+    motionPIC: '',
+    typeOfCampaign: '',
+    applyDate: '',
+    motionDifficulty: '',
+    statusMotion: '',
+    linkMotion: '',
+    remark: '',
   },
   {
     id: 'seed-3',
-    namaAset: 'Preview [TikTok] L-MEN Period Pack',
-    brand: 'L-MEN',
-    platform: 'TikTok Shop',
-    studio: 'Jakarta',
-    mockupType: 'Period',
-    kampanye: 'BaU – Multiple Period',
-    periodeStart: '2026-06-01',
-    periodeEnd: '2026-07-15',
-    jamTayang: 'Sepanjang hari',
-    statusMockup: 'On GD',
-    statusMotion: 'Ready',
-    linkFile: '',
-    catatan: 'LVL 4 – multiple usage date',
-    hostBrief: '',
+    reqDate: '05/11/2025',
+    brand: 'DuaBelibis',
+    withStrategic: 'Yes',
+    stratPIC: 'Nadya A',
+    designPIC: 'Alfie',
+    typeOfContent: 'Banner Marketplace',
+    taksSource: 'Ecommerce',
+    dueDate: '08/11/2025',
+    operationalExcellence: 'Bad',
+    designDifficulty: 'Medium',
+    statusStrat: 'Done',
+    statusDesign: '',
+    finalAssetName: '',
+    motionPIC: '',
+    typeOfCampaign: '',
+    applyDate: '',
+    motionDifficulty: '',
+    statusMotion: '',
+    linkMotion: '',
+    remark: '',
   },
 ]
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/)
-  if (lines.length < 2) return []
+  if (lines.length < 3) return []
   function parseLine(line) {
     const cells = []
     let cur = '', inQ = false
@@ -112,7 +124,9 @@ function parseCSV(text) {
     cells.push(cur.trim())
     return cells
   }
-  const headers = parseLine(lines[0])
+  // lines[0] is the grouping-label row ("by Design" / "by Strategic" / ...),
+  // lines[1] is the real header row, data starts at lines[2].
+  const headers = parseLine(lines[1])
   function resolveField(header) {
     for (const [field, aliases] of Object.entries(COL_MAP)) {
       if (aliases.some(a => a.toLowerCase() === header.toLowerCase())) return field
@@ -120,12 +134,12 @@ function parseCSV(text) {
     return null
   }
   const fieldMap = headers.map(h => resolveField(h))
-  return lines.slice(1).map((line, idx) => {
+  return lines.slice(2).map((line, idx) => {
     const cells = parseLine(line)
     const row = { id: `sheet-${idx + 1}` }
     fieldMap.forEach((field, i) => { if (field) row[field] = cells[i] ?? '' })
     return row
-  }).filter(r => r.namaAset)
+  }).filter(r => r.brand)
 }
 
 function normalizeDate(str) {
@@ -135,25 +149,8 @@ function normalizeDate(str) {
   return str
 }
 
-function normalizeStudio(str) {
-  if (!str) return ''
-  const s = str.trim().toLowerCase()
-  if (s === 'jakarta') return 'Jakarta'
-  if (s === 'bandung') return 'Bandung'
-  return str.trim()
-}
-
-function getStatus(periodeStart, periodeEnd, statusMockup) {
-  const today = new Date(); today.setHours(12, 0, 0, 0)
-  const start = new Date(normalizeDate(periodeStart))
-  const end   = new Date(normalizeDate(periodeEnd)); end.setHours(23, 59, 59)
-  const isReady = (statusMockup ?? '').toLowerCase() === 'ready'
-  if (today < start) return 'akan-datang'
-  if (today > end)   return isReady ? 'kedaluwarsa' : 'missing'
-  return isReady ? 'aktif' : 'belum-siap'
-}
-
 function formatDate(dateStr) {
+  if (!dateStr) return ''
   const d = new Date(normalizeDate(dateStr))
   if (isNaN(d)) return dateStr
   return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -170,64 +167,54 @@ function formatMonthLabel(key) {
   return new Date(year, month - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 }
 
-function monthOverlaps(periodeStart, periodeEnd, monthKey) {
+function monthOverlaps(reqDate, dueDate, monthKey) {
   const [year, month] = monthKey.split('-').map(Number)
   const mStart = new Date(year, month - 1, 1)
   const mEnd   = new Date(year, month, 0, 23, 59, 59)
-  const s = new Date(normalizeDate(periodeStart))
-  const e = new Date(normalizeDate(periodeEnd))
-  if (isNaN(s) || isNaN(e)) return false
-  return s <= mEnd && e >= mStart
+  const s = new Date(normalizeDate(reqDate))
+  const e = new Date(normalizeDate(dueDate || reqDate))
+  if (isNaN(s) && isNaN(e)) return false
+  const start = isNaN(s) ? e : s
+  const end   = isNaN(e) ? s : e
+  return start <= mEnd && end >= mStart
+}
+
+function getActivePIC(row) {
+  return row.motionPIC || row.designPIC || row.stratPIC || ''
 }
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
-const STATUS_CONFIG = {
-  missing:       { label: 'Missing',      dot: '⚫', badge: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200' },
-  'belum-siap':  { label: 'Belum Siap',   dot: '🟠', badge: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200' },
-  aktif:         { label: 'Aktif',        dot: '🟢', badge: 'bg-green-50 text-green-700 ring-1 ring-green-200' },
-  'akan-datang': { label: 'Akan Datang',  dot: '🟡', badge: 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-200' },
-  kedaluwarsa:   { label: 'Kedaluwarsa',  dot: '🔴', badge: 'bg-red-50 text-red-700 ring-1 ring-red-200' },
-}
-
-const STATUS_ORDER = { aktif: 0, 'akan-datang': 1, 'belum-siap': 2, kedaluwarsa: 3, missing: 4 }
-
-const ROW_STATUS_BG = {
-  missing:       'bg-slate-50/60',
-  'belum-siap':  '',
-  aktif:         'bg-green-50/40',
-  'akan-datang': '',
-  kedaluwarsa:   'bg-red-50/30',
-}
-
-const MOCKUP_STATUS_CONFIG = {
-  'On GD':     { badge: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' },
-  'On AE':     { badge: 'bg-purple-50 text-purple-700 ring-1 ring-purple-200' },
-  'On Strat':  { badge: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200' },
-  'On Motion': { badge: 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200' },
-  'Revision':  { badge: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' },
-  'Ready':     { badge: 'bg-green-50 text-green-700 ring-1 ring-green-200' },
-}
-
 const DEFAULT_BADGE = 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'
 
-function getPlatformBadge(platform) {
-  const p = (platform ?? '').toLowerCase()
-  if (p.includes('shopee') && p.includes('tiktok')) return 'bg-purple-50 text-purple-700 ring-1 ring-purple-200'
-  if (p.includes('shopee')) return 'bg-orange-50 text-orange-700 ring-1 ring-orange-200'
-  if (p.includes('tiktok')) return 'bg-slate-100 text-slate-700 ring-1 ring-slate-200'
-  return DEFAULT_BADGE
+const OPERATIONAL_CONFIG = {
+  Excellence: 'bg-green-50 text-green-700 ring-1 ring-green-200',
+  Good:       'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+  Bad:        'bg-red-50 text-red-700 ring-1 ring-red-200',
 }
 
-const STUDIO_CONFIG = {
-  bandung: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
-  jakarta: 'bg-pink-50 text-pink-700 ring-1 ring-pink-200',
+const DIFFICULTY_CONFIG = {
+  Low:    'bg-green-50 text-green-700 ring-1 ring-green-200',
+  Medium: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
+  High:   'bg-red-50 text-red-700 ring-1 ring-red-200',
 }
 
-const MOCKUP_TYPE_CONFIG = {
-  bau:    'bg-green-50 text-green-700 ring-1 ring-green-200',
-  dd:     'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
-  payday: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
+const TAKS_SOURCE_CONFIG = {
+  Ecommerce: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
+  Orca:      'bg-purple-50 text-purple-700 ring-1 ring-purple-200',
 }
+
+// Status Strat / Status Design / Status Motion carry freeform sheet values —
+// only "Done" is populated in the source data today, so this stays generic
+// rather than hardcoding a full enum that doesn't exist yet.
+const KNOWN_STATUS_BADGE = {
+  Done: 'bg-green-50 text-green-700 ring-1 ring-green-200',
+}
+function statusBadgeClass(value) {
+  return KNOWN_STATUS_BADGE[value] ?? DEFAULT_BADGE
+}
+
+const DIFFICULTY_ORDER   = { Low: 0, Medium: 1, High: 2 }
+const OPERATIONAL_ORDER  = { Bad: 0, Good: 1, Excellence: 2 }
 
 // Shared badge class — 6px top/bottom (py-1.5), 10px left/right (px-2.5), rounded-full, 12px/600
 const BADGE = 'inline-flex items-center gap-1 py-1.5 px-2.5 rounded-full text-[12px] font-semibold leading-none transition-colors duration-150'
@@ -241,17 +228,17 @@ const CHIP_ON    = 'bg-brand-600 text-white border-brand-600 shadow-sm'
 export default function CampaignSchedule() {
   const [rawData, setRawData]       = useState(null)
   const [fetchError, setFetchError] = useState(null)
-  const [filterPlatform,     setFilterPlatform]     = useState('semua')
-  const [filterStatus,       setFilterStatus]       = useState('semua')
-  const [filterStatusMockup, setFilterStatusMockup] = useState('semua')
-  const [filterStudio,       setFilterStudio]       = useState('semua')
+  const [filterTaksSource,   setFilterTaksSource]   = useState('semua')
+  const [filterTypeOfContent,setFilterTypeOfContent]= useState('semua')
+  const [filterDifficulty,   setFilterDifficulty]   = useState('semua')
+  const [filterOperational,  setFilterOperational]  = useState('semua')
   const [filterBrand,        setFilterBrand]        = useState('semua')
   const [filterBulan,        setFilterBulan]        = useState('semua')
   const [filterCampaign,     setFilterCampaign]     = useState('semua')
   const [brandOpen,          setBrandOpen]          = useState(false)
   const [brandSearch,        setBrandSearch]        = useState('')
   const brandRef = useRef(null)
-  const [sortKey, setSortKey] = useState('status')
+  const [sortKey, setSortKey] = useState('dueDate')
   const [sortDir, setSortDir] = useState('asc')
 
   useEffect(() => {
@@ -282,50 +269,50 @@ export default function CampaignSchedule() {
   const isLive      = rawData !== null && rawData.length > 0
   const displayData = isLive ? rawData : SEED_DATA
 
-  const enriched = useMemo(
-    () => displayData.map(row => ({
-      ...row,
-      studio: normalizeStudio(row.studio),
-      status: getStatus(row.periodeStart, row.periodeEnd, row.statusMockup),
-    })),
-    [displayData],
-  )
-
   const allMonths = useMemo(() => {
     const seen = new Set()
     displayData.forEach(r => {
-      const sk = getMonthKey(r.periodeStart), ek = getMonthKey(r.periodeEnd)
+      const sk = getMonthKey(r.reqDate), ek = getMonthKey(r.dueDate)
       if (sk) seen.add(sk); if (ek) seen.add(ek)
     })
     return Array.from(seen).sort()
   }, [displayData])
 
+  const brands = useMemo(
+    () => Array.from(new Set(displayData.map(r => r.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'id')),
+    [displayData],
+  )
+
+  const typesOfContent = useMemo(
+    () => Array.from(new Set(displayData.map(r => r.typeOfContent).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'id')),
+    [displayData],
+  )
+
   const filtered = useMemo(
-    () => enriched.filter(row => {
-      const matchP  = filterPlatform === 'semua' || row.platform === filterPlatform
-      const matchS  = filterStatus   === 'semua' || row.status   === filterStatus
-      const matchSM = filterStatusMockup === 'semua' || row.statusMockup === filterStatusMockup
-      const matchSt = filterStudio  === 'semua' || row.studio.toLowerCase() === filterStudio.toLowerCase()
-      const matchB  = filterBrand   === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
-      const matchM  = filterBulan   === 'semua' || monthOverlaps(row.periodeStart, row.periodeEnd, filterBulan)
+    () => displayData.filter(row => {
+      const matchTS = filterTaksSource === 'semua' || row.taksSource === filterTaksSource
+      const matchTC = filterTypeOfContent === 'semua' || row.typeOfContent === filterTypeOfContent
+      const matchDf = filterDifficulty === 'semua' || row.designDifficulty === filterDifficulty
+      const matchOp = filterOperational === 'semua' || row.operationalExcellence === filterOperational
+      const matchB  = filterBrand === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
+      const matchM  = filterBulan === 'semua' || monthOverlaps(row.reqDate, row.dueDate, filterBulan)
       let matchC = true
       if (filterCampaign !== 'semua') {
-        const k = (row.kampanye ?? '').toLowerCase()
+        const k = (row.typeOfCampaign ?? '').toLowerCase()
         const isPayDay = k.includes('payday'), isBaU = k.includes('bau'), isDD = k.includes('dd')
         if (filterCampaign === 'PayDay') matchC = isPayDay
         else if (filterCampaign === 'BaU') matchC = isBaU
         else if (filterCampaign === 'DD') matchC = isDD
         else if (filterCampaign === 'Other') matchC = !isPayDay && !isBaU && !isDD
       }
-      return matchP && matchS && matchSM && matchSt && matchB && matchM && matchC
+      return matchTS && matchTC && matchDf && matchOp && matchB && matchM && matchC
     }),
-    [enriched, filterPlatform, filterStatus, filterStatusMockup, filterStudio, filterBrand, filterBulan, filterCampaign],
+    [displayData, filterTaksSource, filterTypeOfContent, filterDifficulty, filterOperational, filterBrand, filterBulan, filterCampaign],
   )
 
-  const platforms = ['semua', ...Array.from(new Set(displayData.map(r => r.platform).filter(Boolean)))]
   const filteredBrands = brandSearch.trim()
-    ? BRAND_LIST.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
-    : BRAND_LIST
+    ? brands.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
+    : brands
 
   function handleSort(key) {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -336,11 +323,13 @@ export default function CampaignSchedule() {
     if (!sortKey) return filtered
     return [...filtered].sort((a, b) => {
       let av, bv
-      if (sortKey === 'status') {
-        av = STATUS_ORDER[a.status] ?? 99; bv = STATUS_ORDER[b.status] ?? 99
-      } else if (sortKey === 'periodeStart' || sortKey === 'periodeEnd') {
+      if (sortKey === 'reqDate' || sortKey === 'dueDate') {
         av = new Date(normalizeDate(a[sortKey] ?? '')).getTime() || 0
         bv = new Date(normalizeDate(b[sortKey] ?? '')).getTime() || 0
+      } else if (sortKey === 'designDifficulty') {
+        av = DIFFICULTY_ORDER[a[sortKey]] ?? -1; bv = DIFFICULTY_ORDER[b[sortKey]] ?? -1
+      } else if (sortKey === 'operationalExcellence') {
+        av = OPERATIONAL_ORDER[a[sortKey]] ?? -1; bv = OPERATIONAL_ORDER[b[sortKey]] ?? -1
       } else {
         av = (a[sortKey] ?? '').toString(); bv = (b[sortKey] ?? '').toString()
       }
@@ -349,26 +338,17 @@ export default function CampaignSchedule() {
     })
   }, [filtered, sortKey, sortDir])
 
-  const counts = useMemo(() => {
-    const c = { missing: 0, 'belum-siap': 0, aktif: 0, 'akan-datang': 0, kedaluwarsa: 0 }
-    enriched.forEach(r => c[r.status]++)
+  const operationalCounts = useMemo(() => {
+    const c = { Excellence: 0, Good: 0, Bad: 0 }
+    displayData.forEach(r => { if (c[r.operationalExcellence] !== undefined) c[r.operationalExcellence]++ })
     return c
-  }, [enriched])
-
-  const statusMockups = Object.keys(MOCKUP_STATUS_CONFIG)
-  const mockupCounts = useMemo(() => {
-    const c = {}; statusMockups.forEach(s => { c[s] = 0 })
-    enriched.forEach(r => { if (r.statusMockup && c[r.statusMockup] !== undefined) c[r.statusMockup]++ })
-    return c
-  }, [enriched])
+  }, [displayData])
 
   // ── STAT CARDS config ──
   const STAT_CARDS = [
-    { key: 'aktif',       label: 'Aktif',       dot: '🟢', num: 'text-green-700',  bg: 'bg-white border-green-100',    sub: 'text-green-600'  },
-    { key: 'akan-datang', label: 'Akan Datang', dot: '🟡', num: 'text-yellow-700', bg: 'bg-white border-yellow-100',   sub: 'text-yellow-600' },
-    { key: 'belum-siap',  label: 'Belum Siap',  dot: '🟠', num: 'text-orange-700', bg: 'bg-white border-orange-100',   sub: 'text-orange-600' },
-    { key: 'kedaluwarsa', label: 'Kedaluwarsa', dot: '🔴', num: 'text-red-700',    bg: 'bg-white border-red-100',      sub: 'text-red-600'    },
-    { key: 'missing',     label: 'Missing',     dot: '⚫', num: 'text-slate-700',  bg: 'bg-white border-slate-200',    sub: 'text-slate-500'  },
+    { key: 'Excellence', label: 'Excellence', dot: '🟢', num: 'text-green-700', bg: 'bg-white border-green-100', sub: 'text-green-600' },
+    { key: 'Good',       label: 'Good',       dot: '🔵', num: 'text-blue-700',  bg: 'bg-white border-blue-100',  sub: 'text-blue-600'  },
+    { key: 'Bad',        label: 'Bad',        dot: '🔴', num: 'text-red-700',   bg: 'bg-white border-red-100',   sub: 'text-red-600'   },
   ]
 
   return (
@@ -393,8 +373,8 @@ export default function CampaignSchedule() {
                   Jadwal Penggunaan Mockup
                 </h1>
                 <p className="text-[14px] text-slate-500 max-w-xl leading-relaxed">
-                  Daftar aset motion graphic yang sedang aktif, akan datang, dan sudah kedaluwarsa.
-                  Data dikelola Motion Designer Lead via Google Sheets.
+                  Daftar request Design, Strategic, dan Motion beserta status pengerjaannya.
+                  Data dikelola tim internal via Google Sheets.
                 </p>
               </div>
               <Link
@@ -438,14 +418,14 @@ export default function CampaignSchedule() {
         )}
 
         {/* ── STAT CARDS ── */}
-        <div className="grid grid-cols-5 gap-3 mb-8">
+        <div className="grid grid-cols-3 gap-3 mb-8">
           {STAT_CARDS.map(s => (
             <div
               key={s.key}
               className={`border rounded-xl p-5 shadow-[0_1px_2px_rgba(16,24,40,.05)] transition-all duration-150 ease-out ${s.bg}`}
             >
               <div className={`text-[32px] font-bold leading-none mb-2 tracking-tight ${s.num}`}>
-                {counts[s.key]}
+                {operationalCounts[s.key]}
               </div>
               <div className={`text-[12px] font-medium ${s.sub}`}>
                 {s.dot} {s.label}
@@ -457,45 +437,35 @@ export default function CampaignSchedule() {
         {/* ── FILTERS ── */}
         <div className="space-y-3 mb-6">
 
-          {/* Status */}
+          {/* Operational Excellence */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Status</span>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Excellence</span>
             <div className="flex flex-wrap gap-1.5">
-              {(['semua', 'aktif', 'akan-datang', 'belum-siap', 'kedaluwarsa', 'missing']).map(s => {
-                const label = s === 'semua'
-                  ? `Semua (${enriched.length})`
-                  : `${STATUS_CONFIG[s].dot} ${STATUS_CONFIG[s].label} (${counts[s]})`
-                return (
-                  <button key={s} onClick={() => setFilterStatus(s)}
-                    className={`${CHIP_BASE} ${filterStatus === s ? CHIP_ON : CHIP_OFF}`}>
-                    {label}
-                  </button>
-                )
-              })}
+              {(['semua', 'Excellence', 'Good', 'Bad']).map(s => (
+                <button key={s} onClick={() => setFilterOperational(s)}
+                  className={`${CHIP_BASE} ${filterOperational === s ? CHIP_ON : CHIP_OFF}`}>
+                  {s === 'semua' ? `Semua (${displayData.length})` : `${s} (${operationalCounts[s]})`}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Status Mockup */}
+          {/* Design Difficulty */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Mockup</span>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Difficulty</span>
             <div className="flex flex-wrap gap-1.5">
-              {(['semua', ...statusMockups]).map(s => {
-                const label = s === 'semua'
-                  ? `Semua (${enriched.length})`
-                  : `${s} (${mockupCounts[s]})`
-                return (
-                  <button key={s} onClick={() => setFilterStatusMockup(s)}
-                    className={`${CHIP_BASE} ${filterStatusMockup === s ? CHIP_ON : CHIP_OFF}`}>
-                    {label}
-                  </button>
-                )
-              })}
+              {(['semua', 'Low', 'Medium', 'High']).map(s => (
+                <button key={s} onClick={() => setFilterDifficulty(s)}
+                  className={`${CHIP_BASE} ${filterDifficulty === s ? CHIP_ON : CHIP_OFF}`}>
+                  {s === 'semua' ? 'Semua' : s}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Bulan — horizontal scrollable pills */}
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Bulan</span>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Bulan</span>
             <div className="flex gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'thin' }}>
               <button onClick={() => setFilterBulan('semua')}
                 className={`${CHIP_BASE} shrink-0 ${filterBulan === 'semua' ? CHIP_ON : CHIP_OFF}`}>
@@ -512,7 +482,7 @@ export default function CampaignSchedule() {
 
           {/* Brand dropdown */}
           <div className="flex items-center gap-2" ref={brandRef}>
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Brand</span>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Brand</span>
             <div className="relative">
               <button
                 onClick={() => { setBrandOpen(o => !o); if (brandOpen) setBrandSearch('') }}
@@ -558,26 +528,30 @@ export default function CampaignSchedule() {
             </div>
           </div>
 
-          {/* Platform */}
+          {/* Type of Content */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Platform</span>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Konten</span>
             <div className="flex flex-wrap gap-1.5">
-              {platforms.map(p => (
-                <button key={p} onClick={() => setFilterPlatform(p)}
-                  className={`${CHIP_BASE} ${filterPlatform === p ? CHIP_ON : CHIP_OFF}`}>
-                  {p === 'semua' ? 'Semua' : p}
+              <button onClick={() => setFilterTypeOfContent('semua')}
+                className={`${CHIP_BASE} ${filterTypeOfContent === 'semua' ? CHIP_ON : CHIP_OFF}`}>
+                Semua
+              </button>
+              {typesOfContent.map(t => (
+                <button key={t} onClick={() => setFilterTypeOfContent(t)}
+                  className={`${CHIP_BASE} ${filterTypeOfContent === t ? CHIP_ON : CHIP_OFF}`}>
+                  {t}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Studio */}
+          {/* Taks Source */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Studio</span>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Source</span>
             <div className="flex flex-wrap gap-1.5">
-              {(['semua', 'Jakarta', 'Bandung']).map(s => (
-                <button key={s} onClick={() => setFilterStudio(s)}
-                  className={`${CHIP_BASE} ${filterStudio === s ? CHIP_ON : CHIP_OFF}`}>
+              {(['semua', 'Ecommerce', 'Orca']).map(s => (
+                <button key={s} onClick={() => setFilterTaksSource(s)}
+                  className={`${CHIP_BASE} ${filterTaksSource === s ? CHIP_ON : CHIP_OFF}`}>
                   {s === 'semua' ? 'Semua' : s}
                 </button>
               ))}
@@ -586,7 +560,7 @@ export default function CampaignSchedule() {
 
           {/* Campaign */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-24 shrink-0">Campaign</span>
+            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Campaign</span>
             <div className="flex flex-wrap gap-1.5">
               {(['semua', 'PayDay', 'BaU', 'DD', 'Other']).map(c => (
                 <button key={c} onClick={() => setFilterCampaign(c)}
@@ -601,27 +575,32 @@ export default function CampaignSchedule() {
         {/* ── TABLE ── */}
         {sorted.length === 0 ? (
           <div className="text-center py-16 text-slate-400 text-[14px] border border-[#E5E7EB] rounded-xl bg-slate-50">
-            Tidak ada aset yang cocok dengan filter yang dipilih.
+            Tidak ada request yang cocok dengan filter yang dipilih.
           </div>
         ) : (
           <div className="overflow-x-auto border border-[#E5E7EB] rounded-xl shadow-[0_1px_2px_rgba(16,24,40,.05)]">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-[#E5E7EB]">
-                  {/* Status — rowspan 2 */}
-                  <th rowSpan={2} onClick={() => handleSort('status')}
+                  {/* Status group */}
+                  <th colSpan={3}
+                    className="px-4 py-2 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] text-center border-b border-[#E5E7EB]">
+                    Status
+                  </th>
+                  {/* Operational Excellence — rowspan 2 */}
+                  <th rowSpan={2} onClick={() => handleSort('operationalExcellence')}
                     className="align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
                     <span className="flex items-center gap-1">
-                      Status
-                      <span className="text-[10px] opacity-50">{sortKey === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                      Excellence
+                      <span className="text-[10px] opacity-50">{sortKey === 'operationalExcellence' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
                     </span>
                   </th>
-                  {/* Status Mockup — rowspan 2 */}
-                  <th rowSpan={2} onClick={() => handleSort('statusMockup')}
+                  {/* Design Difficulty — rowspan 2 */}
+                  <th rowSpan={2} onClick={() => handleSort('designDifficulty')}
                     className="align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
                     <span className="flex items-center gap-1">
-                      Mockup
-                      <span className="text-[10px] opacity-50">{sortKey === 'statusMockup' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                      Difficulty
+                      <span className="text-[10px] opacity-50">{sortKey === 'designDifficulty' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
                     </span>
                   </th>
                   {/* Period group */}
@@ -631,16 +610,17 @@ export default function CampaignSchedule() {
                   </th>
                   {/* Other columns */}
                   {[
-                    { label: 'Nama Aset',   key: 'namaAset'  },
-                    { label: 'Brand',       key: 'brand'     },
-                    { label: 'Type',        key: 'mockupType'},
-                    { label: 'Platform',    key: 'platform'  },
-                    { label: 'Studio',      key: 'studio'    },
-                    { label: 'Kampanye',    key: 'kampanye'  },
-                    { label: 'Jam',         key: 'jamTayang' },
-                    { label: 'Catatan',     key: null        },
-                    { label: 'Host Brief',  key: null        },
-                    { label: 'File',        key: null        },
+                    { label: 'Final Asset Name', key: 'finalAssetName' },
+                    { label: 'Brand',            key: 'brand'          },
+                    { label: 'Type of Content',  key: 'typeOfContent'  },
+                    { label: 'Source',           key: 'taksSource'     },
+                    { label: 'PIC',              key: null             },
+                    { label: 'Campaign',         key: 'typeOfCampaign' },
+                    { label: 'Apply Date',       key: 'applyDate'      },
+                    { label: 'Remark',           key: null             },
+                    { label: 'Studio',           key: null             },
+                    { label: 'Host Brief',       key: null             },
+                    { label: 'File',             key: null             },
                   ].map(col => (
                     <th key={col.label} rowSpan={2}
                       onClick={col.key ? () => handleSort(col.key) : undefined}
@@ -659,53 +639,76 @@ export default function CampaignSchedule() {
                   ))}
                 </tr>
                 <tr className="bg-slate-50 border-b border-[#E5E7EB]">
-                  <th onClick={() => handleSort('periodeStart')}
+                  <th className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">Strat</th>
+                  <th className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">Design</th>
+                  <th className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">Motion</th>
+                  <th onClick={() => handleSort('reqDate')}
                     className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
                     <span className="flex items-center gap-1">
-                      Start
-                      <span className="text-[10px] opacity-50">{sortKey === 'periodeStart' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                      Req.
+                      <span className="text-[10px] opacity-50">{sortKey === 'reqDate' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
                     </span>
                   </th>
-                  <th className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">
-                    End
+                  <th onClick={() => handleSort('dueDate')}
+                    className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
+                    <span className="flex items-center gap-1">
+                      Due
+                      <span className="text-[10px] opacity-50">{sortKey === 'dueDate' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
+                    </span>
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
                 {sorted.map((row, idx) => {
-                  const cfg = STATUS_CONFIG[row.status]
                   const isEven = idx % 2 === 1
+                  const pic = getActivePIC(row)
                   return (
                     <tr
                       key={row.id}
-                      className={`transition-colors duration-150 ease-out hover:bg-slate-50 ${
-                        ROW_STATUS_BG[row.status] ?? ''
-                      } ${isEven ? 'bg-slate-50/30' : ''}`}
+                      className={`transition-colors duration-150 ease-out hover:bg-slate-50 ${isEven ? 'bg-slate-50/30' : ''}`}
                     >
-                      {/* Status badge */}
-                      <td className="px-4 py-0 h-[52px] align-middle">
-                        <span className={`${BADGE} ${cfg.badge}`}>
-                          {cfg.dot} {cfg.label}
-                        </span>
-                      </td>
-                      {/* Mockup status badge */}
-                      <td className="px-4 py-0 h-[52px] align-middle">
-                        {row.statusMockup
-                          ? <span className={`${BADGE} ${MOCKUP_STATUS_CONFIG[row.statusMockup]?.badge ?? DEFAULT_BADGE}`}>{row.statusMockup}</span>
+                      {/* Status Strat */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.statusStrat
+                          ? <span className={`${BADGE} ${statusBadgeClass(row.statusStrat)}`}>{row.statusStrat}</span>
                           : <span className="text-slate-300 text-[13px]">—</span>}
                       </td>
-                      {/* Periode Start */}
+                      {/* Status Design */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.statusDesign
+                          ? <span className={`${BADGE} ${statusBadgeClass(row.statusDesign)}`}>{row.statusDesign}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Status Motion */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.statusMotion
+                          ? <span className={`${BADGE} ${statusBadgeClass(row.statusMotion)}`}>{row.statusMotion}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Operational Excellence */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.operationalExcellence
+                          ? <span className={`${BADGE} ${OPERATIONAL_CONFIG[row.operationalExcellence] ?? DEFAULT_BADGE}`}>{row.operationalExcellence}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Design Difficulty */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.designDifficulty
+                          ? <span className={`${BADGE} ${DIFFICULTY_CONFIG[row.designDifficulty] ?? DEFAULT_BADGE}`}>{row.designDifficulty}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* Req Date */}
                       <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-700 font-semibold">
-                        {formatDate(row.periodeStart)}
+                        {formatDate(row.reqDate) || <span className="text-slate-300 font-normal">—</span>}
                       </td>
-                      {/* Periode End */}
+                      {/* Due Date */}
                       <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-500">
-                        {formatDate(row.periodeEnd)}
+                        {formatDate(row.dueDate) || <span className="text-slate-300">—</span>}
                       </td>
-                      {/* Nama Aset */}
+                      {/* Final Asset Name */}
                       <td className="px-4 py-0 h-[52px] align-middle">
-                        <div className={`text-[14px] leading-snug ${row.status === 'aktif' ? 'font-semibold text-slate-900' : 'font-medium text-slate-800'}`}>
-                          {row.namaAset}
+                        <div className="text-[14px] leading-snug font-medium text-slate-800">
+                          {row.finalAssetName || `${row.brand} — ${row.typeOfContent || 'Request'}`}
                         </div>
                       </td>
                       {/* Brand */}
@@ -714,44 +717,44 @@ export default function CampaignSchedule() {
                           ? <span className={`${BADGE} bg-slate-100 text-slate-600 ring-1 ring-slate-200`}>{row.brand}</span>
                           : <span className="text-slate-300 text-[13px]">—</span>}
                       </td>
-                      {/* Mockup Type */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.mockupType
-                          ? <span className={`${BADGE} ${MOCKUP_TYPE_CONFIG[row.mockupType.toLowerCase()] ?? DEFAULT_BADGE}`}>{row.mockupType}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Platform */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.platform
-                          ? <span className={`${BADGE} ${getPlatformBadge(row.platform)}`}>{row.platform}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Studio */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.studio
-                          ? <span className={`${BADGE} ${STUDIO_CONFIG[row.studio.toLowerCase()] ?? DEFAULT_BADGE}`}>{row.studio}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Kampanye */}
+                      {/* Type of Content */}
                       <td className="px-4 py-0 h-[52px] align-middle text-[14px] text-slate-600 font-medium">
-                        {row.kampanye || <span className="text-slate-300">—</span>}
+                        {row.typeOfContent || <span className="text-slate-300">—</span>}
                       </td>
-                      {/* Jam Tayang */}
+                      {/* Taks Source */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
+                        {row.taksSource
+                          ? <span className={`${BADGE} ${TAKS_SOURCE_CONFIG[row.taksSource] ?? DEFAULT_BADGE}`}>{row.taksSource}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>}
+                      </td>
+                      {/* PIC */}
+                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap text-[13px] text-slate-600">
+                        {pic || <span className="text-slate-300">—</span>}
+                      </td>
+                      {/* Type of Campaign */}
+                      <td className="px-4 py-0 h-[52px] align-middle text-[14px] text-slate-600 font-medium">
+                        {row.typeOfCampaign || <span className="text-slate-300">—</span>}
+                      </td>
+                      {/* Apply Date */}
                       <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-500">
-                        {row.jamTayang || <span className="text-slate-300">—</span>}
+                        {formatDate(row.applyDate) || <span className="text-slate-300">—</span>}
                       </td>
-                      {/* Catatan */}
+                      {/* Remark */}
                       <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-500 max-w-[160px]">
-                        {row.catatan || <span className="text-slate-300">—</span>}
+                        {row.remark || <span className="text-slate-300">—</span>}
                       </td>
-                      {/* Host Brief */}
-                      <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-500 max-w-[160px]">
-                        {row.hostBrief || <span className="text-slate-300">—</span>}
+                      {/* Studio — manual field, no source column in the sheet yet */}
+                      <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-300">
+                        —
+                      </td>
+                      {/* Host Brief — manual field, no source column in the sheet yet */}
+                      <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-300">
+                        —
                       </td>
                       {/* File */}
                       <td className="px-4 py-0 h-[52px] align-middle">
-                        {row.linkFile
-                          ? <a href={row.linkFile} target="_blank" rel="noopener noreferrer"
+                        {row.linkMotion
+                          ? <a href={row.linkMotion} target="_blank" rel="noopener noreferrer"
                               className="inline-flex items-center h-9 px-4 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-semibold rounded-lg transition-all duration-150 ease-out shadow-[0_1px_2px_rgba(16,24,40,.05)] whitespace-nowrap">
                               Buka →
                             </a>
@@ -767,7 +770,7 @@ export default function CampaignSchedule() {
 
         {/* Row count */}
         <div className="mt-3 text-[12px] text-slate-400 flex items-center justify-between">
-          <span>{sorted.length} dari {enriched.length} aset ditampilkan</span>
+          <span>{sorted.length} dari {displayData.length} request ditampilkan</span>
           <Link to="/framework/campaign-usage-management" className="text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
             Dokumentasi Campaign Usage Management →
           </Link>
@@ -776,28 +779,29 @@ export default function CampaignSchedule() {
         {/* ── NOTES ── */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {[
-            { col: 'Status',       note: 'Dihitung otomatis: Aktif jika periode berjalan & statusMockup = Ready, Belum Siap jika berjalan tapi belum Ready, Akan Datang jika belum mulai, Kedaluwarsa jika sudah lewat & Ready, Missing jika lewat & belum Ready.' },
-            { col: 'Nama Aset',    note: 'Nama display aset — biasanya format: Preview [Platform] Brand Tipe.' },
-            { col: 'Brand',        note: 'Nama brand kampanye, mis. SNICKERS, L-MEN, dsb.' },
-            { col: 'Mockup Type',  note: 'Tipe kampanye aset: BaU (Business as Usual), PayDay, Period, DD, dsb.' },
-            { col: 'Platform',     note: 'Platform siaran live: Shopee Live, TikTok Shop, dsb.' },
-            { col: 'Studio',       note: 'Lokasi studio produksi mockup: Jakarta atau Bandung.' },
-            { col: 'Status Mockup',note: 'Tahap produksi mockup di pipeline. Nilai valid: On GD, On AE, On Strat, On Motion, Revision, Ready.' },
-            { col: 'Kampanye',     note: 'Nama kampanye atau periode dari Google Sheets, dipakai untuk filter Campaign (PayDay / BaU / DD / Other).' },
-            { col: 'Period',       note: 'Header "Period" menaungi 2 sub-kolom: Start (tanggal mulai) & End (tanggal selesai). Sort tabel mengikuti Start saja. Format di Sheets: YYYY-MM-DD atau DD/MM/YYYY.' },
-            { col: 'Jam Tayang',   note: 'Jam siaran live sesuai jadwal kampanye, mis. 09:00–10:00 atau "Sepanjang hari".' },
-            { col: 'Catatan',      note: 'Keterangan tambahan bebas — kolaborasi talent, informasi level, dsb.' },
-            { col: 'Host Brief',   note: 'Ringkasan briefing untuk host siaran live. Diisi oleh Motion Designer atau tim strategis.' },
-            { col: 'File',         note: 'Tautan Google Drive ke file mockup. Kosong jika file belum diupload.' },
-            { col: 'Filter Bulan', note: 'Tampil otomatis dari data — tiap bulan baru di sheet muncul sebagai pill baru ke kanan. Filter menampilkan aset yang periodenya tumpang tindih dengan bulan tersebut.' },
+            { col: 'Status',        note: 'Tiga kolom terpisah — Strat, Design, Motion — menampilkan nilai apa adanya dari sheet (mis. "Done"). Kosong berarti tahap tersebut belum diisi timnya.' },
+            { col: 'Excellence',    note: 'Kolom Operational Exellence dari sheet: Excellence, Good, atau Bad.' },
+            { col: 'Difficulty',    note: 'Kolom Design Difficulty dari sheet: Low, Medium, atau High.' },
+            { col: 'Final Asset Name', note: 'Nama aset final dari sheet. Kosong sampai request mencapai tahap Motion — sebelum itu ditampilkan sebagai "Brand — Type of Content".' },
+            { col: 'Brand',         note: 'Nama brand pada request, langsung dari kolom Brand di sheet.' },
+            { col: 'Type of Content', note: 'Jenis konten yang diminta: Mockup, Social Media, Banner Marketplace, PDP Marketplace, dsb.' },
+            { col: 'Source',        note: 'Kolom Taks Source dari sheet: Ecommerce atau Orca — sumber sistem request, bukan platform siaran.' },
+            { col: 'PIC',           note: 'PIC aktif pada tahap terakhir yang sudah dikerjakan: Motion PIC jika ada, lalu Design PIC, lalu Strat PIC.' },
+            { col: 'Campaign',      note: 'Kolom Type of Campaign dari sheet, dipakai untuk filter Campaign (PayDay / BaU / DD / Other). Masih kosong di sebagian besar data karena tahap Motion belum berjalan.' },
+            { col: 'Period',        note: 'Header "Period" menaungi 2 sub-kolom: Req. (Req. Date) & Due (Due Date). Sort tabel mengikuti Req. Date secara default.' },
+            { col: 'Remark',        note: 'Kolom Remark (Wardrobe, Gimmick, Concern on Live) dari sheet — catatan bebas.' },
+            { col: 'Studio',        note: 'Belum ada kolom sumber di sheet baru — field manual, belum bisa diisi lewat UI ini.' },
+            { col: 'Host Brief',    note: 'Belum ada kolom sumber di sheet baru — field manual, belum bisa diisi lewat UI ini.' },
+            { col: 'File',          note: 'Tautan dari kolom Link Motion. Kosong jika file belum diupload atau request belum sampai tahap Motion.' },
+            { col: 'Filter Bulan',  note: 'Tampil otomatis dari data — tiap bulan baru di sheet muncul sebagai pill baru ke kanan. Filter menampilkan request yang periodenya (Req.–Due) tumpang tindih dengan bulan tersebut.' },
             {
               col: 'Setup Sheets',
               note: (
                 <>
                   Sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong> agar fetch berjalan.{' '}
-                  <a href="https://docs.google.com/spreadsheets/d/17wR3rfsiRJjQPev1SHk55CPkvw6xzmLGdmAb2_OWUiQ/edit"
+                  <a href="https://docs.google.com/spreadsheets/d/1aXZ2STMDwPa-zFeZj37aa_Ko4-IE5WYzIKKe3EMm8rs/edit#gid=1476491661"
                     target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline transition-colors duration-150">
-                    Buka Google Sheets Campaign 2026 →
+                    Buka Google Sheets — tab 2026 →
                   </a>
                 </>
               ),
