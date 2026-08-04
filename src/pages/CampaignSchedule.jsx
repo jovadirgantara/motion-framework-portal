@@ -11,6 +11,7 @@ const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?form
 // Row 1 of the sheet is a grouping label row ("by Design" / "by Strategic" /
 // etc). Row 2 holds the actual column names — that's what COL_MAP matches.
 const COL_MAP = {
+  monthRequest:          ['Month Request'],
   reqDate:               ['Req. Date'],
   brand:                 ['Brand'],
   withStrategic:         ['With Strategic Concept'],
@@ -18,16 +19,23 @@ const COL_MAP = {
   designPIC:             ['Design PIC'],
   typeOfContent:         ['Type of Content'],
   taksSource:            ['Taks Source'],
+  reqQty:                ['Req. Qty'],
+  outputQty:             ['Output Qty'],
   dueDate:               ['Due Date'],
+  submissionDate:        ['Submission Date'],
+  workingDay:            ['Working Day (SLA 3 Days)'],
   operationalExcellence: ['Operational Exellence'],
   designDifficulty:      ['Design Difficulty'],
+  stratRevision:         ['Strat Revision'],
   statusStrat:           ['Status Strat'],
+  designRevision:        ['Design Revision'],
   statusDesign:          ['Status Design'],
   finalAssetName:        ['Final Asset Name'],
   motionPIC:             ['Motion PIC'],
   typeOfCampaign:        ['Type of Campaign'],
   applyDate:             ['Apply Date'],
   motionDifficulty:      ['Motion Difficulty'],
+  motionRevision:        ['Motion Revision'],
   statusMotion:          ['Status Motion'],
   linkMotion:            ['Link Motion'],
   remark:                ['Remark (Wardrobe, Gimmick, Concern on Live)'],
@@ -36,6 +44,7 @@ const COL_MAP = {
 const SEED_DATA = [
   {
     id: 'seed-1',
+    monthRequest: 'November',
     reqDate: '03/11/2025',
     brand: 'Greenfields',
     withStrategic: '',
@@ -43,22 +52,30 @@ const SEED_DATA = [
     designPIC: 'Alfie',
     typeOfContent: 'Mockup',
     taksSource: 'Orca',
+    reqQty: '1',
+    outputQty: '1',
     dueDate: '06/11/2025',
+    submissionDate: '04/11/2025',
+    workingDay: '2',
     operationalExcellence: 'Excellence',
     designDifficulty: 'High',
+    stratRevision: '',
     statusStrat: '',
+    designRevision: '',
     statusDesign: '',
     finalAssetName: '',
     motionPIC: '',
     typeOfCampaign: '',
     applyDate: '',
     motionDifficulty: '',
+    motionRevision: '',
     statusMotion: '',
     linkMotion: '',
     remark: '',
   },
   {
     id: 'seed-2',
+    monthRequest: 'November',
     reqDate: '07/11/2025',
     brand: 'Quaker',
     withStrategic: '',
@@ -66,22 +83,30 @@ const SEED_DATA = [
     designPIC: 'Nadya A',
     typeOfContent: 'Mockup',
     taksSource: 'Orca',
+    reqQty: '1',
+    outputQty: '1',
     dueDate: '10/11/2025',
+    submissionDate: '11/11/2025',
+    workingDay: '3',
     operationalExcellence: 'Good',
     designDifficulty: 'High',
+    stratRevision: '',
     statusStrat: 'Done',
+    designRevision: '',
     statusDesign: '',
     finalAssetName: '',
     motionPIC: '',
     typeOfCampaign: '',
     applyDate: '',
     motionDifficulty: '',
+    motionRevision: '',
     statusMotion: '',
     linkMotion: '',
     remark: '',
   },
   {
     id: 'seed-3',
+    monthRequest: 'November',
     reqDate: '05/11/2025',
     brand: 'DuaBelibis',
     withStrategic: 'Yes',
@@ -89,16 +114,23 @@ const SEED_DATA = [
     designPIC: 'Alfie',
     typeOfContent: 'Banner Marketplace',
     taksSource: 'Ecommerce',
+    reqQty: '1',
+    outputQty: '1',
     dueDate: '08/11/2025',
+    submissionDate: '05/11/2025',
+    workingDay: '1',
     operationalExcellence: 'Bad',
     designDifficulty: 'Medium',
+    stratRevision: '',
     statusStrat: 'Done',
+    designRevision: '',
     statusDesign: '',
     finalAssetName: '',
     motionPIC: '',
     typeOfCampaign: '',
     applyDate: '',
     motionDifficulty: '',
+    motionRevision: '',
     statusMotion: '',
     linkMotion: '',
     remark: '',
@@ -179,10 +211,6 @@ function monthOverlaps(reqDate, dueDate, monthKey) {
   return start <= mEnd && end >= mStart
 }
 
-function getActivePIC(row) {
-  return row.motionPIC || row.designPIC || row.stratPIC || ''
-}
-
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
 const DEFAULT_BADGE = 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'
 
@@ -224,6 +252,120 @@ const CHIP_BASE  = 'h-9 px-4 rounded-xl text-[13px] font-medium border transitio
 const CHIP_OFF   = 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
 const CHIP_ON    = 'bg-brand-600 text-white border-brand-600 shadow-sm'
 
+// ─── TAB / COLUMN SPECS ──────────────────────────────────────────────────────
+// Every tab leads with Month Request / Req. Date / Brand and trails with
+// Remark — these are cross-team identity/notes columns, not exclusive to
+// one work category (matches the sheet's own "by All Team" grouping for
+// Remark, and the team's explicit call for the identity columns).
+const IDENTITY_COLUMNS = [
+  { key: 'monthRequest', label: 'Month',    type: 'text' },
+  { key: 'reqDate',      label: 'Req. Date', type: 'date' },
+  { key: 'brand',        label: 'Brand',    type: 'badge-brand' },
+]
+const REMARK_COLUMN = { key: 'remark', label: 'Remark', type: 'text-muted' }
+
+const TABS = [
+  {
+    key: 'design',
+    label: 'By Design',
+    columns: [
+      ...IDENTITY_COLUMNS,
+      { key: 'designPIC',             label: 'Design PIC',     type: 'text' },
+      { key: 'typeOfContent',         label: 'Type of Content', type: 'text' },
+      { key: 'taksSource',            label: 'Source',         type: 'badge-source' },
+      { key: 'reqQty',                label: 'Req. Qty',       type: 'number' },
+      { key: 'outputQty',             label: 'Output Qty',     type: 'number' },
+      { key: 'dueDate',               label: 'Due Date',       type: 'date' },
+      { key: 'submissionDate',        label: 'Submission',     type: 'date' },
+      { key: 'workingDay',            label: 'SLA (Hari)',     type: 'number' },
+      { key: 'operationalExcellence', label: 'Excellence',     type: 'badge-operational' },
+      { key: 'designDifficulty',      label: 'Difficulty',     type: 'badge-difficulty' },
+      { key: 'designRevision',        label: 'Revision',       type: 'number' },
+      { key: 'statusDesign',          label: 'Status',         type: 'badge-generic' },
+      { key: 'finalAssetName',        label: 'Final Asset Name', type: 'text-strong' },
+      REMARK_COLUMN,
+    ],
+  },
+  {
+    key: 'strategic',
+    label: 'By Strategic',
+    columns: [
+      ...IDENTITY_COLUMNS,
+      { key: 'withStrategic', label: 'With Concept', type: 'yes-no' },
+      { key: 'stratPIC',      label: 'Strat PIC',    type: 'text' },
+      { key: 'stratRevision', label: 'Revision',     type: 'number' },
+      { key: 'statusStrat',   label: 'Status',       type: 'badge-generic' },
+      REMARK_COLUMN,
+    ],
+  },
+  {
+    key: 'motion',
+    label: 'By Motion to OP',
+    columns: [
+      ...IDENTITY_COLUMNS,
+      { key: 'finalAssetName',   label: 'Final Asset Name', type: 'text-strong' },
+      { key: 'motionPIC',        label: 'Motion PIC',       type: 'text' },
+      { key: 'typeOfCampaign',   label: 'Campaign',         type: 'text' },
+      { key: 'applyDate',        label: 'Apply Date',       type: 'date' },
+      { key: 'motionDifficulty', label: 'Difficulty',       type: 'badge-difficulty' },
+      { key: 'motionRevision',   label: 'Revision',         type: 'number' },
+      { key: 'statusMotion',     label: 'Status',           type: 'badge-generic' },
+      { key: 'linkMotion',       label: 'File',             type: 'link' },
+      REMARK_COLUMN,
+    ],
+  },
+]
+
+const DATE_SORT_KEYS    = new Set(['reqDate', 'dueDate', 'submissionDate', 'applyDate'])
+const NUMERIC_SORT_KEYS = new Set(['reqQty', 'outputQty', 'workingDay', 'designRevision', 'stratRevision', 'motionRevision'])
+
+function renderCell(row, col) {
+  const value = row[col.key]
+  switch (col.type) {
+    case 'date':
+      return formatDate(value) || <span className="text-slate-300">—</span>
+    case 'number':
+      return value || <span className="text-slate-300">—</span>
+    case 'badge-brand':
+      return value
+        ? <span className={`${BADGE} bg-slate-100 text-slate-600 ring-1 ring-slate-200`}>{value}</span>
+        : <span className="text-slate-300 text-[13px]">—</span>
+    case 'badge-source':
+      return value
+        ? <span className={`${BADGE} ${TAKS_SOURCE_CONFIG[value] ?? DEFAULT_BADGE}`}>{value}</span>
+        : <span className="text-slate-300 text-[13px]">—</span>
+    case 'badge-operational':
+      return value
+        ? <span className={`${BADGE} ${OPERATIONAL_CONFIG[value] ?? DEFAULT_BADGE}`}>{value}</span>
+        : <span className="text-slate-300 text-[13px]">—</span>
+    case 'badge-difficulty':
+      return value
+        ? <span className={`${BADGE} ${DIFFICULTY_CONFIG[value] ?? DEFAULT_BADGE}`}>{value}</span>
+        : <span className="text-slate-300 text-[13px]">—</span>
+    case 'badge-generic':
+      return value
+        ? <span className={`${BADGE} ${statusBadgeClass(value)}`}>{value}</span>
+        : <span className="text-slate-300 text-[13px]">—</span>
+    case 'yes-no':
+      return value
+        ? <span className={`${BADGE} ${value === 'Yes' ? 'bg-green-50 text-green-700 ring-1 ring-green-200' : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'}`}>{value}</span>
+        : <span className="text-slate-300 text-[13px]">—</span>
+    case 'link':
+      return value
+        ? <a href={value} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center h-9 px-4 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-semibold rounded-lg transition-all duration-150 ease-out shadow-[0_1px_2px_rgba(16,24,40,.05)] whitespace-nowrap">
+            Buka →
+          </a>
+        : <span className="text-slate-300 text-[13px]">—</span>
+    case 'text-strong':
+      return <div className="text-[14px] leading-snug font-medium text-slate-800">{value || <span className="text-slate-300 font-normal">—</span>}</div>
+    case 'text-muted':
+      return value || <span className="text-slate-300">—</span>
+    default:
+      return value || <span className="text-slate-300">—</span>
+  }
+}
+
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function CampaignSchedule() {
   const [rawData, setRawData]       = useState(null)
@@ -238,8 +380,15 @@ export default function CampaignSchedule() {
   const [brandOpen,          setBrandOpen]          = useState(false)
   const [brandSearch,        setBrandSearch]        = useState('')
   const brandRef = useRef(null)
-  const [sortKey, setSortKey] = useState('dueDate')
+  const [activeTab, setActiveTab] = useState('motion')
+  const [sortKey, setSortKey] = useState('reqDate')
   const [sortDir, setSortDir] = useState('asc')
+
+  function handleTabChange(key) {
+    setActiveTab(key)
+    setSortKey('reqDate')
+    setSortDir('asc')
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -323,13 +472,15 @@ export default function CampaignSchedule() {
     if (!sortKey) return filtered
     return [...filtered].sort((a, b) => {
       let av, bv
-      if (sortKey === 'reqDate' || sortKey === 'dueDate') {
+      if (DATE_SORT_KEYS.has(sortKey)) {
         av = new Date(normalizeDate(a[sortKey] ?? '')).getTime() || 0
         bv = new Date(normalizeDate(b[sortKey] ?? '')).getTime() || 0
-      } else if (sortKey === 'designDifficulty') {
+      } else if (sortKey === 'designDifficulty' || sortKey === 'motionDifficulty') {
         av = DIFFICULTY_ORDER[a[sortKey]] ?? -1; bv = DIFFICULTY_ORDER[b[sortKey]] ?? -1
       } else if (sortKey === 'operationalExcellence') {
         av = OPERATIONAL_ORDER[a[sortKey]] ?? -1; bv = OPERATIONAL_ORDER[b[sortKey]] ?? -1
+      } else if (NUMERIC_SORT_KEYS.has(sortKey)) {
+        av = parseFloat(a[sortKey]) || 0; bv = parseFloat(b[sortKey]) || 0
       } else {
         av = (a[sortKey] ?? '').toString(); bv = (b[sortKey] ?? '').toString()
       }
@@ -337,6 +488,8 @@ export default function CampaignSchedule() {
       return sortDir === 'asc' ? cmp : -cmp
     })
   }, [filtered, sortKey, sortDir])
+
+  const activeTabConfig = TABS.find(t => t.key === activeTab) ?? TABS[0]
 
   const operationalCounts = useMemo(() => {
     const c = { Excellence: 0, Good: 0, Bad: 0 }
@@ -572,6 +725,16 @@ export default function CampaignSchedule() {
           </div>
         </div>
 
+        {/* ── TAB BAR ── */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {TABS.map(tab => (
+            <button key={tab.key} onClick={() => handleTabChange(tab.key)}
+              className={`${CHIP_BASE} ${activeTab === tab.key ? CHIP_ON : CHIP_OFF}`}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         {/* ── TABLE ── */}
         {sorted.length === 0 ? (
           <div className="text-center py-16 text-slate-400 text-[14px] border border-[#E5E7EB] rounded-xl bg-slate-50">
@@ -582,184 +745,44 @@ export default function CampaignSchedule() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-[#E5E7EB]">
-                  {/* Status group */}
-                  <th colSpan={3}
-                    className="px-4 py-2 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] text-center border-b border-[#E5E7EB]">
-                    Status
-                  </th>
-                  {/* Operational Excellence — rowspan 2 */}
-                  <th rowSpan={2} onClick={() => handleSort('operationalExcellence')}
-                    className="align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
-                    <span className="flex items-center gap-1">
-                      Excellence
-                      <span className="text-[10px] opacity-50">{sortKey === 'operationalExcellence' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
-                    </span>
-                  </th>
-                  {/* Design Difficulty — rowspan 2 */}
-                  <th rowSpan={2} onClick={() => handleSort('designDifficulty')}
-                    className="align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
-                    <span className="flex items-center gap-1">
-                      Difficulty
-                      <span className="text-[10px] opacity-50">{sortKey === 'designDifficulty' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
-                    </span>
-                  </th>
-                  {/* Period group */}
-                  <th colSpan={2}
-                    className="px-4 py-2 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] text-center border-b border-[#E5E7EB]">
-                    Period
-                  </th>
-                  {/* Other columns */}
-                  {[
-                    { label: 'Final Asset Name', key: 'finalAssetName' },
-                    { label: 'Brand',            key: 'brand'          },
-                    { label: 'Type of Content',  key: 'typeOfContent'  },
-                    { label: 'Source',           key: 'taksSource'     },
-                    { label: 'PIC',              key: null             },
-                    { label: 'Campaign',         key: 'typeOfCampaign' },
-                    { label: 'Apply Date',       key: 'applyDate'      },
-                    { label: 'Remark',           key: null             },
-                    { label: 'Studio',           key: null             },
-                    { label: 'Host Brief',       key: null             },
-                    { label: 'File',             key: null             },
-                  ].map(col => (
-                    <th key={col.label} rowSpan={2}
-                      onClick={col.key ? () => handleSort(col.key) : undefined}
-                      className={`align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${
-                        col.key ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
-                      }`}>
-                      <span className="flex items-center gap-1">
-                        {col.label}
-                        {col.key && (
-                          <span className="text-[10px] opacity-50">
-                            {sortKey === col.key ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
-                          </span>
-                        )}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-                <tr className="bg-slate-50 border-b border-[#E5E7EB]">
-                  <th className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">Strat</th>
-                  <th className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">Design</th>
-                  <th className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] whitespace-nowrap">Motion</th>
-                  <th onClick={() => handleSort('reqDate')}
-                    className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
-                    <span className="flex items-center gap-1">
-                      Req.
-                      <span className="text-[10px] opacity-50">{sortKey === 'reqDate' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
-                    </span>
-                  </th>
-                  <th onClick={() => handleSort('dueDate')}
-                    className="px-4 py-2.5 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none cursor-pointer hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 whitespace-nowrap">
-                    <span className="flex items-center gap-1">
-                      Due
-                      <span className="text-[10px] opacity-50">{sortKey === 'dueDate' ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}</span>
-                    </span>
-                  </th>
+                  {activeTabConfig.columns.map(col => {
+                    const sortable = col.type !== 'link'
+                    return (
+                      <th key={col.key} onClick={sortable ? () => handleSort(col.key) : undefined}
+                        className={`align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${
+                          sortable ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
+                        }`}>
+                        <span className="flex items-center gap-1">
+                          {col.label}
+                          {sortable && (
+                            <span className="text-[10px] opacity-50">
+                              {sortKey === col.key ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
+                            </span>
+                          )}
+                        </span>
+                      </th>
+                    )
+                  })}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
                 {sorted.map((row, idx) => {
                   const isEven = idx % 2 === 1
-                  const pic = getActivePIC(row)
                   return (
                     <tr
                       key={row.id}
                       className={`transition-colors duration-150 ease-out hover:bg-slate-50 ${isEven ? 'bg-slate-50/30' : ''}`}
                     >
-                      {/* Status Strat */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.statusStrat
-                          ? <span className={`${BADGE} ${statusBadgeClass(row.statusStrat)}`}>{row.statusStrat}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Status Design */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.statusDesign
-                          ? <span className={`${BADGE} ${statusBadgeClass(row.statusDesign)}`}>{row.statusDesign}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Status Motion */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.statusMotion
-                          ? <span className={`${BADGE} ${statusBadgeClass(row.statusMotion)}`}>{row.statusMotion}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Operational Excellence */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.operationalExcellence
-                          ? <span className={`${BADGE} ${OPERATIONAL_CONFIG[row.operationalExcellence] ?? DEFAULT_BADGE}`}>{row.operationalExcellence}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Design Difficulty */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.designDifficulty
-                          ? <span className={`${BADGE} ${DIFFICULTY_CONFIG[row.designDifficulty] ?? DEFAULT_BADGE}`}>{row.designDifficulty}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Req Date */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-700 font-semibold">
-                        {formatDate(row.reqDate) || <span className="text-slate-300 font-normal">—</span>}
-                      </td>
-                      {/* Due Date */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-500">
-                        {formatDate(row.dueDate) || <span className="text-slate-300">—</span>}
-                      </td>
-                      {/* Final Asset Name */}
-                      <td className="px-4 py-0 h-[52px] align-middle">
-                        <div className="text-[14px] leading-snug font-medium text-slate-800">
-                          {row.finalAssetName || `${row.brand} — ${row.typeOfContent || 'Request'}`}
-                        </div>
-                      </td>
-                      {/* Brand */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.brand
-                          ? <span className={`${BADGE} bg-slate-100 text-slate-600 ring-1 ring-slate-200`}>{row.brand}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* Type of Content */}
-                      <td className="px-4 py-0 h-[52px] align-middle text-[14px] text-slate-600 font-medium">
-                        {row.typeOfContent || <span className="text-slate-300">—</span>}
-                      </td>
-                      {/* Taks Source */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap">
-                        {row.taksSource
-                          ? <span className={`${BADGE} ${TAKS_SOURCE_CONFIG[row.taksSource] ?? DEFAULT_BADGE}`}>{row.taksSource}</span>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
-                      {/* PIC */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap text-[13px] text-slate-600">
-                        {pic || <span className="text-slate-300">—</span>}
-                      </td>
-                      {/* Type of Campaign */}
-                      <td className="px-4 py-0 h-[52px] align-middle text-[14px] text-slate-600 font-medium">
-                        {row.typeOfCampaign || <span className="text-slate-300">—</span>}
-                      </td>
-                      {/* Apply Date */}
-                      <td className="px-4 py-0 h-[52px] align-middle whitespace-nowrap font-mono text-[12px] text-slate-500">
-                        {formatDate(row.applyDate) || <span className="text-slate-300">—</span>}
-                      </td>
-                      {/* Remark */}
-                      <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-500 max-w-[160px]">
-                        {row.remark || <span className="text-slate-300">—</span>}
-                      </td>
-                      {/* Studio — manual field, no source column in the sheet yet */}
-                      <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-300">
-                        —
-                      </td>
-                      {/* Host Brief — manual field, no source column in the sheet yet */}
-                      <td className="px-4 py-0 h-[52px] align-middle text-[12px] text-slate-300">
-                        —
-                      </td>
-                      {/* File */}
-                      <td className="px-4 py-0 h-[52px] align-middle">
-                        {row.linkMotion
-                          ? <a href={row.linkMotion} target="_blank" rel="noopener noreferrer"
-                              className="inline-flex items-center h-9 px-4 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-semibold rounded-lg transition-all duration-150 ease-out shadow-[0_1px_2px_rgba(16,24,40,.05)] whitespace-nowrap">
-                              Buka →
-                            </a>
-                          : <span className="text-slate-300 text-[13px]">—</span>}
-                      </td>
+                      {activeTabConfig.columns.map(col => (
+                        <td key={col.key}
+                          className={`px-4 py-0 h-[52px] align-middle ${
+                            col.type === 'text-muted' ? 'text-[12px] text-slate-500 max-w-[160px]' : ''
+                          } ${col.type === 'date' || col.type === 'number' || col.type.startsWith('badge') || col.type === 'yes-no' ? 'whitespace-nowrap' : ''} ${
+                            col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''
+                          }`}>
+                          {renderCell(row, col)}
+                        </td>
+                      ))}
                     </tr>
                   )
                 })}
@@ -779,21 +802,16 @@ export default function CampaignSchedule() {
         {/* ── NOTES ── */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {[
-            { col: 'Status',        note: 'Tiga kolom terpisah — Strat, Design, Motion — menampilkan nilai apa adanya dari sheet (mis. "Done"). Kosong berarti tahap tersebut belum diisi timnya.' },
-            { col: 'Excellence',    note: 'Kolom Operational Exellence dari sheet: Excellence, Good, atau Bad.' },
-            { col: 'Difficulty',    note: 'Kolom Design Difficulty dari sheet: Low, Medium, atau High.' },
-            { col: 'Final Asset Name', note: 'Nama aset final dari sheet. Kosong sampai request mencapai tahap Motion — sebelum itu ditampilkan sebagai "Brand — Type of Content".' },
-            { col: 'Brand',         note: 'Nama brand pada request, langsung dari kolom Brand di sheet.' },
-            { col: 'Type of Content', note: 'Jenis konten yang diminta: Mockup, Social Media, Banner Marketplace, PDP Marketplace, dsb.' },
+            { col: 'Tab',           note: 'Tiga tab — By Design, By Strategic, By Motion to OP — menampilkan kolom yang relevan untuk tiap kategori kerja dari satu data yang sama (satu kali fetch). Month Request, Req. Date, Brand, dan Remark tampil di semua tab karena bersifat identitas/lintas tim.' },
+            { col: 'Status',        note: 'Kolom Status Strat / Status Design / Status Motion menampilkan nilai apa adanya dari sheet (mis. "Done"). Kosong berarti tahap tersebut belum diisi timnya.' },
+            { col: 'Excellence',    note: 'Kolom Operational Exellence dari sheet (tab By Design): Excellence, Good, atau Bad.' },
+            { col: 'Difficulty',    note: 'Design Difficulty (tab By Design) dan Motion Difficulty (tab By Motion to OP) dari sheet: Low, Medium, atau High.' },
+            { col: 'Final Asset Name', note: 'Nama aset final dari sheet — tampil di tab By Design maupun By Motion to OP, kosong sampai request mencapai tahap yang mengisinya.' },
             { col: 'Source',        note: 'Kolom Taks Source dari sheet: Ecommerce atau Orca — sumber sistem request, bukan platform siaran.' },
-            { col: 'PIC',           note: 'PIC aktif pada tahap terakhir yang sudah dikerjakan: Motion PIC jika ada, lalu Design PIC, lalu Strat PIC.' },
-            { col: 'Campaign',      note: 'Kolom Type of Campaign dari sheet, dipakai untuk filter Campaign (PayDay / BaU / DD / Other). Masih kosong di sebagian besar data karena tahap Motion belum berjalan.' },
-            { col: 'Period',        note: 'Header "Period" menaungi 2 sub-kolom: Req. (Req. Date) & Due (Due Date). Sort tabel mengikuti Req. Date secara default.' },
-            { col: 'Remark',        note: 'Kolom Remark (Wardrobe, Gimmick, Concern on Live) dari sheet — catatan bebas.' },
-            { col: 'Studio',        note: 'Belum ada kolom sumber di sheet baru — field manual, belum bisa diisi lewat UI ini.' },
-            { col: 'Host Brief',    note: 'Belum ada kolom sumber di sheet baru — field manual, belum bisa diisi lewat UI ini.' },
-            { col: 'File',          note: 'Tautan dari kolom Link Motion. Kosong jika file belum diupload atau request belum sampai tahap Motion.' },
-            { col: 'Filter Bulan',  note: 'Tampil otomatis dari data — tiap bulan baru di sheet muncul sebagai pill baru ke kanan. Filter menampilkan request yang periodenya (Req.–Due) tumpang tindih dengan bulan tersebut.' },
+            { col: 'Campaign',      note: 'Kolom Type of Campaign dari sheet, dipakai juga untuk filter Campaign (PayDay / BaU / DD / Other). Masih kosong di sebagian besar data karena tahap Motion belum berjalan.' },
+            { col: 'Sort',          note: 'Default sort mengikuti Req. Date secara ascending, dan direset tiap kali ganti tab agar indikator sort tidak menunjuk ke kolom yang tidak ditampilkan di tab tersebut.' },
+            { col: 'Remark',        note: 'Kolom Remark (Wardrobe, Gimmick, Concern on Live) dari sheet — catatan bebas, tampil di semua tab.' },
+            { col: 'Filter Bulan',  note: 'Tampil otomatis dari data — tiap bulan baru di sheet muncul sebagai pill baru ke kanan. Filter menampilkan request yang periodenya (Req.–Due) tumpang tindih dengan bulan tersebut, berlaku lintas tab.' },
             {
               col: 'Setup Sheets',
               note: (
