@@ -219,16 +219,22 @@ function toggleInArray(arr, value) {
   return arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value]
 }
 
-function monthOverlaps(reqDate, dueDate, monthKey) {
+// Checks reqDate/dueDate range AND applyDate independently (union, not
+// intersection) so rows that only have Motion-stage data (applyDate) but no
+// Design/Strategic dates yet still surface under their own month instead of
+// being dropped from every month filter.
+function monthOverlaps(row, monthKey) {
   const [year, month] = monthKey.split('-').map(Number)
   const mStart = new Date(year, month - 1, 1)
   const mEnd   = new Date(year, month, 0, 23, 59, 59)
-  const s = new Date(normalizeDate(reqDate))
-  const e = new Date(normalizeDate(dueDate || reqDate))
-  if (isNaN(s) && isNaN(e)) return false
-  const start = isNaN(s) ? e : s
-  const end   = isNaN(e) ? s : e
-  return start <= mEnd && end >= mStart
+  const s = new Date(normalizeDate(row.reqDate))
+  const e = new Date(normalizeDate(row.dueDate || row.reqDate))
+  const rangeMatch = (!isNaN(s) || !isNaN(e))
+    && (isNaN(s) ? e : s) <= mEnd
+    && (isNaN(e) ? s : e) >= mStart
+  const a = new Date(normalizeDate(row.applyDate))
+  const applyMatch = !isNaN(a) && a >= mStart && a <= mEnd
+  return rangeMatch || applyMatch
 }
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
@@ -264,6 +270,22 @@ function classifyStatus(raw) {
   if (has('waiting', 'approval', 'pending')) return 'waiting'
   if (has('progress', 'on strat', 'on gd', 'revisi', 'review')) return 'progress'
   return 'unknown'
+}
+
+// When Status Motion is blank but the stages that feed into it are already
+// done, the row isn't really "empty" — it's ready and simply waiting on the
+// Motion team. Surface that instead of a bare "—" so a finished upstream
+// request doesn't read as untouched. If Status Motion already has its own
+// value (including a value from a row with no Design/Strategic data at all),
+// that value is left as-is.
+function deriveMotionStatus(row) {
+  const raw = row.statusMotion
+  if (classifyStatus(raw) !== 'empty') return raw
+  const designDone    = classifyStatus(row.statusDesign) === 'done'
+  const stratRequired = (row.withStrategic ?? '').trim().toLowerCase() === 'yes'
+  const stratDone      = classifyStatus(row.statusStrat) === 'done'
+  const upstreamReady  = designDone && (!stratRequired || stratDone)
+  return upstreamReady ? 'Waiting for Motion' : raw
 }
 
 const STATUS_CONFIG = {
@@ -500,8 +522,8 @@ export default function CampaignSchedule() {
   const allMonths = useMemo(() => {
     const seen = new Set(FIXED_MONTHS)
     displayData.forEach(r => {
-      const sk = getMonthKey(r.reqDate), ek = getMonthKey(r.dueDate)
-      if (sk) seen.add(sk); if (ek) seen.add(ek)
+      const sk = getMonthKey(r.reqDate), ek = getMonthKey(r.dueDate), ak = getMonthKey(r.applyDate)
+      if (sk) seen.add(sk); if (ek) seen.add(ek); if (ak) seen.add(ak)
     })
     return Array.from(seen).sort()
   }, [displayData])
@@ -523,7 +545,7 @@ export default function CampaignSchedule() {
       const matchDf = filterDifficulty === 'semua' || row.designDifficulty === filterDifficulty
       const matchOp = filterOperational === 'semua' || row.operationalExcellence === filterOperational
       const matchB  = filterBrand === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
-      const matchM  = filterBulan.length === 0 || filterBulan.some(k => monthOverlaps(row.reqDate, row.dueDate, k))
+      const matchM  = filterBulan.length === 0 || filterBulan.some(k => monthOverlaps(row, k))
       let matchC = true
       if (filterCampaign !== 'semua') {
         const k = (row.typeOfCampaign ?? '').toLowerCase()
@@ -909,7 +931,8 @@ export default function CampaignSchedule() {
               <tbody className="divide-y divide-slate-100 bg-white">
                 {sorted.map((row, idx) => {
                   const isEven = idx % 2 === 1
-                  const statusCat = statusCol ? classifyStatus(row[statusCol.key]) : 'unknown'
+                  const displayRow = activeTab === 'motion' ? { ...row, statusMotion: deriveMotionStatus(row) } : row
+                  const statusCat = statusCol ? classifyStatus(displayRow[statusCol.key]) : 'unknown'
                   const rowAccent = STATUS_CONFIG[statusCat].row
                   return (
                     <tr
@@ -925,7 +948,7 @@ export default function CampaignSchedule() {
                           } ${col.type === 'date' || col.type === 'number' || col.type.startsWith('badge') || col.type === 'yes-no' ? 'whitespace-nowrap' : ''} ${
                             col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''
                           }`}>
-                          {renderCell(row, col, statusCat)}
+                          {renderCell(displayRow, col, statusCat)}
                         </td>
                       ))}
                     </tr>
@@ -948,7 +971,7 @@ export default function CampaignSchedule() {
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {[
             { col: 'Tab',           note: 'Tiga tab — By Design, By Strategic, By Motion to OP — menampilkan kolom yang relevan untuk tiap kategori kerja dari satu data yang sama (satu kali fetch). Month Request, Req. Date, Brand, dan Remark tampil di semua tab karena bersifat identitas/lintas tim.' },
-            { col: 'Status',        note: 'Kolom Status Strat / Status Design / Status Motion menampilkan nilai apa adanya dari sheet, diwarnai otomatis berdasarkan kata kunci: hijau (Done/Selesai), biru (On Progress), kuning (Waiting/Approval), merah (Blocked/Issue). Baris yang Done ditandai border hijau dan teks tebal agar langsung kelihatan pas scroll. Kosong berarti tahap tersebut belum diisi timnya.' },
+            { col: 'Status',        note: 'Kolom Status Strat / Status Design / Status Motion menampilkan nilai apa adanya dari sheet, diwarnai otomatis berdasarkan kata kunci: hijau (Done/Selesai), biru (On Progress), kuning (Waiting/Approval), merah (Blocked/Issue). Baris yang Done ditandai border hijau dan teks tebal agar langsung kelihatan pas scroll. Kosong berarti tahap tersebut belum diisi timnya. Khusus tab By Motion to OP: kalau Status Motion masih kosong tapi Design (dan Strategic, kalau dipakai) sudah Done, statusnya otomatis tampil "Waiting for Motion" — menandakan request sudah siap dikerjakan tim Motion.' },
             { col: 'Excellence',    note: 'Kolom Operational Exellence dari sheet (tab By Design): Excellence, Good, atau Bad.' },
             { col: 'Difficulty',    note: 'Design Difficulty (tab By Design) dan Motion Difficulty (tab By Motion to OP) dari sheet: Low, Medium, atau High.' },
             { col: 'Final Asset Name', note: 'Nama aset final dari sheet — tampil di tab By Design maupun By Motion to OP, kosong sampai request mencapai tahap yang mengisinya.' },
@@ -956,7 +979,7 @@ export default function CampaignSchedule() {
             { col: 'Campaign',      note: 'Kolom Type of Campaign dari sheet, dipakai juga untuk filter Campaign (PayDay / BaU / DD / Other). Masih kosong di sebagian besar data karena tahap Motion belum berjalan.' },
             { col: 'Sort',          note: 'Default sort mengikuti Req. Date secara ascending, dan direset tiap kali ganti tab agar indikator sort tidak menunjuk ke kolom yang tidak ditampilkan di tab tersebut.' },
             { col: 'Remark',        note: 'Kolom Remark (Wardrobe, Gimmick, Concern on Live) dari sheet — catatan bebas, tampil di semua tab.' },
-            { col: 'Filter Bulan',  note: 'Dropdown dengan checkbox — bisa pilih lebih dari satu bulan sekaligus, tersedia dari Januari 2025 sampai Desember 2026. Filter menampilkan request yang periodenya (Req.–Due) tumpang tindih dengan salah satu bulan yang dipilih, berlaku lintas tab.' },
+            { col: 'Filter Bulan',  note: 'Dropdown dengan checkbox — bisa pilih lebih dari satu bulan sekaligus, tersedia dari Januari 2025 sampai Desember 2026. Filter menampilkan request yang periodenya (Req.–Due) tumpang tindih dengan salah satu bulan yang dipilih, ATAU yang Apply Date-nya jatuh di bulan itu — jadi request yang baru punya data di tab By Motion to OP (belum ada Req./Due Date dari Design) tetap muncul di bulan Apply Date-nya, tidak perlu menunggu data di tab lain. Berlaku lintas tab.' },
             {
               col: 'Setup Sheets',
               note: (
