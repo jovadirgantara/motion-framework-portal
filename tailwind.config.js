@@ -44,6 +44,16 @@ export default {
         'lift':    '0 12px 32px -12px rgba(125, 63, 128, 0.28)',
         'lift-sm': '0 6px 20px -8px rgba(125, 63, 128, 0.20)',
       },
+      keyframes: {
+        'pop-once': {
+          '0%':   { opacity: 0, transform: 'scale(0.5)' },
+          '60%':  { opacity: 1, transform: 'scale(1.15)' },
+          '100%': { opacity: 1, transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        'pop-once': 'pop-once 0.4s cubic-bezier(0.34,1.56,0.64,1) both',
+      },
     },
   },
   plugins: [],

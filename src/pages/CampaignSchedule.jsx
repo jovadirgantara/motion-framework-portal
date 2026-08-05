@@ -231,14 +231,47 @@ const TAKS_SOURCE_CONFIG = {
   Orca:      'bg-purple-50 text-purple-700 ring-1 ring-purple-200',
 }
 
-// Status Strat / Status Design / Status Motion carry freeform sheet values —
-// only "Done" is populated in the source data today, so this stays generic
-// rather than hardcoding a full enum that doesn't exist yet.
-const KNOWN_STATUS_BADGE = {
-  Done: 'bg-green-50 text-green-700 ring-1 ring-green-200',
+// Status Strat / Status Design / Status Motion carry freeform sheet text
+// ("Done", "On Progress", "Waiting Approval", ...) that isn't consistently
+// spelled across the three columns. Classify by keyword instead of exact
+// match so new/typo'd variants still land in a sensible bucket.
+function classifyStatus(raw) {
+  const v = (raw ?? '').toString().trim().toLowerCase()
+  if (!v) return 'empty'
+  const has = (...kws) => kws.some(k => v.includes(k))
+  if (has('done', 'ready', 'selesai', 'approved')) return 'done'
+  if (has('block', 'issue', 'revisi berkali', 'stuck')) return 'blocked'
+  if (has('waiting', 'approval', 'pending')) return 'waiting'
+  if (has('progress', 'on strat', 'on gd', 'revisi', 'review')) return 'progress'
+  return 'unknown'
 }
-function statusBadgeClass(value) {
-  return KNOWN_STATUS_BADGE[value] ?? DEFAULT_BADGE
+
+const STATUS_CONFIG = {
+  done: {
+    badge: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300 shadow-[0_0_0_3px_rgba(16,185,129,0.12)] font-bold',
+    row:   'border-l-[3px] border-emerald-400 bg-emerald-50/40',
+    icon:  '✓',
+  },
+  progress: {
+    badge: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+    row:   'border-l-[3px] border-blue-300 bg-blue-50/25',
+  },
+  waiting: {
+    badge: 'bg-sun-50 text-sun-700 ring-1 ring-sun-200',
+    row:   'border-l-[3px] border-sun-300 bg-sun-50/30',
+  },
+  blocked: {
+    badge: 'bg-red-50 text-red-700 ring-1 ring-red-300',
+    row:   'border-l-[3px] border-red-400 bg-red-50/30',
+  },
+  empty: {
+    badge: DEFAULT_BADGE,
+    row:   'border-l-[3px] border-transparent',
+  },
+  unknown: {
+    badge: DEFAULT_BADGE,
+    row:   'border-l-[3px] border-transparent',
+  },
 }
 
 const DIFFICULTY_ORDER   = { Low: 0, Medium: 1, High: 2 }
@@ -319,7 +352,7 @@ const TABS = [
 const DATE_SORT_KEYS    = new Set(['reqDate', 'dueDate', 'submissionDate', 'applyDate'])
 const NUMERIC_SORT_KEYS = new Set(['reqQty', 'outputQty', 'workingDay', 'designRevision', 'stratRevision', 'motionRevision'])
 
-function renderCell(row, col) {
+function renderCell(row, col, rowStatusCategory) {
   const value = row[col.key]
   switch (col.type) {
     case 'date':
@@ -342,10 +375,18 @@ function renderCell(row, col) {
       return value
         ? <span className={`${BADGE} ${DIFFICULTY_CONFIG[value] ?? DEFAULT_BADGE}`}>{value}</span>
         : <span className="text-slate-300 text-[13px]">—</span>
-    case 'badge-generic':
+    case 'badge-generic': {
+      const cat = classifyStatus(value)
+      const cfg = STATUS_CONFIG[cat]
       return value
-        ? <span className={`${BADGE} ${statusBadgeClass(value)}`}>{value}</span>
+        ? (
+          <span className={`${BADGE} ${cfg.badge}`}>
+            {cat === 'done' && <span className="animate-pop-once">{cfg.icon}</span>}
+            {value}
+          </span>
+        )
         : <span className="text-slate-300 text-[13px]">—</span>
+    }
     case 'yes-no':
       return value
         ? <span className={`${BADGE} ${value === 'Yes' ? 'bg-green-50 text-green-700 ring-1 ring-green-200' : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'}`}>{value}</span>
@@ -357,8 +398,16 @@ function renderCell(row, col) {
             Buka →
           </a>
         : <span className="text-slate-300 text-[13px]">—</span>
-    case 'text-strong':
-      return <div className="text-[14px] leading-snug font-medium text-slate-800">{value || <span className="text-slate-300 font-normal">—</span>}</div>
+    case 'text-strong': {
+      const isDone = rowStatusCategory === 'done'
+      return (
+        <div className={`text-[14px] leading-snug ${isDone ? 'font-bold text-emerald-800' : 'font-medium text-slate-800'}`}>
+          {value
+            ? <>{isDone && <span className="text-emerald-500 mr-1">✓</span>}{value}</>
+            : <span className="text-slate-300 font-normal">—</span>}
+        </div>
+      )
+    }
     case 'text-muted':
       return value || <span className="text-slate-300">—</span>
     default:
@@ -490,6 +539,7 @@ export default function CampaignSchedule() {
   }, [filtered, sortKey, sortDir])
 
   const activeTabConfig = TABS.find(t => t.key === activeTab) ?? TABS[0]
+  const statusCol = activeTabConfig.columns.find(c => c.type === 'badge-generic')
 
   const operationalCounts = useMemo(() => {
     const c = { Excellence: 0, Good: 0, Bad: 0 }
@@ -743,7 +793,7 @@ export default function CampaignSchedule() {
         ) : (
           <div className="overflow-x-auto border border-[#E5E7EB] rounded-xl shadow-[0_1px_2px_rgba(16,24,40,.05)]">
             <table className="w-full text-left border-collapse">
-              <thead>
+              <thead className="sticky top-14 z-10">
                 <tr className="bg-slate-50 border-b border-[#E5E7EB]">
                   {activeTabConfig.columns.map(col => {
                     const sortable = col.type !== 'link'
@@ -768,10 +818,14 @@ export default function CampaignSchedule() {
               <tbody className="divide-y divide-slate-100 bg-white">
                 {sorted.map((row, idx) => {
                   const isEven = idx % 2 === 1
+                  const statusCat = statusCol ? classifyStatus(row[statusCol.key]) : 'unknown'
+                  const rowAccent = STATUS_CONFIG[statusCat].row
                   return (
                     <tr
                       key={row.id}
-                      className={`transition-colors duration-150 ease-out hover:bg-slate-50 ${isEven ? 'bg-slate-50/30' : ''}`}
+                      className={`transition-colors duration-150 ease-out hover:bg-slate-50 ${rowAccent} ${
+                        isEven && statusCat === 'empty' ? 'bg-slate-50/30' : ''
+                      }`}
                     >
                       {activeTabConfig.columns.map(col => (
                         <td key={col.key}
@@ -780,7 +834,7 @@ export default function CampaignSchedule() {
                           } ${col.type === 'date' || col.type === 'number' || col.type.startsWith('badge') || col.type === 'yes-no' ? 'whitespace-nowrap' : ''} ${
                             col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''
                           }`}>
-                          {renderCell(row, col)}
+                          {renderCell(row, col, statusCat)}
                         </td>
                       ))}
                     </tr>
@@ -803,7 +857,7 @@ export default function CampaignSchedule() {
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {[
             { col: 'Tab',           note: 'Tiga tab — By Design, By Strategic, By Motion to OP — menampilkan kolom yang relevan untuk tiap kategori kerja dari satu data yang sama (satu kali fetch). Month Request, Req. Date, Brand, dan Remark tampil di semua tab karena bersifat identitas/lintas tim.' },
-            { col: 'Status',        note: 'Kolom Status Strat / Status Design / Status Motion menampilkan nilai apa adanya dari sheet (mis. "Done"). Kosong berarti tahap tersebut belum diisi timnya.' },
+            { col: 'Status',        note: 'Kolom Status Strat / Status Design / Status Motion menampilkan nilai apa adanya dari sheet, diwarnai otomatis berdasarkan kata kunci: hijau (Done/Selesai), biru (On Progress), kuning (Waiting/Approval), merah (Blocked/Issue). Baris yang Done ditandai border hijau dan teks tebal agar langsung kelihatan pas scroll. Kosong berarti tahap tersebut belum diisi timnya.' },
             { col: 'Excellence',    note: 'Kolom Operational Exellence dari sheet (tab By Design): Excellence, Good, atau Bad.' },
             { col: 'Difficulty',    note: 'Design Difficulty (tab By Design) dan Motion Difficulty (tab By Motion to OP) dari sheet: Low, Medium, atau High.' },
             { col: 'Final Asset Name', note: 'Nama aset final dari sheet — tampil di tab By Design maupun By Motion to OP, kosong sampai request mencapai tahap yang mengisinya.' },
