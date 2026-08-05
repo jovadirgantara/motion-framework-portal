@@ -166,12 +166,17 @@ function parseCSV(text) {
     return null
   }
   const fieldMap = headers.map(h => resolveField(h))
+  // Rows that only have Motion-stage data (e.g. BAU requests) sometimes carry
+  // their identifying name in Final Asset Name instead of Brand, with Brand
+  // left blank — filtering on `r.brand` alone silently dropped those rows
+  // entirely. Keep any row that has data in at least one field instead, and
+  // only discard genuinely blank sheet rows.
   return lines.slice(2).map((line, idx) => {
     const cells = parseLine(line)
     const row = { id: `sheet-${idx + 1}` }
     fieldMap.forEach((field, i) => { if (field) row[field] = cells[i] ?? '' })
     return row
-  }).filter(r => r.brand)
+  }).filter(r => Object.keys(r).some(k => k !== 'id' && r[k]))
 }
 
 function normalizeDate(str) {
@@ -219,22 +224,29 @@ function toggleInArray(arr, value) {
   return arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value]
 }
 
-// Checks reqDate/dueDate range AND applyDate independently (union, not
-// intersection) so rows that only have Motion-stage data (applyDate) but no
-// Design/Strategic dates yet still surface under their own month instead of
-// being dropped from every month filter.
-function monthOverlaps(row, monthKey) {
+// Two independent month filters — Req/Due Date drives Design/Strategic work,
+// Apply Date drives Motion work, and a row can easily sit in different
+// months on each axis. Keeping them separate (rather than one filter that
+// ORs both together) lets a user pin down exactly which axis they mean
+// instead of guessing why a row did or didn't match.
+function reqMonthOverlaps(row, monthKey) {
   const [year, month] = monthKey.split('-').map(Number)
   const mStart = new Date(year, month - 1, 1)
   const mEnd   = new Date(year, month, 0, 23, 59, 59)
   const s = new Date(normalizeDate(row.reqDate))
   const e = new Date(normalizeDate(row.dueDate || row.reqDate))
-  const rangeMatch = (!isNaN(s) || !isNaN(e))
-    && (isNaN(s) ? e : s) <= mEnd
-    && (isNaN(e) ? s : e) >= mStart
+  if (isNaN(s) && isNaN(e)) return false
+  const start = isNaN(s) ? e : s
+  const end   = isNaN(e) ? s : e
+  return start <= mEnd && end >= mStart
+}
+
+function applyMonthOverlaps(row, monthKey) {
+  const [year, month] = monthKey.split('-').map(Number)
+  const mStart = new Date(year, month - 1, 1)
+  const mEnd   = new Date(year, month, 0, 23, 59, 59)
   const a = new Date(normalizeDate(row.applyDate))
-  const applyMatch = !isNaN(a) && a >= mStart && a <= mEnd
-  return rangeMatch || applyMatch
+  return !isNaN(a) && a >= mStart && a <= mEnd
 }
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
@@ -466,14 +478,17 @@ export default function CampaignSchedule() {
   const [filterDifficulty,   setFilterDifficulty]   = useState('semua')
   const [filterOperational,  setFilterOperational]  = useState('semua')
   const [filterBrand,        setFilterBrand]        = useState('semua')
-  const [filterBulan,        setFilterBulan]        = useState([]) // [] = semua bulan
+  const [filterBulanReq,     setFilterBulanReq]     = useState([]) // [] = semua bulan, by Req./Due Date
+  const [filterBulanApply,   setFilterBulanApply]   = useState([]) // [] = semua bulan, by Apply Date
   const [filterCampaign,     setFilterCampaign]     = useState('semua')
   const [brandOpen,          setBrandOpen]          = useState(false)
   const [brandSearch,        setBrandSearch]        = useState('')
-  const [bulanOpen,          setBulanOpen]          = useState(false)
+  const [bulanReqOpen,       setBulanReqOpen]       = useState(false)
+  const [bulanApplyOpen,     setBulanApplyOpen]     = useState(false)
   const [contentOpen,        setContentOpen]        = useState(false)
   const brandRef = useRef(null)
-  const bulanRef = useRef(null)
+  const bulanReqRef = useRef(null)
+  const bulanApplyRef = useRef(null)
   const contentRef = useRef(null)
   const [activeTab, setActiveTab] = useState('motion')
   const [sortKey, setSortKey] = useState('reqDate')
@@ -504,8 +519,11 @@ export default function CampaignSchedule() {
       if (brandRef.current && !brandRef.current.contains(e.target)) {
         setBrandOpen(false); setBrandSearch('')
       }
-      if (bulanRef.current && !bulanRef.current.contains(e.target)) {
-        setBulanOpen(false)
+      if (bulanReqRef.current && !bulanReqRef.current.contains(e.target)) {
+        setBulanReqOpen(false)
+      }
+      if (bulanApplyRef.current && !bulanApplyRef.current.contains(e.target)) {
+        setBulanApplyOpen(false)
       }
       if (contentRef.current && !contentRef.current.contains(e.target)) {
         setContentOpen(false)
@@ -545,7 +563,8 @@ export default function CampaignSchedule() {
       const matchDf = filterDifficulty === 'semua' || row.designDifficulty === filterDifficulty
       const matchOp = filterOperational === 'semua' || row.operationalExcellence === filterOperational
       const matchB  = filterBrand === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
-      const matchM  = filterBulan.length === 0 || filterBulan.some(k => monthOverlaps(row, k))
+      const matchMReq   = filterBulanReq.length === 0 || filterBulanReq.some(k => reqMonthOverlaps(row, k))
+      const matchMApply = filterBulanApply.length === 0 || filterBulanApply.some(k => applyMonthOverlaps(row, k))
       let matchC = true
       if (filterCampaign !== 'semua') {
         const k = (row.typeOfCampaign ?? '').toLowerCase()
@@ -555,9 +574,9 @@ export default function CampaignSchedule() {
         else if (filterCampaign === 'DD') matchC = isDD
         else if (filterCampaign === 'Other') matchC = !isPayDay && !isBaU && !isDD
       }
-      return matchTS && matchTC && matchDf && matchOp && matchB && matchM && matchC
+      return matchTS && matchTC && matchDf && matchOp && matchB && matchMReq && matchMApply && matchC
     }),
-    [displayData, filterTaksSource, filterTypeOfContent, filterDifficulty, filterOperational, filterBrand, filterBulan, filterCampaign],
+    [displayData, filterTaksSource, filterTypeOfContent, filterDifficulty, filterOperational, filterBrand, filterBulanReq, filterBulanApply, filterCampaign],
   )
 
   const filteredBrands = brandSearch.trim()
@@ -718,49 +737,99 @@ export default function CampaignSchedule() {
             </div>
           </div>
 
-          {/* Bulan — checkbox dropdown, multi-select */}
-          <div className="flex items-center gap-2" ref={bulanRef}>
+          {/* Bulan — two independent checkbox dropdowns side by side, since a
+              row's Req./Due Date month and Apply Date month can differ (e.g.
+              a Motion-only BAU request has no Req./Due Date at all). */}
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Bulan</span>
-            <div className="relative">
-              <button
-                onClick={() => setBulanOpen(o => !o)}
-                className={`${CHIP_BASE} flex items-center gap-1.5 ${filterBulan.length > 0 ? CHIP_ON : CHIP_OFF}`}
-              >
-                {filterBulan.length === 0
-                  ? 'Semua Bulan'
-                  : filterBulan.length === 1
-                    ? formatMonthLabel(filterBulan[0])
-                    : `${filterBulan.length} bulan dipilih`}
-                <span className="text-[10px] opacity-60">{bulanOpen ? '▲' : '▼'}</span>
-              </button>
-              {bulanOpen && (
-                <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
-                  <div className="flex items-center justify-between px-3 py-2 border-b border-[#E5E7EB]">
-                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em]">Pilih Bulan</span>
-                    {filterBulan.length > 0 && (
-                      <button onClick={() => setFilterBulan([])}
-                        className="text-[12px] text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
-                        Reset
-                      </button>
-                    )}
+            <div className="flex flex-wrap gap-2">
+
+              <div className="relative" ref={bulanReqRef}>
+                <button
+                  onClick={() => setBulanReqOpen(o => !o)}
+                  className={`${CHIP_BASE} flex items-center gap-1.5 ${filterBulanReq.length > 0 ? CHIP_ON : CHIP_OFF}`}
+                >
+                  <span className="text-[10px] opacity-70">Req/Due:</span>
+                  {filterBulanReq.length === 0
+                    ? 'Semua Bulan'
+                    : filterBulanReq.length === 1
+                      ? formatMonthLabel(filterBulanReq[0])
+                      : `${filterBulanReq.length} bulan dipilih`}
+                  <span className="text-[10px] opacity-60">{bulanReqOpen ? '▲' : '▼'}</span>
+                </button>
+                {bulanReqOpen && (
+                  <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
+                    <div className="flex items-center justify-between px-3 py-2 border-b border-[#E5E7EB]">
+                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em]">Bulan (Req./Due Date)</span>
+                      {filterBulanReq.length > 0 && (
+                        <button onClick={() => setFilterBulanReq([])}
+                          className="text-[12px] text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
+                          Reset
+                        </button>
+                      )}
+                    </div>
+                    <ul className="max-h-64 overflow-y-auto py-1">
+                      {allMonths.map(k => (
+                        <li key={k}>
+                          <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors duration-150">
+                            <input
+                              type="checkbox"
+                              checked={filterBulanReq.includes(k)}
+                              onChange={() => setFilterBulanReq(prev => toggleInArray(prev, k))}
+                              className="rounded border-slate-300 text-brand-600 focus:ring-brand-400"
+                            />
+                            {formatMonthLabel(k)}
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="max-h-64 overflow-y-auto py-1">
-                    {allMonths.map(k => (
-                      <li key={k}>
-                        <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors duration-150">
-                          <input
-                            type="checkbox"
-                            checked={filterBulan.includes(k)}
-                            onChange={() => setFilterBulan(prev => toggleInArray(prev, k))}
-                            className="rounded border-slate-300 text-brand-600 focus:ring-brand-400"
-                          />
-                          {formatMonthLabel(k)}
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                )}
+              </div>
+
+              <div className="relative" ref={bulanApplyRef}>
+                <button
+                  onClick={() => setBulanApplyOpen(o => !o)}
+                  className={`${CHIP_BASE} flex items-center gap-1.5 ${filterBulanApply.length > 0 ? CHIP_ON : CHIP_OFF}`}
+                >
+                  <span className="text-[10px] opacity-70">Apply:</span>
+                  {filterBulanApply.length === 0
+                    ? 'Semua Bulan'
+                    : filterBulanApply.length === 1
+                      ? formatMonthLabel(filterBulanApply[0])
+                      : `${filterBulanApply.length} bulan dipilih`}
+                  <span className="text-[10px] opacity-60">{bulanApplyOpen ? '▲' : '▼'}</span>
+                </button>
+                {bulanApplyOpen && (
+                  <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
+                    <div className="flex items-center justify-between px-3 py-2 border-b border-[#E5E7EB]">
+                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em]">Bulan (Apply Date)</span>
+                      {filterBulanApply.length > 0 && (
+                        <button onClick={() => setFilterBulanApply([])}
+                          className="text-[12px] text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
+                          Reset
+                        </button>
+                      )}
+                    </div>
+                    <ul className="max-h-64 overflow-y-auto py-1">
+                      {allMonths.map(k => (
+                        <li key={k}>
+                          <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors duration-150">
+                            <input
+                              type="checkbox"
+                              checked={filterBulanApply.includes(k)}
+                              onChange={() => setFilterBulanApply(prev => toggleInArray(prev, k))}
+                              className="rounded border-slate-300 text-brand-600 focus:ring-brand-400"
+                            />
+                            {formatMonthLabel(k)}
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
 
@@ -979,7 +1048,7 @@ export default function CampaignSchedule() {
             { col: 'Campaign',      note: 'Kolom Type of Campaign dari sheet, dipakai juga untuk filter Campaign (PayDay / BaU / DD / Other). Masih kosong di sebagian besar data karena tahap Motion belum berjalan.' },
             { col: 'Sort',          note: 'Default sort mengikuti Req. Date secara ascending, dan direset tiap kali ganti tab agar indikator sort tidak menunjuk ke kolom yang tidak ditampilkan di tab tersebut.' },
             { col: 'Remark',        note: 'Kolom Remark (Wardrobe, Gimmick, Concern on Live) dari sheet — catatan bebas, tampil di semua tab.' },
-            { col: 'Filter Bulan',  note: 'Dropdown dengan checkbox — bisa pilih lebih dari satu bulan sekaligus, tersedia dari Januari 2025 sampai Desember 2026. Filter menampilkan request yang periodenya (Req.–Due) tumpang tindih dengan salah satu bulan yang dipilih, ATAU yang Apply Date-nya jatuh di bulan itu — jadi request yang baru punya data di tab By Motion to OP (belum ada Req./Due Date dari Design) tetap muncul di bulan Apply Date-nya, tidak perlu menunggu data di tab lain. Berlaku lintas tab.' },
+            { col: 'Filter Bulan',  note: 'Dua dropdown terpisah berdampingan — "Req/Due" mem-filter berdasarkan periode Req.–Due Date (kerja Design/Strategic), "Apply" mem-filter berdasarkan Apply Date (kerja Motion). Masing-masing bisa pilih lebih dari satu bulan, tersedia Januari 2025–Desember 2026, dan berlaku lintas tab. Dipisah karena satu request bisa punya bulan Req./Due dan bulan Apply yang berbeda — request yang baru punya Apply Date (belum ada Req./Due dari Design) tetap muncul lewat filter Apply tanpa perlu data di tab lain.' },
             {
               col: 'Setup Sheets',
               note: (
