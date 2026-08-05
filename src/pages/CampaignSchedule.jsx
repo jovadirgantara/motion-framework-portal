@@ -199,6 +199,26 @@ function formatMonthLabel(key) {
   return new Date(year, month - 1, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 }
 
+function generateMonthRange(startY, startM, endY, endM) {
+  const out = []
+  let y = startY, m = startM
+  while (y < endY || (y === endY && m <= endM)) {
+    out.push(`${y}-${String(m).padStart(2, '0')}`)
+    m++
+    if (m > 12) { m = 1; y++ }
+  }
+  return out
+}
+
+// Month picklist always spans this fixed range regardless of what the sheet
+// currently has data for, so future months (e.g. Agustus) are selectable
+// ahead of time instead of only appearing once a row lands in them.
+const FIXED_MONTHS = generateMonthRange(2025, 1, 2026, 12)
+
+function toggleInArray(arr, value) {
+  return arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value]
+}
+
 function monthOverlaps(reqDate, dueDate, monthKey) {
   const [year, month] = monthKey.split('-').map(Number)
   const mStart = new Date(year, month - 1, 1)
@@ -420,15 +440,19 @@ export default function CampaignSchedule() {
   const [rawData, setRawData]       = useState(null)
   const [fetchError, setFetchError] = useState(null)
   const [filterTaksSource,   setFilterTaksSource]   = useState('semua')
-  const [filterTypeOfContent,setFilterTypeOfContent]= useState('semua')
+  const [filterTypeOfContent,setFilterTypeOfContent]= useState([]) // [] = semua konten
   const [filterDifficulty,   setFilterDifficulty]   = useState('semua')
   const [filterOperational,  setFilterOperational]  = useState('semua')
   const [filterBrand,        setFilterBrand]        = useState('semua')
-  const [filterBulan,        setFilterBulan]        = useState('semua')
+  const [filterBulan,        setFilterBulan]        = useState([]) // [] = semua bulan
   const [filterCampaign,     setFilterCampaign]     = useState('semua')
   const [brandOpen,          setBrandOpen]          = useState(false)
   const [brandSearch,        setBrandSearch]        = useState('')
+  const [bulanOpen,          setBulanOpen]          = useState(false)
+  const [contentOpen,        setContentOpen]        = useState(false)
   const brandRef = useRef(null)
+  const bulanRef = useRef(null)
+  const contentRef = useRef(null)
   const [activeTab, setActiveTab] = useState('motion')
   const [sortKey, setSortKey] = useState('reqDate')
   const [sortDir, setSortDir] = useState('asc')
@@ -458,6 +482,12 @@ export default function CampaignSchedule() {
       if (brandRef.current && !brandRef.current.contains(e.target)) {
         setBrandOpen(false); setBrandSearch('')
       }
+      if (bulanRef.current && !bulanRef.current.contains(e.target)) {
+        setBulanOpen(false)
+      }
+      if (contentRef.current && !contentRef.current.contains(e.target)) {
+        setContentOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleOutside)
     return () => document.removeEventListener('mousedown', handleOutside)
@@ -468,7 +498,7 @@ export default function CampaignSchedule() {
   const displayData = isLive ? rawData : SEED_DATA
 
   const allMonths = useMemo(() => {
-    const seen = new Set()
+    const seen = new Set(FIXED_MONTHS)
     displayData.forEach(r => {
       const sk = getMonthKey(r.reqDate), ek = getMonthKey(r.dueDate)
       if (sk) seen.add(sk); if (ek) seen.add(ek)
@@ -489,11 +519,11 @@ export default function CampaignSchedule() {
   const filtered = useMemo(
     () => displayData.filter(row => {
       const matchTS = filterTaksSource === 'semua' || row.taksSource === filterTaksSource
-      const matchTC = filterTypeOfContent === 'semua' || row.typeOfContent === filterTypeOfContent
+      const matchTC = filterTypeOfContent.length === 0 || filterTypeOfContent.includes(row.typeOfContent)
       const matchDf = filterDifficulty === 'semua' || row.designDifficulty === filterDifficulty
       const matchOp = filterOperational === 'semua' || row.operationalExcellence === filterOperational
       const matchB  = filterBrand === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
-      const matchM  = filterBulan === 'semua' || monthOverlaps(row.reqDate, row.dueDate, filterBulan)
+      const matchM  = filterBulan.length === 0 || filterBulan.some(k => monthOverlaps(row.reqDate, row.dueDate, k))
       let matchC = true
       if (filterCampaign !== 'semua') {
         const k = (row.typeOfCampaign ?? '').toLowerCase()
@@ -666,20 +696,49 @@ export default function CampaignSchedule() {
             </div>
           </div>
 
-          {/* Bulan — horizontal scrollable pills */}
-          <div className="flex items-center gap-2">
+          {/* Bulan — checkbox dropdown, multi-select */}
+          <div className="flex items-center gap-2" ref={bulanRef}>
             <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Bulan</span>
-            <div className="flex gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'thin' }}>
-              <button onClick={() => setFilterBulan('semua')}
-                className={`${CHIP_BASE} shrink-0 ${filterBulan === 'semua' ? CHIP_ON : CHIP_OFF}`}>
-                Semua
+            <div className="relative">
+              <button
+                onClick={() => setBulanOpen(o => !o)}
+                className={`${CHIP_BASE} flex items-center gap-1.5 ${filterBulan.length > 0 ? CHIP_ON : CHIP_OFF}`}
+              >
+                {filterBulan.length === 0
+                  ? 'Semua Bulan'
+                  : filterBulan.length === 1
+                    ? formatMonthLabel(filterBulan[0])
+                    : `${filterBulan.length} bulan dipilih`}
+                <span className="text-[10px] opacity-60">{bulanOpen ? '▲' : '▼'}</span>
               </button>
-              {allMonths.map(k => (
-                <button key={k} onClick={() => setFilterBulan(k)}
-                  className={`${CHIP_BASE} shrink-0 ${filterBulan === k ? CHIP_ON : CHIP_OFF}`}>
-                  {formatMonthLabel(k)}
-                </button>
-              ))}
+              {bulanOpen && (
+                <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
+                  <div className="flex items-center justify-between px-3 py-2 border-b border-[#E5E7EB]">
+                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em]">Pilih Bulan</span>
+                    {filterBulan.length > 0 && (
+                      <button onClick={() => setFilterBulan([])}
+                        className="text-[12px] text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
+                        Reset
+                      </button>
+                    )}
+                  </div>
+                  <ul className="max-h-64 overflow-y-auto py-1">
+                    {allMonths.map(k => (
+                      <li key={k}>
+                        <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors duration-150">
+                          <input
+                            type="checkbox"
+                            checked={filterBulan.includes(k)}
+                            onChange={() => setFilterBulan(prev => toggleInArray(prev, k))}
+                            className="rounded border-slate-300 text-brand-600 focus:ring-brand-400"
+                          />
+                          {formatMonthLabel(k)}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
 
@@ -731,20 +790,52 @@ export default function CampaignSchedule() {
             </div>
           </div>
 
-          {/* Type of Content */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Type of Content — checkbox dropdown, multi-select */}
+          <div className="flex items-center gap-2" ref={contentRef}>
             <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Konten</span>
-            <div className="flex flex-wrap gap-1.5">
-              <button onClick={() => setFilterTypeOfContent('semua')}
-                className={`${CHIP_BASE} ${filterTypeOfContent === 'semua' ? CHIP_ON : CHIP_OFF}`}>
-                Semua
+            <div className="relative">
+              <button
+                onClick={() => setContentOpen(o => !o)}
+                className={`${CHIP_BASE} flex items-center gap-1.5 ${filterTypeOfContent.length > 0 ? CHIP_ON : CHIP_OFF}`}
+              >
+                {filterTypeOfContent.length === 0
+                  ? 'Semua Konten'
+                  : filterTypeOfContent.length === 1
+                    ? filterTypeOfContent[0]
+                    : `${filterTypeOfContent.length} konten dipilih`}
+                <span className="text-[10px] opacity-60">{contentOpen ? '▲' : '▼'}</span>
               </button>
-              {typesOfContent.map(t => (
-                <button key={t} onClick={() => setFilterTypeOfContent(t)}
-                  className={`${CHIP_BASE} ${filterTypeOfContent === t ? CHIP_ON : CHIP_OFF}`}>
-                  {t}
-                </button>
-              ))}
+              {contentOpen && (
+                <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
+                  <div className="flex items-center justify-between px-3 py-2 border-b border-[#E5E7EB]">
+                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em]">Pilih Konten</span>
+                    {filterTypeOfContent.length > 0 && (
+                      <button onClick={() => setFilterTypeOfContent([])}
+                        className="text-[12px] text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
+                        Reset
+                      </button>
+                    )}
+                  </div>
+                  <ul className="max-h-64 overflow-y-auto py-1">
+                    {typesOfContent.length === 0
+                      ? <li className="px-3 py-3 text-[13px] text-slate-400 italic">Tidak ada data</li>
+                      : typesOfContent.map(t => (
+                          <li key={t}>
+                            <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors duration-150">
+                              <input
+                                type="checkbox"
+                                checked={filterTypeOfContent.includes(t)}
+                                onChange={() => setFilterTypeOfContent(prev => toggleInArray(prev, t))}
+                                className="rounded border-slate-300 text-brand-600 focus:ring-brand-400"
+                              />
+                              {t}
+                            </label>
+                          </li>
+                        ))
+                    }
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
 
@@ -865,7 +956,7 @@ export default function CampaignSchedule() {
             { col: 'Campaign',      note: 'Kolom Type of Campaign dari sheet, dipakai juga untuk filter Campaign (PayDay / BaU / DD / Other). Masih kosong di sebagian besar data karena tahap Motion belum berjalan.' },
             { col: 'Sort',          note: 'Default sort mengikuti Req. Date secara ascending, dan direset tiap kali ganti tab agar indikator sort tidak menunjuk ke kolom yang tidak ditampilkan di tab tersebut.' },
             { col: 'Remark',        note: 'Kolom Remark (Wardrobe, Gimmick, Concern on Live) dari sheet — catatan bebas, tampil di semua tab.' },
-            { col: 'Filter Bulan',  note: 'Tampil otomatis dari data — tiap bulan baru di sheet muncul sebagai pill baru ke kanan. Filter menampilkan request yang periodenya (Req.–Due) tumpang tindih dengan bulan tersebut, berlaku lintas tab.' },
+            { col: 'Filter Bulan',  note: 'Dropdown dengan checkbox — bisa pilih lebih dari satu bulan sekaligus, tersedia dari Januari 2025 sampai Desember 2026. Filter menampilkan request yang periodenya (Req.–Due) tumpang tindih dengan salah satu bulan yang dipilih, berlaku lintas tab.' },
             {
               col: 'Setup Sheets',
               note: (
