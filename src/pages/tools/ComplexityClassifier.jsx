@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
 import Reveal from '../../components/ui/Reveal'
 import SeedNote from '../../components/ui/SeedNote'
+import Badge from '../../components/ui/Badge'
+import Button from '../../components/ui/Button'
 import { trackEvent } from '../../utils/analytics'
 import config from '../../config/complexity-config.json'
 
@@ -167,17 +169,15 @@ export default function ComplexityClassifier() {
             </div>
           )}
 
-          <button
+          <Button
             onClick={handleSubmit}
             disabled={!allAnswered}
-            className={`w-full py-3 text-sm font-medium rounded transition-colors ${
-              allAnswered
-                ? 'bg-brand-600 text-white hover:bg-brand-700'
-                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-            }`}
+            variant="primary"
+            size="lg"
+            className="w-full"
           >
             {allAnswered ? 'Lihat Hasil Klasifikasi →' : `Jawab semua pertanyaan (${totalQ - answeredCount} tersisa)`}
-          </button>
+          </Button>
 
           <SeedNote className="mt-4" />
         </>
@@ -189,9 +189,11 @@ export default function ComplexityClassifier() {
               {/* Result card */}
               <div className={`border-2 rounded p-6 ${colors.ring} ${colors.bg}`}>
                 <div className="text-center mb-6">
-                  <span className={`inline-block font-mono text-xs px-2.5 py-1 rounded border ${colors.badge} mb-3`}>
-                    {result.label} — {result.sublabel}
-                  </span>
+                  <div className="mb-3">
+                    <Badge color={result.badgeColor} size="lg">
+                      {result.label} — {result.sublabel}
+                    </Badge>
+                  </div>
                   <div className="text-5xl font-semibold tracking-tight text-slate-900 mb-1">
                     CI {totalCI}
                   </div>
@@ -274,9 +276,9 @@ export default function ComplexityClassifier() {
                 </Link>
               </div>
 
-              <button onClick={handleReset} className="w-full py-2.5 text-sm text-slate-500 hover:text-slate-700 border border-slate-200 rounded hover:bg-slate-50 transition-colors">
+              <Button onClick={handleReset} variant="secondary" className="w-full">
                 ← Ulangi Klasifikasi
-              </button>
+              </Button>
 
               <div className="p-4 border border-slate-200 rounded text-center text-sm">
                 <span className="text-slate-500">Hasilnya sesuai ekspektasi? </span>
