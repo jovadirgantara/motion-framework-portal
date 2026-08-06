@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
 import Reveal from '../../components/ui/Reveal'
 import SeedNote from '../../components/ui/SeedNote'
+import Button from '../../components/ui/Button'
 import { trackEvent } from '../../utils/analytics'
 import config from '../../config/render-config.json'
 
@@ -285,12 +286,9 @@ export default function RenderCalculator() {
                 <p className="text-xs text-blue-800 leading-relaxed">{preset.note}</p>
               </div>
 
-              <button
-                onClick={handleDownload}
-                className="w-full py-2.5 text-sm font-medium rounded border border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors"
-              >
+              <Button onClick={handleDownload} variant="secondary" className="w-full">
                 {downloaded ? 'File berhasil diunduh' : 'Download Preset Card (.txt)'}
-              </button>
+              </Button>
             </>
           ) : (
             <div className="border border-slate-200 rounded p-8 text-center min-h-[200px] flex flex-col justify-center">
