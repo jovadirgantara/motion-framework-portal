@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
 import Reveal from '../../components/ui/Reveal'
 import SeedNote from '../../components/ui/SeedNote'
+import Button from '../../components/ui/Button'
 import { buildDisplayName } from '../../utils/sanitize'
 import { trackEvent } from '../../utils/analytics'
 import config from '../../config/naming-config.json'
@@ -217,17 +218,14 @@ export default function NamingGenerator() {
 
           {/* Generate button */}
           <div className="pt-1">
-            <button
+            <Button
               onClick={handleGenerate}
               disabled={!isReady}
-              className={`w-full py-2.5 text-sm font-medium rounded transition-colors ${
-                isReady
-                  ? 'bg-brand-600 text-white hover:bg-brand-700'
-                  : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-              }`}
+              variant="primary"
+              className="w-full"
             >
               {isReady ? 'Generate Nama →' : 'Lengkapi semua field (*)'}
-            </button>
+            </Button>
           </div>
         </div>
 
