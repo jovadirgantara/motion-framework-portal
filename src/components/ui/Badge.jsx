@@ -5,6 +5,10 @@ const colorMap = {
   red:    'bg-red-100 text-red-800 ring-red-200',
   indigo: 'bg-brand-100 text-brand-800 ring-brand-200',
   gray:   'bg-slate-100 text-slate-700 ring-slate-200',
+  brand:  'bg-brand-100 text-brand-800 ring-brand-200',
+  sun:    'bg-sun-100 text-sun-700 ring-sun-200',
+  teal:   'bg-teal-100 text-teal-800 ring-teal-200',
+  pink:   'bg-pink-100 text-pink-800 ring-pink-200',
 }
 
 export default function Badge({ children, color = 'gray', size = 'sm' }) {
