@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PageLayout from '../../components/layout/PageLayout'
 import Reveal from '../../components/ui/Reveal'
 import SeedNote from '../../components/ui/SeedNote'
+import Button from '../../components/ui/Button'
 import { trackEvent } from '../../utils/analytics'
 import config from '../../config/checklist-config.json'
 
@@ -303,18 +304,12 @@ export default function VHChecklist() {
       <div className="flex flex-wrap gap-3 mb-4">
         {answered > 0 && (
           <>
-            <button
-              onClick={handleExport}
-              className="px-4 py-2 text-sm font-medium rounded border border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors"
-            >
+            <Button onClick={handleExport} variant="secondary">
               Export Report .txt
-            </button>
-            <button
-              onClick={handleReset}
-              className="px-4 py-2 text-sm text-slate-500 rounded border border-slate-200 hover:bg-slate-50 transition-colors"
-            >
+            </Button>
+            <Button onClick={handleReset} variant="ghost">
               Reset Checklist
-            </button>
+            </Button>
           </>
         )}
       </div>
