@@ -569,6 +569,39 @@ const TABS = [
 const DATE_SORT_KEYS    = new Set(['reqDate', 'dueDate', 'submissionDate', 'applyDate', 'periodeMulai', 'periodeSelesai'])
 const NUMERIC_SORT_KEYS = new Set(['reqQty', 'outputQty', 'workingDay', 'designRevision', 'stratRevision', 'motionRevision'])
 
+// Every column keeps a minimum width and stays single-line (except
+// text-muted/Catatan, the one freeform notes field) so cells never compress
+// under a narrow viewport or high browser zoom — that compression was what
+// forced text to wrap and overflow into the sticky header on whichever row
+// sat right below it. With this, a wide tab like By Motion to OP grows past
+// the viewport and scrolls horizontally instead of squeezing every column.
+const COL_MIN_WIDTH = {
+  'text-strong':       'min-w-[180px]',
+  'text':              'min-w-[130px]',
+  'text-muted':        'min-w-[180px] max-w-[220px]',
+  'badge-brand':       'min-w-[130px]',
+  'badge-source':      'min-w-[110px]',
+  'badge-operational': 'min-w-[110px]',
+  'badge-difficulty':  'min-w-[110px]',
+  'badge-generic':     'min-w-[130px]',
+  'yes-no':            'min-w-[110px]',
+  'date':              'min-w-[110px]',
+  'number':            'min-w-[80px]',
+  'link':              'min-w-[90px]',
+}
+
+// Solid (non-transparent) equivalents of STATUS_CONFIG's row tints, used only
+// on the frozen first column — a semi-transparent bg there would let
+// horizontally-scrolled-away cells show through underneath it while sticky.
+const STICKY_COL_BG = {
+  done:     'bg-emerald-50',
+  progress: 'bg-blue-50',
+  waiting:  'bg-sun-50',
+  blocked:  'bg-red-50',
+  empty:    'bg-white',
+  unknown:  'bg-white',
+}
+
 function renderCell(row, col, rowStatusCategory) {
   const value = row[col.key]
   switch (col.type) {
@@ -838,7 +871,7 @@ export default function CampaignSchedule() {
   return (
     <PageLayout maxWidthClassName="max-w-none">
       {/* ── SCOPED INTER FONT wrapper ── */}
-      <div className="font-inter">
+      <div className="font-inter overflow-x-hidden">
 
         {/* Header */}
         <Reveal>
@@ -1183,17 +1216,17 @@ export default function CampaignSchedule() {
             Tidak ada request yang cocok dengan filter yang dipilih.
           </div>
         ) : (
-          <div className="overflow-x-auto border border-[#E5E7EB] rounded-xl shadow-[0_1px_2px_rgba(16,24,40,.05)]">
-            <table className="w-full text-left border-collapse">
-              <thead className="sticky top-14 z-10">
+          <div key={activeTab} className="overflow-auto overscroll-contain max-h-[70vh] border border-[#E5E7EB] rounded-xl shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+            <table className="w-full text-left border-collapse table-auto">
+              <thead className="sticky top-0 z-10">
                 <tr className="bg-slate-50 border-b border-[#E5E7EB]">
-                  {activeTabConfig.columns.map(col => {
+                  {activeTabConfig.columns.map((col, colIdx) => {
                     const sortable = col.type !== 'link'
                     return (
                       <th key={col.key} onClick={sortable ? () => handleSort(col.key) : undefined}
-                        className={`align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${
+                        className={`align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${COL_MIN_WIDTH[col.type] ?? ''} ${
                           sortable ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
-                        }`}>
+                        } ${colIdx === 0 ? 'sticky left-0 z-20 bg-slate-50' : ''}`}>
                         <span className="flex items-center gap-1">
                           {col.label}
                           {sortable && (
@@ -1212,19 +1245,21 @@ export default function CampaignSchedule() {
                   const isEven = idx % 2 === 1
                   const statusCat = statusCol ? classifyStatus(row[statusCol.key]) : 'unknown'
                   const rowAccent = STATUS_CONFIG[statusCat].row
+                  const rowIsEvenEmpty = isEven && statusCat === 'empty'
+                  const stickyBg = rowIsEvenEmpty ? 'bg-slate-50' : STICKY_COL_BG[statusCat]
                   return (
                     <tr
                       key={row.id}
                       className={`transition-colors duration-150 ease-out hover:bg-slate-50 ${rowAccent} ${
-                        isEven && statusCat === 'empty' ? 'bg-slate-50/30' : ''
+                        rowIsEvenEmpty ? 'bg-slate-50/30' : ''
                       }`}
                     >
-                      {activeTabConfig.columns.map(col => (
+                      {activeTabConfig.columns.map((col, colIdx) => (
                         <td key={col.key}
-                          className={`px-4 py-2 min-h-[52px] align-middle ${
-                            col.type === 'text-muted' ? 'text-[12px] text-slate-500 max-w-[160px]' : ''
-                          } ${col.type === 'date' || col.type === 'number' || col.type.startsWith('badge') || col.type === 'yes-no' ? 'whitespace-nowrap' : ''} ${
-                            col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''
+                          className={`px-4 py-2 min-h-[52px] align-middle ${COL_MIN_WIDTH[col.type] ?? ''} ${
+                            col.type === 'text-muted' ? 'text-[12px] text-slate-500' : 'whitespace-nowrap'
+                          } ${col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''} ${
+                            colIdx === 0 ? `sticky left-0 z-[5] ${stickyBg}` : ''
                           }`}>
                           {renderCell(row, col, statusCat)}
                         </td>
