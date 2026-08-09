@@ -459,6 +459,21 @@ const CAMPAIGN_LIFECYCLE_CONFIG = {
   unknown:  { label: '-',           badge: 'bg-slate-50 text-slate-300 ring-1 ring-slate-200' },
 }
 
+// 'unknown' (missing Periode Mulai) is deliberately left out — filtering by
+// "-" isn't a meaningful user action, "Semua" already covers those rows.
+const LIFECYCLE_FILTER_OPTIONS = ['semua', 'active', 'upcoming', 'ended']
+
+// Filter chips for Status Mockup use classifyStatus's color categories
+// rather than raw sheet text, same reasoning as the badge itself — the sheet
+// text isn't spelled consistently (Ready/On GD/On Progress/...).
+const STATUS_MOCKUP_FILTER_OPTIONS = [
+  { key: 'semua',    label: 'Semua' },
+  { key: 'done',     label: 'Done' },
+  { key: 'progress', label: 'On Progress' },
+  { key: 'waiting',  label: 'Waiting' },
+  { key: 'blocked',  label: 'Blocked' },
+]
+
 const TAKS_SOURCE_CONFIG = {
   Ecommerce: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
   Orca:      'bg-purple-50 text-purple-700 ring-1 ring-purple-200',
@@ -584,7 +599,7 @@ const TABS = [
       { key: 'motionPIC',        label: 'Motion PIC', type: 'text' },
       { key: 'motionDifficulty', label: 'Difficulty', type: 'badge-difficulty' },
       { key: 'motionRevision',   label: 'Revision',   type: 'number' },
-      { key: 'statusMotion',     label: 'Status',     type: 'badge-generic' },
+      { key: 'statusMotion',     label: 'Status Mockup', type: 'badge-generic' },
       { key: 'linkMotion',       label: 'File',       type: 'link' },
       { key: 'catatan',          label: 'Catatan',    type: 'text-muted' },
       { key: 'studio',           label: 'Studio',     type: 'text' },
@@ -727,6 +742,8 @@ export default function CampaignSchedule() {
   const [filterBulanReq,     setFilterBulanReq]     = useState([]) // [] = semua bulan, by Req./Due Date
   const [filterBulanApply,   setFilterBulanApply]   = useState([]) // [] = semua bulan, by Apply Date
   const [filterCampaign,     setFilterCampaign]     = useState('semua')
+  const [filterLifecycle,    setFilterLifecycle]    = useState('semua') // Motion tab only — Aktif/Akan Datang/Selesai
+  const [filterStatusMockup, setFilterStatusMockup] = useState('semua') // Motion tab only — done/progress/waiting/blocked
   const [brandOpen,          setBrandOpen]          = useState(false)
   const [brandSearch,        setBrandSearch]        = useState('')
   const [bulanReqOpen,       setBulanReqOpen]       = useState(false)
@@ -853,7 +870,9 @@ export default function CampaignSchedule() {
         const matchB  = filterBrand === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
         const matchDf = filterDifficulty === 'semua' || row.motionDifficulty === filterDifficulty
         const matchMApply = filterBulanApply.length === 0 || filterBulanApply.some(k => motionApplyMonthOverlaps(row, k))
-        return matchB && matchDf && matchMApply && matchesCampaignFilter(row)
+        const matchLc = filterLifecycle === 'semua' || campaignLifecycleStatus(row) === filterLifecycle
+        const matchSm = filterStatusMockup === 'semua' || classifyStatus(row.statusMotion) === filterStatusMockup
+        return matchB && matchDf && matchMApply && matchesCampaignFilter(row) && matchLc && matchSm
       })
     }
     return oldDisplayData.filter(row => {
@@ -866,7 +885,7 @@ export default function CampaignSchedule() {
       const matchMApply = filterBulanApply.length === 0 || filterBulanApply.some(k => applyMonthOverlaps(row, k))
       return matchTS && matchTC && matchDf && matchOp && matchB && matchMReq && matchMApply && matchesCampaignFilter(row)
     })
-  }, [isMotionTab, oldDisplayData, motionDisplayData, filterTaksSource, filterTypeOfContent, filterDifficulty, filterOperational, filterBrand, filterBulanReq, filterBulanApply, filterCampaign])
+  }, [isMotionTab, oldDisplayData, motionDisplayData, filterTaksSource, filterTypeOfContent, filterDifficulty, filterOperational, filterBrand, filterBulanReq, filterBulanApply, filterCampaign, filterLifecycle, filterStatusMockup])
 
   const filteredBrands = brandSearch.trim()
     ? brands.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
@@ -1249,6 +1268,37 @@ export default function CampaignSchedule() {
               ))}
             </div>
           </div>
+
+          {/* Status (campaign lifecycle) and Status Mockup — Motion tab only,
+              the underlying fields (Periode Mulai/Selesai, Status Mockup
+              sheet column) don't exist on Design/Strategic. */}
+          {isMotionTab && (
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Status</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {LIFECYCLE_FILTER_OPTIONS.map(opt => (
+                    <button key={opt} onClick={() => setFilterLifecycle(opt)}
+                      className={`${CHIP_BASE} ${filterLifecycle === opt ? CHIP_ON : CHIP_OFF}`}>
+                      {opt === 'semua' ? 'Semua' : CAMPAIGN_LIFECYCLE_CONFIG[opt].label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Status Mockup</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {STATUS_MOCKUP_FILTER_OPTIONS.map(opt => (
+                    <button key={opt.key} onClick={() => setFilterStatusMockup(opt.key)}
+                      className={`${CHIP_BASE} ${filterStatusMockup === opt.key ? CHIP_ON : CHIP_OFF}`}>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* ── TAB BAR ── */}
