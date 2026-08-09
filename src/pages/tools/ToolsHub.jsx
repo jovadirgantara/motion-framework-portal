@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import PageLayout from '../../components/layout/PageLayout'
 import PageHeader from '../../components/ui/PageHeader'
 import IconBlob from '../../components/ui/IconBlob'
-import { revealUp, stagger, viewportOnce, cardHover } from '../../utils/motion'
+import { revealUp, stagger, viewportOnce } from '../../utils/motion'
 import { TOOLS } from '../../content/tools-meta'
 
 export default function ToolsHub() {
@@ -24,7 +24,7 @@ export default function ToolsHub() {
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
         {TOOLS.map(tool => (
-          <motion.div key={tool.to} variants={revealUp} whileHover={cardHover}>
+          <motion.div key={tool.to} variants={revealUp}>
             <div className="card card-hover group flex gap-5 p-5 h-full">
               <IconBlob icon={tool.icon} accent={tool.accent} size="lg" />
               <div className="flex-1 flex flex-col">

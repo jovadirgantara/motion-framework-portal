@@ -19,7 +19,7 @@ export default function FrameworkOverview() {
       </PageHeader>
 
       <Reveal delay={80}>
-        <div>
+        <div className="space-y-3">
           {components.map(comp => (
             <IndexRow
               key={comp.id}

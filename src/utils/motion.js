@@ -25,7 +25,6 @@ export const stagger = {
   visible: { transition: { staggerChildren: 0.07 } },
 }
 
-export const cardHover   = { y: -6, scale: 1.02, transition: spring }
 export const buttonHover = { scale: 1.03, transition: spring }
 export const buttonTap   = { scale: 0.97 }
 

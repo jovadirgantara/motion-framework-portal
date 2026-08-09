@@ -16,7 +16,7 @@ const ACCENT_NUM = {
 
 export default function IndexRow({ number, title, summary, to, accent = 'brand' }) {
   return (
-    <Link to={to} className="card card-hover group flex items-start gap-4 p-5 mb-3 last:mb-0">
+    <Link to={to} className="card card-hover group flex items-start gap-4 p-5">
       <span className={`font-display text-2xl font-bold shrink-0 ${ACCENT_NUM[accent]}`}>{number}</span>
       <div className="flex-1 min-w-0">
         <h3 className={`font-display text-base font-bold tracking-tight text-slate-900 transition-colors ${ACCENT_TEXT[accent]}`}>

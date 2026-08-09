@@ -138,7 +138,7 @@ export default function Home() {
       <section className="py-14">
         <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger}>
           <SectionHeader eyebrow="/ Framework" title="8 Komponen Konstitutif" />
-          <div>
+          <div className="space-y-3">
             {mainComponents.map(comp => {
               const accent = FRAMEWORK_ACCENTS[(comp.order - 1) % 4]
               return (
