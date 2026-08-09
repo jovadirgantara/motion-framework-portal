@@ -4,7 +4,7 @@ import PageLayout from '../components/layout/PageLayout'
 import ProductMockup from '../components/ui/ProductMockup'
 import IndexRow from '../components/ui/IndexRow'
 import IconBlob from '../components/ui/IconBlob'
-import { revealUp, stagger, viewportOnce, cardHover, buttonHover, buttonTap } from '../utils/motion'
+import { revealUp, stagger, viewportOnce, bentoEntrance, buttonHover, buttonTap } from '../utils/motion'
 import { TOOLS, FRAMEWORK_ACCENTS } from '../content/tools-meta'
 import frameworkComponents from '../content/framework-components.json'
 
@@ -119,12 +119,12 @@ export default function Home() {
       <section className="py-14">
         <motion.div initial="hidden" whileInView="visible" viewport={viewportOnce} variants={stagger}>
           <SectionHeader eyebrow="/ Problem Statement" title="6 Masalah yang Diselesaikan" />
-          <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {problems.map(p => (
               <motion.div
                 key={p.code}
-                variants={revealUp}
-                className="flex items-start gap-4 py-4 border-b border-slate-100 last:border-b-0"
+                variants={bentoEntrance}
+                className="card card-hover flex items-start gap-4 p-5"
               >
                 <span className="font-mono text-sm text-slate-400 shrink-0 pt-0.5 w-10">{p.code}</span>
                 <p className="text-sm text-slate-700 leading-relaxed">{p.text}</p>
@@ -142,7 +142,7 @@ export default function Home() {
             {mainComponents.map(comp => {
               const accent = FRAMEWORK_ACCENTS[(comp.order - 1) % 4]
               return (
-                <motion.div key={comp.id} variants={revealUp}>
+                <motion.div key={comp.id} variants={bentoEntrance}>
                   <IndexRow
                     number={String(comp.order).padStart(2, '0')}
                     title={comp.title}
@@ -181,10 +181,10 @@ export default function Home() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {TOOLS.map(tool => (
-              <motion.div key={tool.to} variants={revealUp} whileHover={cardHover}>
+              <motion.div key={tool.to} variants={bentoEntrance}>
                 <Link
                   to={tool.to}
-                  className="group flex gap-5 rounded-2xl bg-white border border-slate-200 p-5 hover:border-brand-300 hover:shadow-lift-sm transition-all h-full"
+                  className="card card-hover group flex gap-5 p-5 h-full"
                 >
                   <IconBlob icon={tool.icon} accent={tool.accent} size="lg" />
                   <div className="flex-1 flex flex-col">
