@@ -407,6 +407,21 @@ function inferMotionEnd(row, start) {
   return new Date(nextYear, nextMonth - 1, nextMonth - 1)
 }
 
+// Campaign lifecycle status for the "By Motion to OP" table's frozen STATUS
+// column — reuses inferMotionEnd's DD/PayDay/BaU end-date rule so a row
+// missing Periode Selesai still gets a sensible AKTIF/SELESAI read instead of
+// looking permanently unresolved.
+function campaignLifecycleStatus(row) {
+  const start = new Date(normalizeDate(row.periodeMulai))
+  if (isNaN(start)) return 'unknown'
+  const selesai = new Date(normalizeDate(row.periodeSelesai))
+  const end = !isNaN(selesai) ? selesai : inferMotionEnd(row, start)
+  const now = new Date()
+  if (now < start) return 'upcoming'
+  if (now > end)   return 'ended'
+  return 'active'
+}
+
 function motionApplyMonthOverlaps(row, monthKey) {
   const [year, month] = monthKey.split('-').map(Number)
   const mStart = new Date(year, month - 1, 1)
@@ -432,6 +447,16 @@ const DIFFICULTY_CONFIG = {
   Medium:   'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
   High:     'bg-red-50 text-red-700 ring-1 ring-red-200',
   Campaign: 'bg-purple-50 text-purple-700 ring-1 ring-purple-200',
+}
+
+// Campaign lifecycle badge — separate from STATUS_CONFIG, which colors the
+// freeform Status Strat/Design/Motion workflow text (Done/Progress/etc), a
+// different concept from "is this campaign's period currently running".
+const CAMPAIGN_LIFECYCLE_CONFIG = {
+  active:   { label: 'Aktif',       badge: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' },
+  upcoming: { label: 'Akan Datang', badge: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' },
+  ended:    { label: 'Selesai',     badge: 'bg-slate-100 text-slate-500 ring-1 ring-slate-200' },
+  unknown:  { label: '-',           badge: 'bg-slate-50 text-slate-300 ring-1 ring-slate-200' },
 }
 
 const TAKS_SOURCE_CONFIG = {
@@ -547,6 +572,7 @@ const TABS = [
     // Sourced from the separate "Motion Status" sheet — no Month
     // Request/Req. Date identity columns here, this sheet doesn't have them.
     columns: [
+      { key: 'campaignStatus',   label: 'Status',     type: 'campaign-status' },
       { key: 'namaAset',         label: 'Nama Aset',  type: 'text-strong' },
       { key: 'brand',            label: 'Brand',      type: 'badge-brand' },
       { key: 'platform',         label: 'Platform',   type: 'text' },
@@ -575,8 +601,18 @@ const NUMERIC_SORT_KEYS = new Set(['reqQty', 'outputQty', 'workingDay', 'designR
 // forced text to wrap and overflow into the sticky header on whichever row
 // sat right below it. With this, a wide tab like By Motion to OP grows past
 // the viewport and scrolls horizontally instead of squeezing every column.
+// campaign-status gets a *fixed* (not just min) width — it's the first of two
+// sticky columns on the Motion tab, and the second sticky column (Nama Aset)
+// needs a matching fixed `left` offset (STICKY_STATUS_COL_LEFT below) to sit
+// flush next to it instead of overlapping/gapping as other columns grow.
+// Tailwind's class scanner is static, so this width is duplicated as a
+// literal class here and as a literal `left-[140px]` at the usage site —
+// keep both in sync if this ever changes.
+const STICKY_STATUS_COL_LEFT = 'left-[140px]'
+
 const COL_MIN_WIDTH = {
   'text-strong':       'min-w-[180px]',
+  'campaign-status':   'w-[140px] min-w-[140px]',
   'text':              'min-w-[130px]',
   'text-muted':        'min-w-[180px] max-w-[220px]',
   'badge-brand':       'min-w-[130px]',
@@ -636,6 +672,10 @@ function renderCell(row, col, rowStatusCategory) {
           </span>
         )
         : <span className="text-slate-300 text-[13px]">—</span>
+    }
+    case 'campaign-status': {
+      const cfg = CAMPAIGN_LIFECYCLE_CONFIG[campaignLifecycleStatus(row)]
+      return <span className={`${BADGE} ${cfg.badge}`}>{cfg.label}</span>
     }
     case 'yes-no':
       return value
@@ -852,6 +892,9 @@ export default function CampaignSchedule() {
 
   const activeTabConfig = TABS.find(t => t.key === activeTab) ?? TABS[0]
   const statusCol = activeTabConfig.columns.find(c => c.type === 'badge-generic')
+  // Design/Strategic freeze just their first (identity) column; Motion freezes
+  // two — the new campaign-status badge plus Nama Aset right after it.
+  const stickyColCount = activeTabConfig.columns[0]?.type === 'campaign-status' ? 2 : 1
 
   // Excellence overview is a Design-only concept — always computed off the
   // Design/Strategic sheet regardless of which tab is active.
@@ -1222,11 +1265,13 @@ export default function CampaignSchedule() {
                 <tr className="bg-slate-50 border-b border-[#E5E7EB]">
                   {activeTabConfig.columns.map((col, colIdx) => {
                     const sortable = col.type !== 'link'
+                    const isSticky = colIdx < stickyColCount
+                    const stickyLeft = colIdx === 0 ? 'left-0' : STICKY_STATUS_COL_LEFT
                     return (
                       <th key={col.key} onClick={sortable ? () => handleSort(col.key) : undefined}
                         className={`align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${COL_MIN_WIDTH[col.type] ?? ''} ${
                           sortable ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
-                        } ${colIdx === 0 ? 'sticky left-0 z-20 bg-slate-50' : ''}`}>
+                        } ${isSticky ? `sticky ${stickyLeft} z-20 bg-slate-50` : ''}`}>
                         <span className="flex items-center gap-1">
                           {col.label}
                           {sortable && (
@@ -1259,7 +1304,7 @@ export default function CampaignSchedule() {
                           className={`px-4 py-2 min-h-[52px] align-middle ${COL_MIN_WIDTH[col.type] ?? ''} ${
                             col.type === 'text-muted' ? 'text-[12px] text-slate-500' : 'whitespace-nowrap'
                           } ${col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''} ${
-                            colIdx === 0 ? `sticky left-0 z-[5] ${stickyBg}` : ''
+                            colIdx < stickyColCount ? `sticky ${colIdx === 0 ? 'left-0' : STICKY_STATUS_COL_LEFT} z-[5] ${stickyBg}` : ''
                           }`}>
                           {renderCell(row, col, statusCat)}
                         </td>
