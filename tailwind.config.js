@@ -32,8 +32,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-        display: ['"Bricolage Grotesque"', '"Plus Jakarta Sans"', 'sans-serif'],
+        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Space Grotesk"', '"DM Sans"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'Fira Code', 'monospace'],
         inter: ['Inter', 'system-ui', 'sans-serif'],
       },
