@@ -156,7 +156,7 @@ export default function RenderCalculator() {
           {/* Platform */}
           <div>
             <SectionLabel>/ Platform</SectionLabel>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {config.platforms.map(p => (
                 <ChoiceButton
                   key={p.value}
@@ -174,7 +174,7 @@ export default function RenderCalculator() {
           {platform && (
             <div>
               <SectionLabel>/ Device</SectionLabel>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {config.devices.map(d => (
                   <ChoiceButton
                     key={d.value}

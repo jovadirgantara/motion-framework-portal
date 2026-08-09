@@ -149,7 +149,7 @@ export default function VHChecklist() {
 
       {/* Progress + live score */}
       <div className="border border-slate-200 rounded p-4 mb-6">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-4">
             <div>
               <span className={`text-2xl font-semibold ${
@@ -226,7 +226,7 @@ export default function VHChecklist() {
                       <div key={ind.id} className={`px-4 py-4 transition-colors ${
                         val === 'fail' ? 'bg-red-50/50' : val === 'pass' ? 'bg-green-50/30' : ''
                       }`}>
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
                           <div className="flex-1">
                             <p className="text-sm text-slate-900 mb-1">
                               <span className="font-mono text-2xs text-slate-400 mr-2">
@@ -238,7 +238,7 @@ export default function VHChecklist() {
                               {ind.hint}
                             </p>
                           </div>
-                          <div className="flex gap-1 shrink-0 pt-0.5">
+                          <div className="flex gap-1 shrink-0 sm:pt-0.5">
                             {['pass', 'fail', 'na'].map(s => (
                               <TriButton
                                 key={s}
