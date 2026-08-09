@@ -1,21 +1,25 @@
 import { Link } from 'react-router-dom'
 
-const ACCENT_BORDERS = {
-  brand: 'hover:border-l-brand-400',
-  sun:   'hover:border-l-sun-400',
-  teal:  'hover:border-l-teal-400',
-  pink:  'hover:border-l-pink-400',
+const ACCENT_TEXT = {
+  brand: 'group-hover:text-brand-600',
+  sun:   'group-hover:text-sun-600',
+  teal:  'group-hover:text-teal-600',
+  pink:  'group-hover:text-pink-600',
+}
+
+const ACCENT_NUM = {
+  brand: 'text-brand-300',
+  sun:   'text-sun-300',
+  teal:  'text-teal-300',
+  pink:  'text-pink-300',
 }
 
 export default function IndexRow({ number, title, summary, to, accent = 'brand' }) {
   return (
-    <Link
-      to={to}
-      className={`group flex items-start gap-4 py-4 pl-4 -ml-4 border-b border-slate-100 border-l-2 border-l-transparent transition-colors ${ACCENT_BORDERS[accent]}`}
-    >
-      <span className="font-mono text-sm text-slate-400 shrink-0 pt-0.5 w-6">{number}</span>
+    <Link to={to} className="card card-hover group flex items-start gap-4 p-5 mb-3 last:mb-0">
+      <span className={`font-display text-2xl font-bold shrink-0 ${ACCENT_NUM[accent]}`}>{number}</span>
       <div className="flex-1 min-w-0">
-        <h3 className="font-display text-base font-bold tracking-tight text-slate-900 group-hover:text-brand-600 transition-colors">
+        <h3 className={`font-display text-base font-bold tracking-tight text-slate-900 transition-colors ${ACCENT_TEXT[accent]}`}>
           {title}
         </h3>
         <p className="text-sm text-slate-500 leading-relaxed mt-0.5">{summary}</p>
