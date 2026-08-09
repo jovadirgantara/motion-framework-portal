@@ -6,6 +6,7 @@ CLAUDE.md
 .claude/
 .rtk/
 docs/superpowers/
+.superpowers/
 
 # design-sync (claude.ai/design) tooling — local only, not for this public repo
 .design-sync/
