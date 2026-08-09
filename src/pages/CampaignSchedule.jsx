@@ -1221,7 +1221,7 @@ export default function CampaignSchedule() {
                     >
                       {activeTabConfig.columns.map(col => (
                         <td key={col.key}
-                          className={`px-4 py-0 h-[52px] align-middle ${
+                          className={`px-4 py-2 min-h-[52px] align-middle ${
                             col.type === 'text-muted' ? 'text-[12px] text-slate-500 max-w-[160px]' : ''
                           } ${col.type === 'date' || col.type === 'number' || col.type.startsWith('badge') || col.type === 'yes-no' ? 'whitespace-nowrap' : ''} ${
                             col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''
