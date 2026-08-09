@@ -8,6 +8,12 @@ const SHEET_ID = '1aXZ2STMDwPa-zFeZj37aa_Ko4-IE5WYzIKKe3EMm8rs'
 const GID      = '1476491661'
 const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`
 
+// By Motion to OP moved to its own "Motion Status" tab in the same
+// spreadsheet — different structure (flat header, no grouping row) and no
+// relation to the Design/Strategic rows, so it gets its own fetch/parse.
+const MOTION_GID     = '820345676'
+const MOTION_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${MOTION_GID}`
+
 // Row 1 of the sheet is a grouping label row ("by Design" / "by Strategic" /
 // etc). Row 2 holds the actual column names — that's what COL_MAP matches.
 const COL_MAP = {
@@ -39,6 +45,28 @@ const COL_MAP = {
   statusMotion:          ['Status Motion'],
   linkMotion:            ['Link Motion'],
   remark:                ['Remark (Wardrobe, Gimmick, Concern on Live)'],
+}
+
+// "Motion Status" tab has a single flat header row (no grouping row above
+// it). Field keys reuse names from COL_MAP wherever the concept matches
+// (brand, typeOfCampaign, motionDifficulty, motionRevision, statusMotion,
+// linkMotion) so the shared filters/renderCell types keep working unchanged.
+const MOTION_COL_MAP = {
+  namaAset:         ['Nama Aset'],
+  brand:            ['Brand'],
+  platform:         ['Platform'],
+  tipe:             ['Tipe'],
+  typeOfCampaign:   ['Kampanye'],
+  periodeMulai:     ['Periode Mulai'],
+  periodeSelesai:   ['Periode Selesai'],
+  jamTayang:        ['Jam Tayang'],
+  motionPIC:        ['Motion PIC'],
+  motionDifficulty: ['Motion Difficulty'],
+  motionRevision:   ['Motion Revision'],
+  statusMotion:      ['Status Mockup'],
+  linkMotion:        ['Link File'],
+  catatan:          ['Catatan'],
+  studio:           ['Studio'],
 }
 
 const SEED_DATA = [
@@ -137,34 +165,96 @@ const SEED_DATA = [
   },
 ]
 
+const MOTION_SEED_DATA = [
+  {
+    id: 'motion-seed-1',
+    namaAset: 'ANLENE BAU',
+    brand: 'FONTERRA',
+    platform: 'TikTok',
+    tipe: 'Sepeda Chaos',
+    typeOfCampaign: 'BaU',
+    periodeMulai: '2026-07-26',
+    periodeSelesai: '2026-07-28',
+    jamTayang: 'Pas Running',
+    motionPIC: '',
+    motionDifficulty: '',
+    motionRevision: '',
+    statusMotion: 'Ready',
+    linkMotion: 'https://drive.google.com/drive/folders/1Uwm_aDwjqkUQ2mjIZnXvv5plbhNinThl',
+    catatan: 'Update Promo',
+    studio: 'Jakarta',
+  },
+  {
+    id: 'motion-seed-2',
+    namaAset: 'BETADINE DD',
+    brand: 'BETADINE',
+    platform: 'TikTok',
+    tipe: '',
+    typeOfCampaign: 'DD',
+    periodeMulai: '2026-07-07',
+    periodeSelesai: '2026-07-07',
+    jamTayang: '00:00',
+    motionPIC: '',
+    motionDifficulty: '',
+    motionRevision: '',
+    statusMotion: 'Ready',
+    linkMotion: 'https://drive.google.com/drive/folders/1tkoB-b3mSFppCtknHIcN7YmdwjGHSOcG',
+    catatan: '',
+    studio: 'Jakarta',
+  },
+  {
+    id: 'motion-seed-3',
+    namaAset: 'BETADINE PAYDAY',
+    brand: 'BETADINE',
+    platform: 'TikTok',
+    tipe: '',
+    typeOfCampaign: 'PayDay',
+    periodeMulai: '2026-07-25',
+    periodeSelesai: '2026-07-31',
+    jamTayang: 'Pas Running',
+    motionPIC: '',
+    motionDifficulty: '',
+    motionRevision: '',
+    statusMotion: 'Ready',
+    linkMotion: 'https://drive.google.com/drive/folders/1nLyzUK_U5ZiNv0dtX9apIaqZYjHEwwS9',
+    catatan: '',
+    studio: 'Jakarta',
+  },
+]
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
-function parseCSV(text) {
-  const lines = text.trim().split(/\r?\n/)
-  if (lines.length < 3) return []
-  function parseLine(line) {
-    const cells = []
-    let cur = '', inQ = false
-    for (let i = 0; i < line.length; i++) {
-      const c = line[i]
-      if (c === '"') {
-        if (inQ && line[i + 1] === '"') { cur += '"'; i++ }
-        else inQ = !inQ
-      } else if (c === ',' && !inQ) {
-        cells.push(cur.trim()); cur = ''
-      } else { cur += c }
-    }
-    cells.push(cur.trim())
-    return cells
+function parseCSVLine(line) {
+  const cells = []
+  let cur = '', inQ = false
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i]
+    if (c === '"') {
+      if (inQ && line[i + 1] === '"') { cur += '"'; i++ }
+      else inQ = !inQ
+    } else if (c === ',' && !inQ) {
+      cells.push(cur.trim()); cur = ''
+    } else { cur += c }
   }
-  // lines[0] is the grouping-label row ("by Design" / "by Strategic" / ...),
-  // lines[1] is the real header row, data starts at lines[2].
-  const headers = parseLine(lines[1])
-  function resolveField(header) {
-    for (const [field, aliases] of Object.entries(COL_MAP)) {
+  cells.push(cur.trim())
+  return cells
+}
+
+function makeFieldResolver(colMap) {
+  return function resolveField(header) {
+    for (const [field, aliases] of Object.entries(colMap)) {
       if (aliases.some(a => a.toLowerCase() === header.toLowerCase())) return field
     }
     return null
   }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/)
+  if (lines.length < 3) return []
+  // lines[0] is the grouping-label row ("by Design" / "by Strategic" / ...),
+  // lines[1] is the real header row, data starts at lines[2].
+  const headers = parseCSVLine(lines[1])
+  const resolveField = makeFieldResolver(COL_MAP)
   const fieldMap = headers.map(h => resolveField(h))
   // Rows that only have Motion-stage data (e.g. BAU requests) sometimes carry
   // their identifying name in Final Asset Name instead of Brand, with Brand
@@ -172,9 +262,47 @@ function parseCSV(text) {
   // entirely. Keep any row that has data in at least one field instead, and
   // only discard genuinely blank sheet rows.
   return lines.slice(2).map((line, idx) => {
-    const cells = parseLine(line)
+    const cells = parseCSVLine(line)
     const row = { id: `sheet-${idx + 1}` }
     fieldMap.forEach((field, i) => { if (field) row[field] = cells[i] ?? '' })
+    return row
+  }).filter(r => Object.keys(r).some(k => k !== 'id' && r[k]))
+}
+
+const INDO_MONTHS = {
+  januari: 1, februari: 2, maret: 3, april: 4, mei: 5, juni: 6,
+  juli: 7, agustus: 8, september: 9, oktober: 10, november: 11, desember: 12,
+}
+
+// "Motion Status" sheet writes dates as "26 Juli 2026" — converted to
+// YYYY-MM-DD here so normalizeDate/formatDate/getMonthKey (which all expect
+// either DD/MM/YYYY or ISO) work on it unchanged.
+function parseIndoDate(str) {
+  const m = (str ?? '').trim().match(/^(\d{1,2})\s+([A-Za-zë]+)\s+(\d{4})$/)
+  if (!m) return ''
+  const month = INDO_MONTHS[m[2].toLowerCase()]
+  if (!month) return ''
+  return `${m[3]}-${String(month).padStart(2, '0')}-${m[1].padStart(2, '0')}`
+}
+
+// Motion Status has one flat header row (no grouping row above it) — data
+// starts right after the header.
+function parseMotionCSV(text) {
+  const lines = text.trim().split(/\r?\n/)
+  if (lines.length < 2) return []
+  const headers = parseCSVLine(lines[0])
+  const resolveField = makeFieldResolver(MOTION_COL_MAP)
+  const fieldMap = headers.map(h => resolveField(h))
+  return lines.slice(1).map((line, idx) => {
+    const cells = parseCSVLine(line)
+    const row = { id: `motion-sheet-${idx + 1}` }
+    fieldMap.forEach((field, i) => {
+      if (!field) return
+      const raw = cells[i] ?? ''
+      row[field] = (field === 'periodeMulai' || field === 'periodeSelesai')
+        ? parseIndoDate(raw)
+        : (raw === '-' ? '' : raw)
+    })
     return row
   }).filter(r => Object.keys(r).some(k => k !== 'id' && r[k]))
 }
@@ -249,6 +377,47 @@ function applyMonthOverlaps(row, monthKey) {
   return !isNaN(a) && a >= mStart && a <= mEnd
 }
 
+function addDays(date, n) {
+  const d = new Date(date)
+  d.setDate(d.getDate() + n)
+  return d
+}
+
+// Motion Status rows are often left with Periode Selesai blank because the
+// wrap date isn't known yet. Rather than treating that as "open forever" (and
+// polluting every future month's filter), infer an end from the row's own
+// Kampanye cycle — DD/PayDay are one-day-ish slots, BaU runs until the next
+// DD/PayDay checkpoint. See design doc for the exact rule; this mirrors it.
+function inferMotionEnd(row, start) {
+  const kind = (row.typeOfCampaign ?? '').trim().toLowerCase()
+  if (kind === 'dd' || kind === 'payday') return addDays(start, 1)
+
+  // BaU (and anything unrecognized): bounded by that month's Double Date
+  // (day-of-month === month number) and the 25th (PayDay), cycling into next
+  // month's Double Date once past the 25th.
+  const day = start.getDate()
+  const month = start.getMonth() + 1 // 1-12
+  const year = start.getFullYear()
+  const ddDay = month
+  const PAYDAY_DAY = 25
+  if (day < ddDay)      return new Date(year, month - 1, ddDay - 1)
+  if (day < PAYDAY_DAY) return new Date(year, month - 1, PAYDAY_DAY - 1)
+  const nextMonth = month === 12 ? 1 : month + 1
+  const nextYear  = month === 12 ? year + 1 : year
+  return new Date(nextYear, nextMonth - 1, nextMonth - 1)
+}
+
+function motionApplyMonthOverlaps(row, monthKey) {
+  const [year, month] = monthKey.split('-').map(Number)
+  const mStart = new Date(year, month - 1, 1)
+  const mEnd   = new Date(year, month, 0, 23, 59, 59)
+  const start = new Date(normalizeDate(row.periodeMulai))
+  if (isNaN(start)) return false
+  const selesai = new Date(normalizeDate(row.periodeSelesai))
+  const end = !isNaN(selesai) ? selesai : inferMotionEnd(row, start)
+  return start <= mEnd && end >= mStart
+}
+
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
 const DEFAULT_BADGE = 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'
 
@@ -259,9 +428,10 @@ const OPERATIONAL_CONFIG = {
 }
 
 const DIFFICULTY_CONFIG = {
-  Low:    'bg-green-50 text-green-700 ring-1 ring-green-200',
-  Medium: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
-  High:   'bg-red-50 text-red-700 ring-1 ring-red-200',
+  Low:      'bg-green-50 text-green-700 ring-1 ring-green-200',
+  Medium:   'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
+  High:     'bg-red-50 text-red-700 ring-1 ring-red-200',
+  Campaign: 'bg-purple-50 text-purple-700 ring-1 ring-purple-200',
 }
 
 const TAKS_SOURCE_CONFIG = {
@@ -282,22 +452,6 @@ function classifyStatus(raw) {
   if (has('waiting', 'approval', 'pending')) return 'waiting'
   if (has('progress', 'on strat', 'on gd', 'revisi', 'review')) return 'progress'
   return 'unknown'
-}
-
-// When Status Motion is blank but the stages that feed into it are already
-// done, the row isn't really "empty" — it's ready and simply waiting on the
-// Motion team. Surface that instead of a bare "—" so a finished upstream
-// request doesn't read as untouched. If Status Motion already has its own
-// value (including a value from a row with no Design/Strategic data at all),
-// that value is left as-is.
-function deriveMotionStatus(row) {
-  const raw = row.statusMotion
-  if (classifyStatus(raw) !== 'empty') return raw
-  const designDone    = classifyStatus(row.statusDesign) === 'done'
-  const stratRequired = (row.withStrategic ?? '').trim().toLowerCase() === 'yes'
-  const stratDone      = classifyStatus(row.statusStrat) === 'done'
-  const upstreamReady  = designDone && (!stratRequired || stratDone)
-  return upstreamReady ? 'Waiting for Motion' : raw
 }
 
 const STATUS_CONFIG = {
@@ -328,7 +482,7 @@ const STATUS_CONFIG = {
   },
 }
 
-const DIFFICULTY_ORDER   = { Low: 0, Medium: 1, High: 2 }
+const DIFFICULTY_ORDER   = { Low: 0, Medium: 1, High: 2, Campaign: 3 }
 const OPERATIONAL_ORDER  = { Bad: 0, Good: 1, Excellence: 2 }
 
 // Shared badge class — 6px top/bottom (py-1.5), 10px left/right (px-2.5), rounded-full, 12px/600
@@ -340,10 +494,12 @@ const CHIP_OFF   = 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 h
 const CHIP_ON    = 'bg-brand-600 text-white border-brand-600 shadow-sm'
 
 // ─── TAB / COLUMN SPECS ──────────────────────────────────────────────────────
-// Every tab leads with Month Request / Req. Date / Brand and trails with
-// Remark — these are cross-team identity/notes columns, not exclusive to
-// one work category (matches the sheet's own "by All Team" grouping for
-// Remark, and the team's explicit call for the identity columns).
+// Design/Strategic tabs lead with Month Request / Req. Date / Brand and
+// trail with Remark — these are cross-team identity/notes columns, not
+// exclusive to one work category (matches the sheet's own "by All Team"
+// grouping for Remark, and the team's explicit call for the identity
+// columns). The Motion tab comes from a different sheet with no equivalent
+// identity columns, so it doesn't use these.
 const IDENTITY_COLUMNS = [
   { key: 'monthRequest', label: 'Month',    type: 'text' },
   { key: 'reqDate',      label: 'Req. Date', type: 'date' },
@@ -388,22 +544,29 @@ const TABS = [
   {
     key: 'motion',
     label: 'By Motion to OP',
+    // Sourced from the separate "Motion Status" sheet — no Month
+    // Request/Req. Date identity columns here, this sheet doesn't have them.
     columns: [
-      ...IDENTITY_COLUMNS,
-      { key: 'finalAssetName',   label: 'Final Asset Name', type: 'text-strong' },
-      { key: 'motionPIC',        label: 'Motion PIC',       type: 'text' },
-      { key: 'typeOfCampaign',   label: 'Campaign',         type: 'text' },
-      { key: 'applyDate',        label: 'Apply Date',       type: 'date' },
-      { key: 'motionDifficulty', label: 'Difficulty',       type: 'badge-difficulty' },
-      { key: 'motionRevision',   label: 'Revision',         type: 'number' },
-      { key: 'statusMotion',     label: 'Status',           type: 'badge-generic' },
-      { key: 'linkMotion',       label: 'File',             type: 'link' },
-      REMARK_COLUMN,
+      { key: 'namaAset',         label: 'Nama Aset',  type: 'text-strong' },
+      { key: 'brand',            label: 'Brand',      type: 'badge-brand' },
+      { key: 'platform',         label: 'Platform',   type: 'text' },
+      { key: 'tipe',             label: 'Tipe',       type: 'text' },
+      { key: 'typeOfCampaign',   label: 'Campaign',   type: 'text' },
+      { key: 'periodeMulai',     label: 'Periode Mulai',   type: 'date' },
+      { key: 'periodeSelesai',   label: 'Periode Selesai', type: 'date' },
+      { key: 'jamTayang',        label: 'Jam Tayang', type: 'text' },
+      { key: 'motionPIC',        label: 'Motion PIC', type: 'text' },
+      { key: 'motionDifficulty', label: 'Difficulty', type: 'badge-difficulty' },
+      { key: 'motionRevision',   label: 'Revision',   type: 'number' },
+      { key: 'statusMotion',     label: 'Status',     type: 'badge-generic' },
+      { key: 'linkMotion',       label: 'File',       type: 'link' },
+      { key: 'catatan',          label: 'Catatan',    type: 'text-muted' },
+      { key: 'studio',           label: 'Studio',     type: 'text' },
     ],
   },
 ]
 
-const DATE_SORT_KEYS    = new Set(['reqDate', 'dueDate', 'submissionDate', 'applyDate'])
+const DATE_SORT_KEYS    = new Set(['reqDate', 'dueDate', 'submissionDate', 'applyDate', 'periodeMulai', 'periodeSelesai'])
 const NUMERIC_SORT_KEYS = new Set(['reqQty', 'outputQty', 'workingDay', 'designRevision', 'stratRevision', 'motionRevision'])
 
 function renderCell(row, col, rowStatusCategory) {
@@ -473,6 +636,8 @@ function renderCell(row, col, rowStatusCategory) {
 export default function CampaignSchedule() {
   const [rawData, setRawData]       = useState(null)
   const [fetchError, setFetchError] = useState(null)
+  const [motionRawData, setMotionRawData]     = useState(null)
+  const [motionFetchError, setMotionFetchError] = useState(null)
   const [filterTaksSource,   setFilterTaksSource]   = useState('semua')
   const [filterTypeOfContent,setFilterTypeOfContent]= useState([]) // [] = semua konten
   const [filterDifficulty,   setFilterDifficulty]   = useState('semua')
@@ -496,7 +661,7 @@ export default function CampaignSchedule() {
 
   function handleTabChange(key) {
     setActiveTab(key)
-    setSortKey('reqDate')
+    setSortKey(key === 'motion' ? 'periodeMulai' : 'reqDate')
     setSortDir('asc')
   }
 
@@ -511,6 +676,20 @@ export default function CampaignSchedule() {
         if (rows.length === 0) setFetchError('sheet-empty')
       })
       .catch(err => { if (!cancelled) { setFetchError(err.message); setRawData(null) } })
+    return () => { cancelled = true }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    fetch(MOTION_CSV_URL)
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text() })
+      .then(text => {
+        if (cancelled) return
+        const rows = parseMotionCSV(text)
+        setMotionRawData(rows.length > 0 ? rows : null)
+        if (rows.length === 0) setMotionFetchError('sheet-empty')
+      })
+      .catch(err => { if (!cancelled) { setMotionFetchError(err.message); setMotionRawData(null) } })
     return () => { cancelled = true }
   }, [])
 
@@ -533,18 +712,33 @@ export default function CampaignSchedule() {
     return () => document.removeEventListener('mousedown', handleOutside)
   }, [])
 
-  const isLoading   = rawData === null && fetchError === null
-  const isLive      = rawData !== null && rawData.length > 0
-  const displayData = isLive ? rawData : SEED_DATA
+  const isMotionTab = activeTab === 'motion'
+
+  const oldIsLoading = rawData === null && fetchError === null
+  const oldIsLive     = rawData !== null && rawData.length > 0
+  const oldDisplayData = oldIsLive ? rawData : SEED_DATA
+
+  const motionIsLoading  = motionRawData === null && motionFetchError === null
+  const motionIsLive     = motionRawData !== null && motionRawData.length > 0
+  const motionDisplayData = motionIsLive ? motionRawData : MOTION_SEED_DATA
+
+  const isLoading   = isMotionTab ? motionIsLoading : oldIsLoading
+  const isLive      = isMotionTab ? motionIsLive : oldIsLive
+  const activeFetchError = isMotionTab ? motionFetchError : fetchError
+  const displayData = isMotionTab ? motionDisplayData : oldDisplayData
 
   const allMonths = useMemo(() => {
     const seen = new Set(FIXED_MONTHS)
-    displayData.forEach(r => {
+    oldDisplayData.forEach(r => {
       const sk = getMonthKey(r.reqDate), ek = getMonthKey(r.dueDate), ak = getMonthKey(r.applyDate)
       if (sk) seen.add(sk); if (ek) seen.add(ek); if (ak) seen.add(ak)
     })
+    motionDisplayData.forEach(r => {
+      const sk = getMonthKey(r.periodeMulai), ek = getMonthKey(r.periodeSelesai)
+      if (sk) seen.add(sk); if (ek) seen.add(ek)
+    })
     return Array.from(seen).sort()
-  }, [displayData])
+  }, [oldDisplayData, motionDisplayData])
 
   const brands = useMemo(
     () => Array.from(new Set(displayData.map(r => r.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'id')),
@@ -552,12 +746,36 @@ export default function CampaignSchedule() {
   )
 
   const typesOfContent = useMemo(
-    () => Array.from(new Set(displayData.map(r => r.typeOfContent).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'id')),
-    [displayData],
+    () => Array.from(new Set(oldDisplayData.map(r => r.typeOfContent).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'id')),
+    [oldDisplayData],
   )
 
-  const filtered = useMemo(
-    () => displayData.filter(row => {
+  // Campaign filter (PayDay/BaU/DD/Other) is shared by both tabs — same
+  // keyword classification either way, just against whichever row's
+  // typeOfCampaign value.
+  function matchesCampaignFilter(row) {
+    if (filterCampaign === 'semua') return true
+    const k = (row.typeOfCampaign ?? '').toLowerCase()
+    const isPayDay = k.includes('payday'), isBaU = k.includes('bau'), isDD = k.includes('dd')
+    if (filterCampaign === 'PayDay') return isPayDay
+    if (filterCampaign === 'BaU') return isBaU
+    if (filterCampaign === 'DD') return isDD
+    return !isPayDay && !isBaU && !isDD // Other
+  }
+
+  const filtered = useMemo(() => {
+    if (isMotionTab) {
+      // Only filters that have a real equivalent in the Motion Status sheet
+      // apply here — Excellence/Source/Konten/Req-Due-bulan are Design-only
+      // concepts and are left out entirely (not evaluated as "no match").
+      return motionDisplayData.filter(row => {
+        const matchB  = filterBrand === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
+        const matchDf = filterDifficulty === 'semua' || row.motionDifficulty === filterDifficulty
+        const matchMApply = filterBulanApply.length === 0 || filterBulanApply.some(k => motionApplyMonthOverlaps(row, k))
+        return matchB && matchDf && matchMApply && matchesCampaignFilter(row)
+      })
+    }
+    return oldDisplayData.filter(row => {
       const matchTS = filterTaksSource === 'semua' || row.taksSource === filterTaksSource
       const matchTC = filterTypeOfContent.length === 0 || filterTypeOfContent.includes(row.typeOfContent)
       const matchDf = filterDifficulty === 'semua' || row.designDifficulty === filterDifficulty
@@ -565,19 +783,9 @@ export default function CampaignSchedule() {
       const matchB  = filterBrand === 'semua' || (row.brand ?? '').toLowerCase() === filterBrand.toLowerCase()
       const matchMReq   = filterBulanReq.length === 0 || filterBulanReq.some(k => reqMonthOverlaps(row, k))
       const matchMApply = filterBulanApply.length === 0 || filterBulanApply.some(k => applyMonthOverlaps(row, k))
-      let matchC = true
-      if (filterCampaign !== 'semua') {
-        const k = (row.typeOfCampaign ?? '').toLowerCase()
-        const isPayDay = k.includes('payday'), isBaU = k.includes('bau'), isDD = k.includes('dd')
-        if (filterCampaign === 'PayDay') matchC = isPayDay
-        else if (filterCampaign === 'BaU') matchC = isBaU
-        else if (filterCampaign === 'DD') matchC = isDD
-        else if (filterCampaign === 'Other') matchC = !isPayDay && !isBaU && !isDD
-      }
-      return matchTS && matchTC && matchDf && matchOp && matchB && matchMReq && matchMApply && matchC
-    }),
-    [displayData, filterTaksSource, filterTypeOfContent, filterDifficulty, filterOperational, filterBrand, filterBulanReq, filterBulanApply, filterCampaign],
-  )
+      return matchTS && matchTC && matchDf && matchOp && matchB && matchMReq && matchMApply && matchesCampaignFilter(row)
+    })
+  }, [isMotionTab, oldDisplayData, motionDisplayData, filterTaksSource, filterTypeOfContent, filterDifficulty, filterOperational, filterBrand, filterBulanReq, filterBulanApply, filterCampaign])
 
   const filteredBrands = brandSearch.trim()
     ? brands.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()))
@@ -612,11 +820,13 @@ export default function CampaignSchedule() {
   const activeTabConfig = TABS.find(t => t.key === activeTab) ?? TABS[0]
   const statusCol = activeTabConfig.columns.find(c => c.type === 'badge-generic')
 
+  // Excellence overview is a Design-only concept — always computed off the
+  // Design/Strategic sheet regardless of which tab is active.
   const operationalCounts = useMemo(() => {
     const c = { Excellence: 0, Good: 0, Bad: 0 }
-    displayData.forEach(r => { if (c[r.operationalExcellence] !== undefined) c[r.operationalExcellence]++ })
+    oldDisplayData.forEach(r => { if (c[r.operationalExcellence] !== undefined) c[r.operationalExcellence]++ })
     return c
-  }, [displayData])
+  }, [oldDisplayData])
 
   // ── STAT CARDS config ──
   const STAT_CARDS = [
@@ -684,9 +894,9 @@ export default function CampaignSchedule() {
         )}
         {!isLoading && !isLive && (
           <div className="border border-amber-100 bg-amber-50 rounded-xl px-4 py-3 mb-6 text-[13px] text-amber-700 font-medium shadow-[0_1px_2px_rgba(16,24,40,.05)]">
-            {fetchError === 'sheet-empty'
+            {activeFetchError === 'sheet-empty'
               ? <>Sheet masih kosong — tambahkan data di Google Sheets lalu refresh.</>
-              : <>SEED — gagal memuat dari Sheets ({fetchError}). Set sheet ke <em>Anyone with the link can view</em> lalu refresh.</>
+              : <>SEED — gagal memuat dari Sheets ({activeFetchError}). Set sheet ke <em>Anyone with the link can view</em> lalu refresh.</>
             }
           </div>
         )}
@@ -718,7 +928,7 @@ export default function CampaignSchedule() {
               {(['semua', 'Excellence', 'Good', 'Bad']).map(s => (
                 <button key={s} onClick={() => setFilterOperational(s)}
                   className={`${CHIP_BASE} ${filterOperational === s ? CHIP_ON : CHIP_OFF}`}>
-                  {s === 'semua' ? `Semua (${displayData.length})` : `${s} (${operationalCounts[s]})`}
+                  {s === 'semua' ? `Semua (${oldDisplayData.length})` : `${s} (${operationalCounts[s]})`}
                 </button>
               ))}
             </div>
@@ -1000,8 +1210,7 @@ export default function CampaignSchedule() {
               <tbody className="divide-y divide-slate-100 bg-white">
                 {sorted.map((row, idx) => {
                   const isEven = idx % 2 === 1
-                  const displayRow = activeTab === 'motion' ? { ...row, statusMotion: deriveMotionStatus(row) } : row
-                  const statusCat = statusCol ? classifyStatus(displayRow[statusCol.key]) : 'unknown'
+                  const statusCat = statusCol ? classifyStatus(row[statusCol.key]) : 'unknown'
                   const rowAccent = STATUS_CONFIG[statusCat].row
                   return (
                     <tr
@@ -1017,7 +1226,7 @@ export default function CampaignSchedule() {
                           } ${col.type === 'date' || col.type === 'number' || col.type.startsWith('badge') || col.type === 'yes-no' ? 'whitespace-nowrap' : ''} ${
                             col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''
                           }`}>
-                          {renderCell(displayRow, col, statusCat)}
+                          {renderCell(row, col, statusCat)}
                         </td>
                       ))}
                     </tr>
@@ -1039,24 +1248,29 @@ export default function CampaignSchedule() {
         {/* ── NOTES ── */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {[
-            { col: 'Tab',           note: 'Tiga tab — By Design, By Strategic, By Motion to OP — menampilkan kolom yang relevan untuk tiap kategori kerja dari satu data yang sama (satu kali fetch). Month Request, Req. Date, Brand, dan Remark tampil di semua tab karena bersifat identitas/lintas tim.' },
-            { col: 'Status',        note: 'Kolom Status Strat / Status Design / Status Motion menampilkan nilai apa adanya dari sheet, diwarnai otomatis berdasarkan kata kunci: hijau (Done/Selesai), biru (On Progress), kuning (Waiting/Approval), merah (Blocked/Issue). Baris yang Done ditandai border hijau dan teks tebal agar langsung kelihatan pas scroll. Kosong berarti tahap tersebut belum diisi timnya. Khusus tab By Motion to OP: kalau Status Motion masih kosong tapi Design (dan Strategic, kalau dipakai) sudah Done, statusnya otomatis tampil "Waiting for Motion" — menandakan request sudah siap dikerjakan tim Motion.' },
-            { col: 'Excellence',    note: 'Kolom Operational Exellence dari sheet (tab By Design): Excellence, Good, atau Bad.' },
-            { col: 'Difficulty',    note: 'Design Difficulty (tab By Design) dan Motion Difficulty (tab By Motion to OP) dari sheet: Low, Medium, atau High.' },
-            { col: 'Final Asset Name', note: 'Nama aset final dari sheet — tampil di tab By Design maupun By Motion to OP, kosong sampai request mencapai tahap yang mengisinya.' },
-            { col: 'Source',        note: 'Kolom Taks Source dari sheet: Ecommerce atau Orca — sumber sistem request, bukan platform siaran.' },
-            { col: 'Campaign',      note: 'Kolom Type of Campaign dari sheet, dipakai juga untuk filter Campaign (PayDay / BaU / DD / Other). Masih kosong di sebagian besar data karena tahap Motion belum berjalan.' },
-            { col: 'Sort',          note: 'Default sort mengikuti Req. Date secara ascending, dan direset tiap kali ganti tab agar indikator sort tidak menunjuk ke kolom yang tidak ditampilkan di tab tersebut.' },
-            { col: 'Remark',        note: 'Kolom Remark (Wardrobe, Gimmick, Concern on Live) dari sheet — catatan bebas, tampil di semua tab.' },
-            { col: 'Filter Bulan',  note: 'Dua dropdown terpisah berdampingan — "Req/Due" mem-filter berdasarkan periode Req.–Due Date (kerja Design/Strategic), "Apply" mem-filter berdasarkan Apply Date (kerja Motion). Masing-masing bisa pilih lebih dari satu bulan, tersedia Januari 2025–Desember 2026, dan berlaku lintas tab. Dipisah karena satu request bisa punya bulan Req./Due dan bulan Apply yang berbeda — request yang baru punya Apply Date (belum ada Req./Due dari Design) tetap muncul lewat filter Apply tanpa perlu data di tab lain.' },
+            { col: 'Tab',           note: 'By Design dan By Strategic menampilkan kolom dari sheet Design/Strategic (satu kali fetch, tab berbagi data yang sama — Month Request, Req. Date, Brand, dan Remark tampil di kedua tab itu). By Motion to OP kini sumbernya sheet terpisah ("Motion Status"), fetch dan struktur kolomnya sendiri, gak nyambung ke Design/Strategic.' },
+            { col: 'Status',        note: 'Kolom Status Strat / Status Design menampilkan nilai apa adanya dari sheet, diwarnai otomatis berdasarkan kata kunci: hijau (Done/Selesai), biru (On Progress), kuning (Waiting/Approval), merah (Blocked/Issue). Baris yang Done ditandai border hijau dan teks tebal agar langsung kelihatan pas scroll. Tab By Motion to OP pakai kolom Status Mockup dari sheet Motion Status dengan pewarnaan yang sama, apa adanya (tanpa derivasi dari status Design/Strategic).' },
+            { col: 'Excellence',    note: 'Kolom Operational Exellence dari sheet (tab By Design): Excellence, Good, atau Bad. Stat card di atas selalu merujuk data ini walau lagi buka tab lain.' },
+            { col: 'Final Asset Name', note: 'Nama aset final dari sheet Design/Strategic — cuma tampil di tab By Design, kosong sampai request mencapai tahap yang mengisinya. Tab By Motion to OP punya kolom sendiri, "Nama Aset", dari sheet Motion Status.' },
+            { col: 'Difficulty',    note: 'Design Difficulty (tab By Design) dan Motion Difficulty (tab By Motion to OP, dari sheet Motion Status): Low, Medium, High, atau Campaign.' },
+            { col: 'Source',        note: 'Kolom Taks Source dari sheet: Ecommerce atau Orca — sumber sistem request, bukan platform siaran. Cuma berlaku di tab By Design.' },
+            { col: 'Campaign',      note: 'Kolom Type of Campaign (By Design/Strategic) atau Kampanye (By Motion to OP, dari sheet Motion Status) — dipakai juga untuk filter Campaign (PayDay / BaU / DD / Other).' },
+            { col: 'Sort',          note: 'Default sort mengikuti Req. Date (By Design/Strategic) atau Periode Mulai (By Motion to OP), ascending, dan direset tiap kali ganti tab agar indikator sort tidak menunjuk ke kolom yang tidak ditampilkan di tab tersebut.' },
+            { col: 'Remark',        note: 'By Design/Strategic pakai kolom Remark (Wardrobe, Gimmick, Concern on Live) dari sheet Design/Strategic. By Motion to OP pakai kolom Catatan dari sheet Motion Status — catatan bebas yang terpisah, bukan kolom yang sama.' },
+            { col: 'Filter Bulan',  note: 'Dua dropdown terpisah berdampingan — "Req/Due" (kerja Design/Strategic, cuma berlaku di tab itu) dan "Apply" (By Motion to OP, dicek terhadap rentang Periode Mulai–Selesai di sheet Motion Status). Kalau Periode Selesai dikosongkan, batas aktifnya dihitung otomatis dari siklus Kampanye: DD/PayDay dianggap aktif 1 hari setelah mulai, BaU dianggap aktif sampai sebelum tanggal DD/PayDay checkpoint berikutnya. Masing-masing dropdown bisa pilih lebih dari satu bulan, tersedia Januari 2025–Desember 2026.' },
             {
               col: 'Setup Sheets',
               note: (
                 <>
-                  Sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong> agar fetch berjalan.{' '}
+                  Kedua sheet harus di-set <strong>Share → Anyone with the link → Viewer</strong> agar fetch berjalan.{' '}
                   <a href="https://docs.google.com/spreadsheets/d/1aXZ2STMDwPa-zFeZj37aa_Ko4-IE5WYzIKKe3EMm8rs/edit#gid=1476491661"
                     target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline transition-colors duration-150">
                     Buka Google Sheets — tab 2026 →
+                  </a>{' '}
+                  ·{' '}
+                  <a href="https://docs.google.com/spreadsheets/d/1aXZ2STMDwPa-zFeZj37aa_Ko4-IE5WYzIKKe3EMm8rs/edit#gid=820345676"
+                    target="_blank" rel="noopener noreferrer" className="text-brand-600 hover:underline transition-colors duration-150">
+                    Motion Status →
                   </a>
                 </>
               ),
