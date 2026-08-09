@@ -608,7 +608,15 @@ const NUMERIC_SORT_KEYS = new Set(['reqQty', 'outputQty', 'workingDay', 'designR
 // Tailwind's class scanner is static, so this width is duplicated as a
 // literal class here and as a literal `left-[140px]` at the usage site —
 // keep both in sync if this ever changes.
-const STICKY_STATUS_COL_LEFT = 'left-[140px]'
+//
+// Sticky positioning only kicks in from the `sm` breakpoint up. Below that,
+// campaign-status (140px) + Nama Aset (auto-grows past its 180px min for
+// bold multi-word asset names, ~230px+ in practice) add up to more than a
+// phone's own viewport width once page padding is subtracted — frozen at
+// scrollLeft 0 that leaves nothing else on screen and no way to tell the
+// rest of the table exists. On mobile the table just scrolls normally
+// instead, so every column is reachable by swiping.
+const STICKY_STATUS_COL_LEFT = 'sm:left-[140px]'
 
 const COL_MIN_WIDTH = {
   'text-strong':       'min-w-[180px]',
@@ -1266,12 +1274,12 @@ export default function CampaignSchedule() {
                   {activeTabConfig.columns.map((col, colIdx) => {
                     const sortable = col.type !== 'link'
                     const isSticky = colIdx < stickyColCount
-                    const stickyLeft = colIdx === 0 ? 'left-0' : STICKY_STATUS_COL_LEFT
+                    const stickyLeft = colIdx === 0 ? 'sm:left-0' : STICKY_STATUS_COL_LEFT
                     return (
                       <th key={col.key} onClick={sortable ? () => handleSort(col.key) : undefined}
                         className={`align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${COL_MIN_WIDTH[col.type] ?? ''} ${
                           sortable ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
-                        } ${isSticky ? `sticky ${stickyLeft} z-20 bg-slate-50` : ''}`}>
+                        } ${isSticky ? `sm:sticky ${stickyLeft} sm:z-20 bg-slate-50` : ''}`}>
                         <span className="flex items-center gap-1">
                           {col.label}
                           {sortable && (
@@ -1304,7 +1312,7 @@ export default function CampaignSchedule() {
                           className={`px-4 py-2 min-h-[52px] align-middle ${COL_MIN_WIDTH[col.type] ?? ''} ${
                             col.type === 'text-muted' ? 'text-[12px] text-slate-500' : 'whitespace-nowrap'
                           } ${col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''} ${
-                            colIdx < stickyColCount ? `sticky ${colIdx === 0 ? 'left-0' : STICKY_STATUS_COL_LEFT} z-[5] ${stickyBg}` : ''
+                            colIdx < stickyColCount ? `sm:sticky ${colIdx === 0 ? 'sm:left-0' : STICKY_STATUS_COL_LEFT} sm:z-[5] ${stickyBg}` : ''
                           }`}>
                           {renderCell(row, col, statusCat)}
                         </td>
