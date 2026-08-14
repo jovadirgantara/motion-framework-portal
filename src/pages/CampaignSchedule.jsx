@@ -661,6 +661,17 @@ const STICKY_COL_BG = {
   unknown:  'bg-white',
 }
 
+// Sheet cells sometimes carry an asset label ("[TIKTOK] [BAU] FOO") instead of
+// the actual Drive link — happens when the URL was attached as a rich-text
+// hyperlink over that label in Sheets rather than typed as the cell's value,
+// which the CSV export drops (it only exports the visible text). Rendering
+// that label as an <a href> creates a same-origin relative link that lands
+// back on this portal instead of Drive, so only treat it as a real link once
+// it's an absolute http(s) URL.
+function isAbsoluteUrl(value) {
+  return /^https?:\/\//i.test((value ?? '').trim())
+}
+
 function renderCell(row, col, rowStatusCategory) {
   const value = row[col.key]
   switch (col.type) {
@@ -705,12 +716,15 @@ function renderCell(row, col, rowStatusCategory) {
         ? <span className={`${BADGE} ${value === 'Yes' ? 'bg-green-50 text-green-700 ring-1 ring-green-200' : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'}`}>{value}</span>
         : <span className="text-slate-300 text-[13px]">—</span>
     case 'link':
-      return value
+      if (!value) return <span className="text-slate-300 text-[13px]">—</span>
+      return isAbsoluteUrl(value)
         ? <a href={value} target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center h-9 px-4 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-semibold rounded-lg transition-all duration-150 ease-out shadow-[0_1px_2px_rgba(16,24,40,.05)] whitespace-nowrap">
             Buka →
           </a>
-        : <span className="text-slate-300 text-[13px]">—</span>
+        : <span className="inline-flex items-center h-9 px-3 text-[12px] text-slate-400 italic whitespace-nowrap" title="Link belum diisi di Sheets — isi kolom Link File dengan URL Drive langsung">
+            Link belum ada
+          </span>
     case 'text-strong': {
       const isDone = rowStatusCategory === 'done'
       return (
