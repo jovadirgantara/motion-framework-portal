@@ -1,43 +1,46 @@
 import { Link } from 'react-router-dom'
+import Logo from './Logo'
+
+const NAV = [
+  ['/framework', 'Framework'],
+  ['/tools', 'Tools'],
+  ['/campaign', 'Jadwal'],
+  ['/downloads', 'Unduhan'],
+  ['/get-started', 'Mulai'],
+  ['/about', 'Tentang'],
+]
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white mt-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+    <footer className="mt-16 border-t border-line bg-surface-sunken">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
 
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link to="/" className="flex items-center gap-3 mb-3 group">
-              <div className="w-9 h-9 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0">
-                <span className="text-white font-mono font-bold text-2xs leading-none">ORBIZ</span>
-              </div>
-              <span className="text-sm font-semibold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors">
-                Mockup & Motion Framework
+            <Link to="/" className="group mb-3 flex items-center gap-3">
+              <Logo className="h-9 w-9" />
+              <span className="text-sm font-semibold tracking-tight text-ink transition-colors group-hover:text-brand-600">
+                Mockup &amp; Motion Framework
               </span>
             </Link>
-            <p className="text-xs text-slate-500 leading-relaxed max-w-xs mb-3">
-              Portal dokumentasi interaktif framework produksi motion graphic live commerce berbasis visual hierarchy.
-              Dikembangkan sebagai bagian dari penelitian S1 Pendidikan Multimedia, UPI Cibiru.
+            <p className="mb-4 max-w-xs text-xs leading-relaxed text-ink-muted">
+              Portal dokumentasi interaktif framework produksi motion graphic live commerce berbasis
+              visual hierarchy. Dikembangkan sebagai bagian dari penelitian S1 Pendidikan Multimedia,
+              UPI Cibiru.
             </p>
-            <span className="font-mono text-2xs text-slate-400 border border-slate-200 rounded-full px-2 py-0.5">
+            <span className="rounded-full border border-line px-2 py-0.5 font-mono text-2xs text-ink-subtle">
               © 2026 Jova Dirgantara Putra
             </span>
           </div>
 
           {/* Nav */}
           <div>
-            <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-4">Navigasi</p>
+            <p className="mb-4 font-mono text-2xs uppercase tracking-widest text-ink-subtle">Navigasi</p>
             <ul className="space-y-2 text-sm">
-              {[
-                ['/framework', 'Framework'],
-                ['/tools', 'Tools'],
-                ['/campaign', 'Jadwal'],
-                ['/downloads', 'Unduhan'],
-                ['/about', 'Tentang'],
-              ].map(([to, label]) => (
+              {NAV.map(([to, label]) => (
                 <li key={to}>
-                  <Link to={to} className="text-slate-500 hover:text-brand-700 transition-colors">
+                  <Link to={to} className="text-ink-muted transition-colors hover:text-brand-600">
                     {label}
                   </Link>
                 </li>
@@ -47,16 +50,16 @@ export default function Footer() {
 
           {/* Research */}
           <div>
-            <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-4">Penelitian</p>
-            <ul className="space-y-2 text-sm text-slate-500">
-              <li className="font-semibold text-slate-700">Jova Dirgantara Putra</li>
-              <li className="font-mono text-xs text-slate-400">NIM 2201632</li>
+            <p className="mb-4 font-mono text-2xs uppercase tracking-widest text-ink-subtle">Penelitian</p>
+            <ul className="space-y-2 text-sm text-ink-muted">
+              <li className="font-semibold text-ink">Jova Dirgantara Putra</li>
+              <li className="font-mono text-xs text-ink-subtle">NIM 2201632</li>
               <li>S1 Pendidikan Multimedia</li>
               <li>UPI Cibiru</li>
               <li className="pt-2">
                 <Link
                   to="/feedback"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-brand-700 border border-brand-300 rounded-full hover:bg-brand-50 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-brand-300 px-3 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100"
                 >
                   Beri Feedback →
                 </Link>
@@ -66,12 +69,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-          <p className="font-mono text-2xs text-slate-400">
+        <div className="mt-10 flex flex-col items-start justify-between gap-2 border-t border-line pt-6 sm:flex-row sm:items-center">
+          <p className="font-mono text-2xs text-ink-subtle">
             © 2026 Jova Dirgantara Putra · UPI Cibiru
           </p>
           <p className="font-mono text-2xs text-amber-600">
-            ⚠ Data estimasi adalah SEED default — bukan temuan final penelitian
+            Data estimasi adalah SEED default — bukan temuan final penelitian
           </p>
         </div>
       </div>

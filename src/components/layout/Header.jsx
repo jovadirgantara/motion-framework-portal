@@ -1,147 +1,191 @@
 import { useState, useEffect } from 'react'
 import Logo from './Logo'
+import ThemeToggle from '../ui/ThemeToggle'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 
+// Three zones, matching the three sidebar groups. Secondary destinations
+// (Unduhan, Mulai, Tentang) moved into the sidebar's "Lainnya" group and the
+// footer — a flat six-item bar was the reason nothing read as primary.
 const navItems = [
   { label: 'Framework', to: '/framework' },
   { label: 'Tools', to: '/tools' },
   { label: 'Jadwal', to: '/campaign' },
+]
+
+const mobileExtras = [
   { label: 'Unduhan', to: '/downloads' },
+  { label: 'Mulai', to: '/get-started' },
+  { label: 'Tentang', to: '/about' },
 ]
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [scrollY, setScrollY] = useState(0)
+  const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
+  const reduce = useReducedMotion()
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Close the overlay on navigation, and stop the page scrolling behind it.
+  useEffect(() => setMenuOpen(false), [location.pathname])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = e => e.key === 'Escape' && setMenuOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
 
   return (
     <motion.header
-      initial={{ y: -100 }}
+      initial={reduce ? false : { y: -64 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 ${
-        scrollY > 50 ? 'shadow-md' : ''
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className={`sticky top-0 z-40 w-full border-b bg-surface/80 backdrop-blur-md transition-[border-color,box-shadow] ${
+        scrolled ? 'border-line shadow-lift-sm' : 'border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="group flex items-center gap-3">
             <motion.div
-              whileHover={{ rotate: 5, scale: 1.1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+              whileHover={reduce ? undefined : { rotate: 5, scale: 1.08 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 12 }}
             >
-              <Logo />
+              <Logo className="h-9 w-9" />
             </motion.div>
-            <span className="text-sm font-semibold tracking-tight text-slate-900 group-hover:text-brand-700 transition-colors">
-              Mockup & Motion Framework
+            <span className="hidden text-sm font-semibold tracking-tight text-ink transition-colors group-hover:text-brand-600 sm:block">
+              Mockup &amp; Motion Framework
             </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navItems.map(item => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `px-3 py-1.5 text-sm rounded-full transition-colors font-medium ${
-                    isActive || location.pathname.startsWith(item.to)
-                      ? 'text-brand-700 bg-brand-50 font-semibold ring-1 ring-inset ring-brand-200'
-                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
-                  }`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-            <div className="w-px h-4 bg-slate-200 mx-2" />
+          {/* Desktop nav */}
+          <nav aria-label="Navigasi utama" className="hidden items-center gap-1 md:flex">
+            {navItems.map(item => {
+              const active = location.pathname === item.to || location.pathname.startsWith(`${item.to}/`)
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  aria-current={active ? 'page' : undefined}
+                  className={`relative rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                    active ? 'text-brand-700' : 'text-ink-muted hover:text-ink'
+                  }`}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="nav-pill"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      className="absolute inset-0 -z-10 rounded-full bg-brand-100"
+                    />
+                  )}
+                  {item.label}
+                </NavLink>
+              )
+            })}
+
+            <span aria-hidden="true" className="mx-2 h-4 w-px bg-line" />
+            <ThemeToggle />
             <Link
               to="/feedback"
-              className="px-4 py-1.5 text-sm font-medium text-white bg-brand-600 rounded-full hover:bg-brand-700 transition-colors"
+              className="ml-1 rounded-full bg-brand-600 px-4 py-1.5 text-sm font-semibold text-on-accent transition-colors hover:bg-brand-700"
             >
               Feedback
             </Link>
           </nav>
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Buka menu"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+          {/* Mobile controls */}
+          <div className="flex items-center gap-1.5 md:hidden">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted transition-colors hover:bg-slate-100 hover:text-ink"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Buka menu"
+              aria-expanded={menuOpen}
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile full-screen overlay */}
+      {/* Mobile overlay */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-white md:hidden"
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-50 bg-surface md:hidden"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-14">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6">
+              <div className="flex h-16 items-center justify-between">
                 <Link to="/" className="flex items-center gap-3" onClick={() => setMenuOpen(false)}>
-                  <Logo />
-                  <span className="text-sm font-semibold tracking-tight text-slate-900">Mockup & Motion Framework</span>
+                  <Logo className="h-9 w-9" />
+                  <span className="text-sm font-semibold tracking-tight text-ink">
+                    Mockup &amp; Motion Framework
+                  </span>
                 </Link>
                 <button
+                  type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors"
+                  aria-label="Tutup menu"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink-muted hover:bg-slate-100 hover:text-ink"
                 >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
             </div>
+
             <motion.nav
+              aria-label="Navigasi utama"
               initial="hidden"
               animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: { opacity: 1, transition: { staggerChildren: 0.07 } },
-              }}
-              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8 grid gap-2"
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
+              className="mx-auto grid max-w-7xl gap-1.5 px-4 pb-8 pt-4 sm:px-6"
             >
-              {[...navItems, { label: 'Tentang', to: '/about' }].map((item, i) => (
+              {[...navItems, ...mobileExtras].map(item => (
                 <motion.div
-                  key={i}
-                  variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+                  key={item.to}
+                  variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}
                 >
                   <Link
                     to={item.to}
-                    className="flex items-center justify-between rounded-2xl px-4 py-3 text-base font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-700 transition-colors"
+                    className="flex items-center justify-between rounded-2xl px-4 py-3.5 text-base font-medium text-ink transition-colors hover:bg-brand-100 hover:text-brand-800"
                     onClick={() => setMenuOpen(false)}
                   >
                     {item.label}
-                    <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    <svg className="h-4 w-4 text-ink-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
                     </svg>
                   </Link>
                 </motion.div>
               ))}
               <motion.div
-                variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+                variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}
                 className="pt-3"
               >
                 <Link
                   to="/feedback"
-                  className="block w-full text-center px-4 py-2.5 text-sm font-medium text-white bg-brand-600 rounded-full hover:bg-brand-700 transition-colors"
+                  className="block w-full rounded-full bg-brand-600 px-4 py-3 text-center text-sm font-semibold text-on-accent hover:bg-brand-700"
                   onClick={() => setMenuOpen(false)}
                 >
                   Beri Feedback

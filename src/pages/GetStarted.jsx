@@ -77,7 +77,7 @@ const steps = [
 
 export default function GetStarted() {
   return (
-    <PageLayout>
+    <PageLayout sidebar="all">
       <div className="max-w-2xl mx-auto">
         <PageHeader
           eyebrow="/ Mulai dari Sini"
@@ -85,7 +85,7 @@ export default function GetStarted() {
           description={
             <>
               Urutan baca yang disarankan untuk designer baru atau validator yang mau memahami framework
-              secara menyeluruh. Total waktu estimasi: <strong className="text-slate-700">~45 menit</strong>.
+              secara menyeluruh. Total waktu estimasi: <strong className="text-ink-muted">~45 menit</strong>.
             </>
           }
         />
@@ -104,13 +104,13 @@ export default function GetStarted() {
               className={`flex gap-4 rounded-2xl p-5 ${
                 s.isTool ? 'bg-brand-50' :
                 s.isFeedback ? 'bg-teal-50' :
-                'bg-white border border-slate-200'
+                'bg-elevated border border-line'
               }`}
             >
               <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 font-display ${
-                s.isTool ? 'bg-brand-600 text-white' :
-                s.isFeedback ? 'bg-teal-600 text-white' :
-                'bg-slate-200 text-slate-600'
+                s.isTool ? 'bg-brand-600 text-on-accent' :
+                s.isFeedback ? 'bg-teal-600 text-on-accent' :
+                'bg-slate-200 text-ink-muted'
               }`}>
                 {s.step}
               </div>
@@ -123,11 +123,11 @@ export default function GetStarted() {
                     {s.isFeedback && (
                       <span className="text-2xs font-mono uppercase tracking-widest text-teal-600 mr-2">Feedback</span>
                     )}
-                    <span className="font-display text-base font-bold text-slate-900">{s.title}</span>
+                    <span className="font-display text-base font-bold text-ink">{s.title}</span>
                   </div>
-                  <span className="text-xs text-slate-400 shrink-0">{s.time}</span>
+                  <span className="text-xs text-ink-subtle shrink-0">{s.time}</span>
                 </div>
-                <p className="text-sm text-slate-600 mt-1 mb-2 leading-relaxed">{s.desc}</p>
+                <p className="text-sm text-ink-muted mt-1 mb-2 leading-relaxed">{s.desc}</p>
                 <Link
                   to={s.to}
                   className={`text-sm font-semibold hover:underline underline-offset-4 ${

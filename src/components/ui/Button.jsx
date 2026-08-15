@@ -1,11 +1,13 @@
 export default function Button({ children, onClick, variant = 'primary', size = 'md', className = '', type = 'button', disabled = false }) {
-  const base = 'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed'
+  const base = 'inline-flex items-center justify-center gap-2 font-semibold rounded-lg transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50'
 
+  // Accent fills carry `text-on-accent`, never a literal white: in dark mode
+  // the accent lightens, and white on it would drop below 4.5:1.
   const variants = {
-    primary:   'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800',
-    secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 active:bg-slate-100',
-    ghost:     'text-brand-600 hover:bg-brand-50 active:bg-brand-100',
-    danger:    'bg-red-600 text-white hover:bg-red-700',
+    primary:   'bg-brand-600 text-on-accent hover:bg-brand-700',
+    secondary: 'bg-elevated text-ink border border-line-strong hover:bg-slate-100',
+    ghost:     'text-brand-600 hover:bg-brand-100',
+    danger:    'bg-red-600 text-on-accent hover:bg-red-700',
   }
 
   const sizes = {

@@ -7,10 +7,42 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply text-slate-800 bg-white font-sans;
+    @apply text-ink bg-surface font-sans antialiased;
   }
   h1, h2, h3, h4 {
     @apply font-display;
+  }
+
+  /* One visible focus treatment for every interactive element. Uses
+     :focus-visible so pointer users never see a ring, keyboard users always
+     do — the previous per-component `focus:ring` rules were inconsistent. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2;
+    --tw-ring-offset-color: rgb(var(--t-surface));
+  }
+
+  /* Form controls inherit the theme rather than the UA's light-only defaults. */
+  input, select, textarea {
+    @apply bg-elevated text-ink border-line;
+  }
+  ::placeholder {
+    @apply text-ink-subtle;
+  }
+
+  ::selection {
+    @apply bg-brand-500/25;
+  }
+
+  /* Honour the OS setting globally, not just inside framer-motion components. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
@@ -27,7 +59,7 @@
 
   /* ── Kartu playful — radius besar, shadow ungu saat hover ── */
   .card {
-    @apply bg-white border border-slate-200 rounded-2xl transition-all duration-200;
+    @apply bg-elevated border border-line rounded-2xl transition-all duration-200;
   }
   .card-hover {
     @apply hover:border-brand-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lift-sm;
@@ -35,14 +67,14 @@
 
   /* ── Alternate section background ── */
   .section-alt {
-    @apply bg-slate-50;
+    @apply bg-surface-sunken;
   }
 
   /* ── Photo placeholder ── */
   .placeholder-img {
-    @apply border-2 border-dashed border-slate-300 bg-slate-50 rounded-xl
+    @apply border-2 border-dashed border-line-strong bg-surface-sunken rounded-xl
            flex flex-col items-center justify-center gap-2
-           text-slate-400 font-mono text-2xs text-center;
+           text-ink-subtle font-mono text-2xs text-center;
   }
 
   /* ── Mono badge ── */
@@ -52,7 +84,7 @@
 
   /* ── Divider line ── */
   .section-divider {
-    @apply border-t border-slate-200;
+    @apply border-t border-line;
   }
 
   /* ── Framework prose ── */
@@ -78,24 +110,33 @@
     @apply w-full text-sm mb-4 border-collapse;
   }
   .prose-framework th {
-    @apply text-left font-semibold text-slate-700 border-b border-slate-200 pb-2 pr-4;
+    @apply text-left font-semibold text-slate-700 border-b border-line pb-2 pr-4;
   }
   .prose-framework td {
-    @apply border-b border-slate-100 py-2 pr-4 align-top;
+    @apply border-b border-line py-2 pr-4 align-top;
   }
   .prose-framework code {
     @apply font-mono text-sm bg-slate-100 px-1.5 py-0.5 rounded text-brand-700;
   }
   .prose-framework pre {
-    @apply font-mono text-sm bg-slate-900 text-slate-100 p-4 rounded overflow-x-auto mb-4;
+    @apply font-mono text-sm bg-code-bg text-code-ink p-4 rounded overflow-x-auto mb-4;
   }
   .prose-framework pre code {
-    @apply bg-transparent text-slate-100 p-0;
+    @apply bg-transparent text-code-ink p-0;
   }
   .prose-framework blockquote {
     @apply border-l-2 border-brand-400 pl-4 italic text-slate-600 mb-4;
   }
   .prose-framework strong {
     @apply font-semibold text-slate-900;
+  }
+}
+
+@layer utilities {
+  /* Skip link — visually hidden until focused. */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60]
+           focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2
+           focus:text-sm focus:font-semibold focus:text-on-accent;
   }
 }

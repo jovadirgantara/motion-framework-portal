@@ -23,9 +23,9 @@ const INTERP_COLORS = {
 function TriButton({ status, current, onSelect }) {
   const isActive = current === status
   const styles = {
-    pass: isActive ? 'bg-green-600 text-white border-green-600' : 'border-slate-300 text-slate-500 hover:border-green-400 hover:text-green-700',
-    fail: isActive ? 'bg-red-600 text-white border-red-600'     : 'border-slate-300 text-slate-500 hover:border-red-400 hover:text-red-700',
-    na:   isActive ? 'bg-slate-500 text-white border-slate-500' : 'border-slate-300 text-slate-500 hover:bg-slate-100',
+    pass: isActive ? 'bg-green-600 text-on-accent border-green-600' : 'border-line-strong text-ink-muted hover:border-green-400 hover:text-green-700',
+    fail: isActive ? 'bg-red-600 text-on-accent border-red-600'     : 'border-line-strong text-ink-muted hover:border-red-400 hover:text-red-700',
+    na:   isActive ? 'bg-slate-500 text-on-accent border-slate-500' : 'border-line-strong text-ink-muted hover:bg-slate-100',
   }
   const labels = { pass: 'PASS', fail: 'FAIL', na: 'N/A' }
   return (
@@ -130,25 +130,25 @@ export default function VHChecklist() {
     <PageLayout sidebar="tools">
       {/* Header */}
       <Reveal>
-        <div className="pb-6 border-b border-slate-200 mb-6">
-          <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
+        <div className="pb-6 border-b border-line mb-6">
+          <div className="flex items-center gap-2 font-mono text-2xs text-ink-subtle mb-3">
             <Link to="/tools" className="hover:text-brand-600">Tools</Link>
             <span>/</span>
             <span>Visual Hierarchy Checklist</span>
           </div>
           <p className="eyebrow text-pink-600 mb-1">/ Tool 03 · Visual Hierarchy Checklist</p>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 mb-2">Visual Hierarchy Checklist</h1>
-          <p className="text-sm text-slate-500 max-w-xl">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-ink mb-2">Visual Hierarchy Checklist</h1>
+          <p className="text-sm text-ink-muted max-w-xl">
             Quality control visual sebelum motion graphic digunakan pada live commerce.
             Nilai setiap indikator: <span className="font-mono text-green-700">PASS</span> ·{' '}
             <span className="font-mono text-red-700">FAIL</span> ·{' '}
-            <span className="font-mono text-slate-500">N/A</span>
+            <span className="font-mono text-ink-muted">N/A</span>
           </p>
         </div>
       </Reveal>
 
       {/* Progress + live score */}
-      <div className="border border-slate-200 rounded p-4 mb-6">
+      <div className="border border-line rounded p-4 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-4">
             <div>
@@ -160,7 +160,7 @@ export default function VHChecklist() {
               }`}>
                 {ratedIds.length > 0 ? passRate + '%' : '—'}
               </span>
-              <span className="font-mono text-2xs text-slate-400 ml-1">PASS Rate</span>
+              <span className="font-mono text-2xs text-ink-subtle ml-1">PASS Rate</span>
             </div>
             {ratedIds.length > 0 && (
               <span className={`font-mono text-2xs px-2 py-0.5 rounded border ${colors.badge}`}>
@@ -168,7 +168,7 @@ export default function VHChecklist() {
               </span>
             )}
           </div>
-          <div className="font-mono text-2xs text-slate-400">
+          <div className="font-mono text-2xs text-ink-subtle">
             {answered}/{TOTAL} diisi · {passIds.length} PASS · {failIds.length} FAIL · {naIds.length} N/A
           </div>
         </div>
@@ -187,16 +187,16 @@ export default function VHChecklist() {
           const stat   = catStats.find(s => s.id === cat.id)
           const isOpen = open[cat.id] ?? false
           return (
-            <div key={cat.id} className="border border-slate-200 rounded overflow-hidden">
+            <div key={cat.id} className="border border-line rounded overflow-hidden">
               {/* Accordion header */}
               <button
                 onClick={() => toggleAccordion(cat.id)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+                className="w-full flex items-center justify-between px-4 py-3 bg-surface-sunken hover:bg-slate-100 transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-2xs text-slate-400">{String(ci + 1).padStart(2, '0')}</span>
-                  <span className="text-sm font-medium text-slate-800">{cat.label}</span>
-                  <span className="font-mono text-2xs text-slate-400">
+                  <span className="font-mono text-2xs text-ink-subtle">{String(ci + 1).padStart(2, '0')}</span>
+                  <span className="text-sm font-medium text-ink">{cat.label}</span>
+                  <span className="font-mono text-2xs text-ink-subtle">
                     ({cat.indicators.length} indikator)
                   </span>
                 </div>
@@ -213,13 +213,13 @@ export default function VHChecklist() {
                       {stat.failed} FAIL
                     </span>
                   )}
-                  <span className="text-slate-400 text-sm">{isOpen ? '▲' : '▼'}</span>
+                  <span className="text-ink-subtle text-sm">{isOpen ? '▲' : '▼'}</span>
                 </div>
               </button>
 
               {/* Indicators */}
               {isOpen && (
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y divide-line">
                   {cat.indicators.map((ind, ii) => {
                     const val = answers[ind.id]
                     return (
@@ -228,13 +228,13 @@ export default function VHChecklist() {
                       }`}>
                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
                           <div className="flex-1">
-                            <p className="text-sm text-slate-900 mb-1">
-                              <span className="font-mono text-2xs text-slate-400 mr-2">
+                            <p className="text-sm text-ink mb-1">
+                              <span className="font-mono text-2xs text-ink-subtle mr-2">
                                 {ci + 1}.{ii + 1}
                               </span>
                               {ind.text}
                             </p>
-                            <p className="font-mono text-2xs text-slate-400 leading-relaxed">
+                            <p className="font-mono text-2xs text-ink-subtle leading-relaxed">
                               {ind.hint}
                             </p>
                           </div>
@@ -264,16 +264,16 @@ export default function VHChecklist() {
         <div className={`border-2 ${colors.ring} ${colors.bg} rounded p-5 mb-4`}>
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-1">Hasil PASS Rate</p>
+              <p className="font-mono text-2xs text-ink-subtle tracking-widest uppercase mb-1">Hasil PASS Rate</p>
               <p className={`text-3xl font-semibold ${colors.text}`}>{passRate}%</p>
               <p className={`text-sm font-medium ${colors.text} mt-0.5`}>{interp.label}</p>
-              <p className="text-sm text-slate-600 mt-1">{interp.desc}</p>
+              <p className="text-sm text-ink-muted mt-1">{interp.desc}</p>
             </div>
             <div className="text-right shrink-0">
-              <p className="font-mono text-xs text-slate-500">
+              <p className="font-mono text-xs text-ink-muted">
                 {passIds.length} / {ratedIds.length} dinilai
               </p>
-              <p className="font-mono text-2xs text-slate-400 mt-0.5">
+              <p className="font-mono text-2xs text-ink-subtle mt-0.5">
                 PASS ÷ Total Dinilai × 100
               </p>
             </div>
@@ -324,8 +324,8 @@ export default function VHChecklist() {
           </Link>
         </div>
 
-        <div className="p-4 border border-slate-200 rounded text-center text-sm">
-          <span className="text-slate-500">Selesai review? </span>
+        <div className="p-4 border border-line rounded text-center text-sm">
+          <span className="text-ink-muted">Selesai review? </span>
           <Link
             to="/feedback"
             className="text-brand-600 font-medium hover:underline"

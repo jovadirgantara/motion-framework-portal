@@ -434,7 +434,7 @@ function motionApplyMonthOverlaps(row, monthKey) {
 }
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
-const DEFAULT_BADGE = 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'
+const DEFAULT_BADGE = 'bg-slate-100 text-ink-muted ring-1 ring-slate-200'
 
 const OPERATIONAL_CONFIG = {
   Excellence: 'bg-green-50 text-green-700 ring-1 ring-green-200',
@@ -455,8 +455,8 @@ const DIFFICULTY_CONFIG = {
 const CAMPAIGN_LIFECYCLE_CONFIG = {
   active:   { label: 'Aktif',       badge: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' },
   upcoming: { label: 'Akan Datang', badge: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' },
-  ended:    { label: 'Selesai',     badge: 'bg-slate-100 text-slate-500 ring-1 ring-slate-200' },
-  unknown:  { label: '-',           badge: 'bg-slate-50 text-slate-300 ring-1 ring-slate-200' },
+  ended:    { label: 'Selesai',     badge: 'bg-slate-100 text-ink-muted ring-1 ring-slate-200' },
+  unknown:  { label: '-',           badge: 'bg-surface-sunken text-slate-300 ring-1 ring-slate-200' },
 }
 
 // 'unknown' (missing Periode Mulai) is deliberately left out — filtering by
@@ -531,8 +531,8 @@ const BADGE = 'inline-flex items-center gap-1 py-1.5 px-2.5 rounded-full text-[1
 
 // Shared filter chip class
 const CHIP_BASE  = 'h-9 px-4 rounded-xl text-[13px] font-medium border transition-all duration-150 ease-out whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-1'
-const CHIP_OFF   = 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
-const CHIP_ON    = 'bg-brand-600 text-white border-brand-600 shadow-sm'
+const CHIP_OFF   = 'bg-elevated text-ink-muted border-line hover:bg-elevated-hover hover:border-line-strong'
+const CHIP_ON    = 'bg-brand-600 text-on-accent border-brand-600 shadow-sm'
 
 // ─── TAB / COLUMN SPECS ──────────────────────────────────────────────────────
 // Design/Strategic tabs lead with Month Request / Req. Date / Brand and
@@ -658,8 +658,8 @@ const STICKY_COL_BG = {
   progress: 'bg-blue-50',
   waiting:  'bg-sun-50',
   blocked:  'bg-red-50',
-  empty:    'bg-white',
-  unknown:  'bg-white',
+  empty:    'bg-elevated',
+  unknown:  'bg-elevated',
 }
 
 // Sheet cells sometimes carry an asset label ("[TIKTOK] [BAU] FOO") instead of
@@ -682,7 +682,7 @@ function renderCell(row, col, rowStatusCategory) {
       return value || <span className="text-slate-300">—</span>
     case 'badge-brand':
       return value
-        ? <span className={`${BADGE} bg-slate-100 text-slate-600 ring-1 ring-slate-200`}>{value}</span>
+        ? <span className={`${BADGE} bg-slate-100 text-ink-muted ring-1 ring-slate-200`}>{value}</span>
         : <span className="text-slate-300 text-[13px]">—</span>
     case 'badge-source':
       return value
@@ -714,22 +714,22 @@ function renderCell(row, col, rowStatusCategory) {
     }
     case 'yes-no':
       return value
-        ? <span className={`${BADGE} ${value === 'Yes' ? 'bg-green-50 text-green-700 ring-1 ring-green-200' : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'}`}>{value}</span>
+        ? <span className={`${BADGE} ${value === 'Yes' ? 'bg-green-50 text-green-700 ring-1 ring-green-200' : 'bg-slate-100 text-ink-muted ring-1 ring-slate-200'}`}>{value}</span>
         : <span className="text-slate-300 text-[13px]">—</span>
     case 'link':
       if (!value) return <span className="text-slate-300 text-[13px]">—</span>
       return isAbsoluteUrl(value)
         ? <a href={value} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center h-9 px-4 bg-brand-600 hover:bg-brand-700 text-white text-[13px] font-semibold rounded-lg transition-all duration-150 ease-out shadow-[0_1px_2px_rgba(16,24,40,.05)] whitespace-nowrap">
+            className="inline-flex items-center h-9 px-4 bg-brand-600 hover:bg-brand-700 text-on-accent text-[13px] font-semibold rounded-lg transition-all duration-150 ease-out shadow-[0_1px_2px_rgba(16,24,40,.05)] whitespace-nowrap">
             Buka →
           </a>
-        : <span className="inline-flex items-center h-9 px-3 text-[12px] text-slate-400 italic whitespace-nowrap" title="Link belum diisi di Sheets — isi kolom Link File dengan URL Drive langsung">
+        : <span className="inline-flex items-center h-9 px-3 text-[12px] text-ink-subtle italic whitespace-nowrap" title="Link belum diisi di Sheets — isi kolom Link File dengan URL Drive langsung">
             Link belum ada
           </span>
     case 'text-strong': {
       const isDone = rowStatusCategory === 'done'
       return (
-        <div className={`text-[14px] leading-snug ${isDone ? 'font-bold text-emerald-800' : 'font-medium text-slate-800'}`}>
+        <div className={`text-[14px] leading-snug ${isDone ? 'font-bold text-emerald-800' : 'font-medium text-ink'}`}>
           {value
             ? <>{isDone && <span className="text-emerald-500 mr-1">✓</span>}{value}</>
             : <span className="text-slate-300 font-normal">—</span>}
@@ -954,9 +954,9 @@ export default function CampaignSchedule() {
 
   // ── STAT CARDS config ──
   const STAT_CARDS = [
-    { key: 'Excellence', label: 'Excellence', dot: '🟢', num: 'text-green-700', bg: 'bg-white border-green-100', sub: 'text-green-600' },
-    { key: 'Good',       label: 'Good',       dot: '🔵', num: 'text-blue-700',  bg: 'bg-white border-blue-100',  sub: 'text-blue-600'  },
-    { key: 'Bad',        label: 'Bad',        dot: '🔴', num: 'text-red-700',   bg: 'bg-white border-red-100',   sub: 'text-red-600'   },
+    { key: 'Excellence', label: 'Excellence', dot: '🟢', num: 'text-green-700', bg: 'bg-elevated border-green-100', sub: 'text-green-600' },
+    { key: 'Good',       label: 'Good',       dot: '🔵', num: 'text-blue-700',  bg: 'bg-elevated border-blue-100',  sub: 'text-blue-600'  },
+    { key: 'Bad',        label: 'Bad',        dot: '🔴', num: 'text-red-700',   bg: 'bg-elevated border-red-100',   sub: 'text-red-600'   },
   ]
 
   return (
@@ -966,8 +966,8 @@ export default function CampaignSchedule() {
 
         {/* Header */}
         <Reveal>
-          <div className="pt-8 pb-6 border-b border-[#E5E7EB] mb-8">
-            <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400 mb-4 tracking-wider">
+          <div className="pt-8 pb-6 border-b border-line mb-8">
+            <div className="flex items-center gap-2 font-mono text-[11px] text-ink-subtle mb-4 tracking-wider">
               <Link to="/" className="hover:text-brand-600 transition-colors duration-150">Home</Link>
               <span>/</span>
               <span>Jadwal Kampanye</span>
@@ -977,10 +977,10 @@ export default function CampaignSchedule() {
                 <p className="font-mono text-[11px] text-brand-600 tracking-[0.12em] uppercase mb-2">
                   / Komponen 08 · Campaign Usage Management
                 </p>
-                <h1 className="font-display text-[30px] font-bold tracking-tight text-slate-900 mb-2 leading-tight">
+                <h1 className="font-display text-[30px] font-bold tracking-tight text-ink mb-2 leading-tight">
                   Jadwal Penggunaan Mockup
                 </h1>
-                <p className="text-[14px] text-slate-500 max-w-xl leading-relaxed">
+                <p className="text-[14px] text-ink-muted max-w-xl leading-relaxed">
                   Daftar request Design, Strategic, dan Motion beserta status pengerjaannya.
                   Data dikelola tim internal via Google Sheets.
                 </p>
@@ -997,13 +997,13 @@ export default function CampaignSchedule() {
 
         {/* Data source status */}
         {isLoading && (
-          <div className="border border-[#E5E7EB] rounded-xl overflow-hidden mb-6 shadow-[0_1px_2px_rgba(16,24,40,.05)]">
-            <div className="bg-slate-50 px-4 py-3 border-b border-[#E5E7EB] flex items-center gap-3">
+          <div className="border border-line rounded-xl overflow-hidden mb-6 shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+            <div className="bg-surface-sunken px-4 py-3 border-b border-line flex items-center gap-3">
               <div className="h-2.5 bg-slate-200 rounded-full animate-pulse w-48" />
               <div className="h-2.5 bg-slate-200 rounded-full animate-pulse w-32" />
             </div>
             {[1, 2, 3].map(i => (
-              <div key={i} className="flex gap-4 px-4 py-4 border-b border-slate-100 last:border-0">
+              <div key={i} className="flex gap-4 px-4 py-4 border-b border-line last:border-0">
                 <div className="h-4 bg-slate-100 rounded animate-pulse w-16 shrink-0" />
                 <div className="h-4 bg-slate-100 rounded animate-pulse flex-1" />
                 <div className="h-4 bg-slate-100 rounded animate-pulse w-24 shrink-0" />
@@ -1047,7 +1047,7 @@ export default function CampaignSchedule() {
 
           {/* Operational Excellence */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Excellence</span>
+            <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Excellence</span>
             <div className="flex flex-wrap gap-1.5">
               {(['semua', 'Excellence', 'Good', 'Bad']).map(s => (
                 <button key={s} onClick={() => setFilterOperational(s)}
@@ -1060,7 +1060,7 @@ export default function CampaignSchedule() {
 
           {/* Design Difficulty */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Difficulty</span>
+            <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Difficulty</span>
             <div className="flex flex-wrap gap-1.5">
               {(['semua', 'Low', 'Medium', 'High']).map(s => (
                 <button key={s} onClick={() => setFilterDifficulty(s)}
@@ -1075,7 +1075,7 @@ export default function CampaignSchedule() {
               row's Req./Due Date month and Apply Date month can differ (e.g.
               a Motion-only BAU request has no Req./Due Date at all). */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Bulan</span>
+            <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Bulan</span>
             <div className="flex flex-wrap gap-2">
 
               <div className="relative" ref={bulanReqRef}>
@@ -1092,9 +1092,9 @@ export default function CampaignSchedule() {
                   <span className="text-[10px] opacity-60">{bulanReqOpen ? '▲' : '▼'}</span>
                 </button>
                 {bulanReqOpen && (
-                  <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-[#E5E7EB]">
-                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em]">Bulan (Req./Due Date)</span>
+                  <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-elevated border border-line rounded-xl shadow-lg overflow-hidden">
+                    <div className="flex items-center justify-between px-3 py-2 border-b border-line">
+                      <span className="text-[11px] font-semibold text-ink-subtle uppercase tracking-[0.06em]">Bulan (Req./Due Date)</span>
                       {filterBulanReq.length > 0 && (
                         <button onClick={() => setFilterBulanReq([])}
                           className="text-[12px] text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
@@ -1105,12 +1105,12 @@ export default function CampaignSchedule() {
                     <ul className="max-h-64 overflow-y-auto py-1">
                       {allMonths.map(k => (
                         <li key={k}>
-                          <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors duration-150">
+                          <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-ink-muted hover:bg-elevated-hover cursor-pointer transition-colors duration-150">
                             <input
                               type="checkbox"
                               checked={filterBulanReq.includes(k)}
                               onChange={() => setFilterBulanReq(prev => toggleInArray(prev, k))}
-                              className="rounded border-slate-300 text-brand-600 focus:ring-brand-400"
+                              className="rounded border-line-strong text-brand-600 focus:ring-brand-400"
                             />
                             {formatMonthLabel(k)}
                           </label>
@@ -1135,9 +1135,9 @@ export default function CampaignSchedule() {
                   <span className="text-[10px] opacity-60">{bulanApplyOpen ? '▲' : '▼'}</span>
                 </button>
                 {bulanApplyOpen && (
-                  <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-[#E5E7EB]">
-                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em]">Bulan (Apply Date)</span>
+                  <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-elevated border border-line rounded-xl shadow-lg overflow-hidden">
+                    <div className="flex items-center justify-between px-3 py-2 border-b border-line">
+                      <span className="text-[11px] font-semibold text-ink-subtle uppercase tracking-[0.06em]">Bulan (Apply Date)</span>
                       {filterBulanApply.length > 0 && (
                         <button onClick={() => setFilterBulanApply([])}
                           className="text-[12px] text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
@@ -1148,12 +1148,12 @@ export default function CampaignSchedule() {
                     <ul className="max-h-64 overflow-y-auto py-1">
                       {allMonths.map(k => (
                         <li key={k}>
-                          <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors duration-150">
+                          <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-ink-muted hover:bg-elevated-hover cursor-pointer transition-colors duration-150">
                             <input
                               type="checkbox"
                               checked={filterBulanApply.includes(k)}
                               onChange={() => setFilterBulanApply(prev => toggleInArray(prev, k))}
-                              className="rounded border-slate-300 text-brand-600 focus:ring-brand-400"
+                              className="rounded border-line-strong text-brand-600 focus:ring-brand-400"
                             />
                             {formatMonthLabel(k)}
                           </label>
@@ -1169,7 +1169,7 @@ export default function CampaignSchedule() {
 
           {/* Brand dropdown */}
           <div className="flex items-center gap-2" ref={brandRef}>
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Brand</span>
+            <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Brand</span>
             <div className="relative">
               <button
                 onClick={() => { setBrandOpen(o => !o); if (brandOpen) setBrandSearch('') }}
@@ -1179,30 +1179,30 @@ export default function CampaignSchedule() {
                 <span className="text-[10px] opacity-60">{brandOpen ? '▲' : '▼'}</span>
               </button>
               {brandOpen && (
-                <div className="absolute z-10 top-full left-0 mt-1.5 w-60 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
-                  <div className="p-2.5 border-b border-[#E5E7EB]">
+                <div className="absolute z-10 top-full left-0 mt-1.5 w-60 bg-elevated border border-line rounded-xl shadow-lg overflow-hidden">
+                  <div className="p-2.5 border-b border-line">
                     <input
                       type="text" value={brandSearch} onChange={e => setBrandSearch(e.target.value)}
                       placeholder="Cari brand..." autoFocus
-                      className="w-full text-[13px] px-3 py-2 border border-[#E5E7EB] rounded-lg outline-none focus:border-brand-400 transition-colors duration-150"
+                      className="w-full text-[13px] px-3 py-2 border border-line rounded-lg outline-none focus:border-brand-400 transition-colors duration-150"
                     />
                   </div>
                   <ul className="max-h-52 overflow-y-auto py-1">
                     {filterBrand !== 'semua' && !brandSearch && (
                       <li>
                         <button onClick={() => { setFilterBrand('semua'); setBrandOpen(false); setBrandSearch('') }}
-                          className="w-full text-left px-3 py-2 text-[13px] text-slate-500 hover:bg-slate-50 transition-colors duration-150">
+                          className="w-full text-left px-3 py-2 text-[13px] text-ink-muted hover:bg-elevated-hover transition-colors duration-150">
                           Semua Brand
                         </button>
                       </li>
                     )}
                     {filteredBrands.length === 0
-                      ? <li className="px-3 py-3 text-[13px] text-slate-400 italic">Tidak ditemukan</li>
+                      ? <li className="px-3 py-3 text-[13px] text-ink-subtle italic">Tidak ditemukan</li>
                       : filteredBrands.map(b => (
                           <li key={b}>
                             <button onClick={() => { setFilterBrand(b); setBrandOpen(false); setBrandSearch('') }}
                               className={`w-full text-left px-3 py-2 text-[13px] transition-colors duration-150 ${
-                                filterBrand === b ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                                filterBrand === b ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-ink-muted hover:bg-elevated-hover'
                               }`}>
                               {b}
                             </button>
@@ -1217,7 +1217,7 @@ export default function CampaignSchedule() {
 
           {/* Type of Content — checkbox dropdown, multi-select */}
           <div className="flex items-center gap-2" ref={contentRef}>
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Konten</span>
+            <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Konten</span>
             <div className="relative">
               <button
                 onClick={() => setContentOpen(o => !o)}
@@ -1231,9 +1231,9 @@ export default function CampaignSchedule() {
                 <span className="text-[10px] opacity-60">{contentOpen ? '▲' : '▼'}</span>
               </button>
               {contentOpen && (
-                <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden">
-                  <div className="flex items-center justify-between px-3 py-2 border-b border-[#E5E7EB]">
-                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-[0.06em]">Pilih Konten</span>
+                <div className="absolute z-10 top-full left-0 mt-1.5 w-64 bg-elevated border border-line rounded-xl shadow-lg overflow-hidden">
+                  <div className="flex items-center justify-between px-3 py-2 border-b border-line">
+                    <span className="text-[11px] font-semibold text-ink-subtle uppercase tracking-[0.06em]">Pilih Konten</span>
                     {filterTypeOfContent.length > 0 && (
                       <button onClick={() => setFilterTypeOfContent([])}
                         className="text-[12px] text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
@@ -1243,15 +1243,15 @@ export default function CampaignSchedule() {
                   </div>
                   <ul className="max-h-64 overflow-y-auto py-1">
                     {typesOfContent.length === 0
-                      ? <li className="px-3 py-3 text-[13px] text-slate-400 italic">Tidak ada data</li>
+                      ? <li className="px-3 py-3 text-[13px] text-ink-subtle italic">Tidak ada data</li>
                       : typesOfContent.map(t => (
                           <li key={t}>
-                            <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors duration-150">
+                            <label className="flex items-center gap-2.5 px-3 py-2 text-[13px] text-ink-muted hover:bg-elevated-hover cursor-pointer transition-colors duration-150">
                               <input
                                 type="checkbox"
                                 checked={filterTypeOfContent.includes(t)}
                                 onChange={() => setFilterTypeOfContent(prev => toggleInArray(prev, t))}
-                                className="rounded border-slate-300 text-brand-600 focus:ring-brand-400"
+                                className="rounded border-line-strong text-brand-600 focus:ring-brand-400"
                               />
                               {t}
                             </label>
@@ -1266,7 +1266,7 @@ export default function CampaignSchedule() {
 
           {/* Taks Source */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Source</span>
+            <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Source</span>
             <div className="flex flex-wrap gap-1.5">
               {(['semua', 'Ecommerce', 'Orca']).map(s => (
                 <button key={s} onClick={() => setFilterTaksSource(s)}
@@ -1279,7 +1279,7 @@ export default function CampaignSchedule() {
 
           {/* Campaign */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Campaign</span>
+            <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Campaign</span>
             <div className="flex flex-wrap gap-1.5">
               {(['semua', 'PayDay', 'BaU', 'DD', 'Other']).map(c => (
                 <button key={c} onClick={() => setFilterCampaign(c)}
@@ -1296,7 +1296,7 @@ export default function CampaignSchedule() {
           {isMotionTab && (
             <>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Status</span>
+                <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Status</span>
                 <div className="flex flex-wrap gap-1.5">
                   {LIFECYCLE_FILTER_OPTIONS.map(opt => (
                     <button key={opt} onClick={() => setFilterLifecycle(opt)}
@@ -1308,7 +1308,7 @@ export default function CampaignSchedule() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase w-28 shrink-0">Status Mockup</span>
+                <span className="text-[11px] font-semibold text-ink-subtle tracking-[0.08em] uppercase w-28 shrink-0">Status Mockup</span>
                 <div className="flex flex-wrap gap-1.5">
                   {STATUS_MOCKUP_FILTER_OPTIONS.map(opt => (
                     <button key={opt.key} onClick={() => setFilterStatusMockup(opt.key)}
@@ -1334,23 +1334,23 @@ export default function CampaignSchedule() {
 
         {/* ── TABLE ── */}
         {sorted.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-[14px] border border-[#E5E7EB] rounded-xl bg-slate-50">
+          <div className="text-center py-16 text-ink-subtle text-[14px] border border-line rounded-xl bg-surface-sunken">
             Tidak ada request yang cocok dengan filter yang dipilih.
           </div>
         ) : (
-          <div key={activeTab} className="overflow-auto overscroll-contain max-h-[70vh] border border-[#E5E7EB] rounded-xl shadow-[0_1px_2px_rgba(16,24,40,.05)]">
+          <div key={activeTab} className="overflow-auto overscroll-contain max-h-[70vh] border border-line rounded-xl shadow-[0_1px_2px_rgba(16,24,40,.05)]">
             <table className="w-full text-left border-collapse table-auto">
               <thead className="sticky top-0 z-10">
-                <tr className="bg-slate-50 border-b border-[#E5E7EB]">
+                <tr className="bg-surface-sunken border-b border-line">
                   {activeTabConfig.columns.map((col, colIdx) => {
                     const sortable = col.type !== 'link'
                     const isSticky = colIdx < stickyColCount
                     const stickyLeft = colIdx === 0 ? 'sm:left-0' : STICKY_STATUS_COL_LEFT
                     return (
                       <th key={col.key} onClick={sortable ? () => handleSort(col.key) : undefined}
-                        className={`align-middle px-4 py-3 text-[13px] font-semibold text-slate-500 uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${COL_MIN_WIDTH[col.type] ?? ''} ${
-                          sortable ? 'cursor-pointer hover:text-slate-700 hover:bg-slate-100' : ''
-                        } ${isSticky ? `sm:sticky ${stickyLeft} sm:z-20 bg-slate-50` : ''}`}>
+                        className={`align-middle px-4 py-3 text-[13px] font-semibold text-ink-muted uppercase tracking-[0.06em] select-none transition-colors duration-150 whitespace-nowrap ${COL_MIN_WIDTH[col.type] ?? ''} ${
+                          sortable ? 'cursor-pointer hover:text-ink-muted hover:bg-slate-100' : ''
+                        } ${isSticky ? `sm:sticky ${stickyLeft} sm:z-20 bg-surface-sunken` : ''}`}>
                         <span className="flex items-center gap-1">
                           {col.label}
                           {sortable && (
@@ -1364,25 +1364,25 @@ export default function CampaignSchedule() {
                   })}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="divide-y divide-line bg-elevated">
                 {sorted.map((row, idx) => {
                   const isEven = idx % 2 === 1
                   const statusCat = statusCol ? classifyStatus(row[statusCol.key]) : 'unknown'
                   const rowAccent = STATUS_CONFIG[statusCat].row
                   const rowIsEvenEmpty = isEven && statusCat === 'empty'
-                  const stickyBg = rowIsEvenEmpty ? 'bg-slate-50' : STICKY_COL_BG[statusCat]
+                  const stickyBg = rowIsEvenEmpty ? 'bg-surface-sunken' : STICKY_COL_BG[statusCat]
                   return (
                     <tr
                       key={row.id}
-                      className={`transition-colors duration-150 ease-out hover:bg-slate-50 ${rowAccent} ${
-                        rowIsEvenEmpty ? 'bg-slate-50/30' : ''
+                      className={`transition-colors duration-150 ease-out hover:bg-elevated-hover ${rowAccent} ${
+                        rowIsEvenEmpty ? 'bg-surface-sunken/30' : ''
                       }`}
                     >
                       {activeTabConfig.columns.map((col, colIdx) => (
                         <td key={col.key}
                           className={`px-4 py-2 min-h-[52px] align-middle ${COL_MIN_WIDTH[col.type] ?? ''} ${
-                            col.type === 'text-muted' ? 'text-[12px] text-slate-500' : 'whitespace-nowrap'
-                          } ${col.type === 'date' ? 'font-mono text-[12px] text-slate-500' : ''} ${
+                            col.type === 'text-muted' ? 'text-[12px] text-ink-muted' : 'whitespace-nowrap'
+                          } ${col.type === 'date' ? 'font-mono text-[12px] text-ink-muted' : ''} ${
                             colIdx < stickyColCount ? `sm:sticky ${colIdx === 0 ? 'sm:left-0' : STICKY_STATUS_COL_LEFT} sm:z-[5] ${stickyBg}` : ''
                           }`}>
                           {renderCell(row, col, statusCat)}
@@ -1397,7 +1397,7 @@ export default function CampaignSchedule() {
         )}
 
         {/* Row count */}
-        <div className="mt-3 text-[12px] text-slate-400 flex items-center justify-between">
+        <div className="mt-3 text-[12px] text-ink-subtle flex items-center justify-between">
           <span>{sorted.length} dari {displayData.length} request ditampilkan</span>
           <Link to="/framework/campaign-usage-management" className="text-brand-600 hover:text-brand-700 font-medium transition-colors duration-150">
             Dokumentasi Campaign Usage Management →
@@ -1435,10 +1435,10 @@ export default function CampaignSchedule() {
               ),
             },
           ].map(({ col, note }) => (
-            <div key={col} className="flex gap-2.5 bg-slate-50 border border-[#E5E7EB] rounded-xl px-3.5 py-3 text-[12px] text-slate-600">
+            <div key={col} className="flex gap-2.5 bg-surface-sunken border border-line rounded-xl px-3.5 py-3 text-[12px] text-ink-muted">
               <span className="font-mono text-slate-300 shrink-0 pt-px">#</span>
               <div>
-                <span className="font-semibold text-slate-700">{col}</span>
+                <span className="font-semibold text-ink-muted">{col}</span>
                 <span className="text-slate-300 mx-1.5">—</span>
                 <span>{note}</span>
               </div>

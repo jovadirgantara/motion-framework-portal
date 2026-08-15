@@ -12,8 +12,8 @@ export default function FrameworkOverview() {
   return (
     <FrameworkPageLayout component={overview}>
       <PageHeader eyebrow="/ MGLC Framework" title={overview.title} description={overview.summary}>
-        <p className="text-sm text-slate-600 border-l-2 border-brand-200 pl-4 mt-4 max-w-2xl">
-          Komponen 1 (Visual Hierarchy) adalah <strong className="text-slate-800">inti filosofis</strong> — baca ini
+        <p className="text-sm text-ink-muted border-l-2 border-brand-200 pl-4 mt-4 max-w-2xl">
+          Komponen 1 (Visual Hierarchy) adalah <strong className="text-ink">inti filosofis</strong> — baca ini
           terlebih dahulu. Komponen 2–7 adalah sistem pendukung. Komponen 8 adalah lapisan operasional.
         </p>
       </PageHeader>

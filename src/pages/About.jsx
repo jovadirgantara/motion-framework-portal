@@ -12,7 +12,7 @@ export default function About() {
   )
 
   return (
-    <PageLayout>
+    <PageLayout sidebar="all">
       <div className="max-w-3xl mx-auto">
         <Reveal>
         <PageHeader
@@ -22,9 +22,9 @@ export default function About() {
           accent="pink"
         />
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-6">
-          <h2 className="font-display text-xl font-bold text-slate-900 mb-3">Konteks Penelitian</h2>
-          <div className="space-y-3 text-sm text-slate-700">
+        <div className="card p-6 mb-6">
+          <h2 className="font-display text-xl font-bold text-ink mb-3">Konteks Penelitian</h2>
+          <div className="space-y-3 text-sm text-ink-muted">
             <p>
               Portal ini adalah <strong>Produk 2</strong> dari penelitian Design and Development Research (DDR)
               berjudul <em>"Pengembangan Framework Produksi Motion Graphic Live Commerce Berbasis Visual Hierarchy"</em>.
@@ -41,7 +41,7 @@ export default function About() {
           </div>
         </div>
 
-        <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-8 pb-6 border-b border-slate-100">
+        <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-8 pb-6 border-b border-line">
           {[
             ['Peneliti', 'Jova Dirgantara Putra'],
             ['NIM', '2201632'],
@@ -51,8 +51,8 @@ export default function About() {
             ['Tahun', '2026'],
           ].map(([label, value]) => (
             <div key={label}>
-              <dt className="text-xs text-slate-400 uppercase tracking-wide mb-0.5">{label}</dt>
-              <dd className="text-sm font-medium text-slate-900">{value}</dd>
+              <dt className="text-xs text-ink-subtle uppercase tracking-wide mb-0.5">{label}</dt>
+              <dd className="text-sm font-medium text-ink">{value}</dd>
             </div>
           ))}
         </dl>
@@ -71,23 +71,23 @@ export default function About() {
 
         {/* Glossary */}
         <Reveal delay={120}>
-        <h2 className="font-display text-xl font-bold text-slate-900 mb-3">Glosarium</h2>
+        <h2 className="font-display text-xl font-bold text-ink mb-3">Glosarium</h2>
         <input
           type="text"
           placeholder="Cari istilah..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full mb-4 rounded-full border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="w-full mb-4 rounded-full border border-line-strong px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
-        <div className="border-t border-slate-100 divide-y divide-slate-100">
+        <div className="border-t border-line divide-y divide-line">
           {filtered.map(g => (
             <div key={g.term} className="py-3">
-              <p className="text-sm font-semibold text-slate-900 mb-1">{g.term}</p>
-              <p className="text-sm text-slate-600">{g.definition}</p>
+              <p className="text-sm font-semibold text-ink mb-1">{g.term}</p>
+              <p className="text-sm text-ink-muted">{g.definition}</p>
             </div>
           ))}
           {filtered.length === 0 && (
-            <p className="text-sm text-slate-400 text-center py-4">Tidak ada istilah yang cocok.</p>
+            <p className="text-sm text-ink-subtle text-center py-4">Tidak ada istilah yang cocok.</p>
           )}
         </div>
         </Reveal>
