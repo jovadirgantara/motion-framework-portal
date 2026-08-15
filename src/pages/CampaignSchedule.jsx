@@ -524,6 +524,7 @@ const STATUS_CONFIG = {
 
 const DIFFICULTY_ORDER   = { Low: 0, Medium: 1, High: 2, Campaign: 3 }
 const OPERATIONAL_ORDER  = { Bad: 0, Good: 1, Excellence: 2 }
+const CAMPAIGN_LIFECYCLE_ORDER = { active: 0, upcoming: 1, ended: 2, unknown: 3 }
 
 // Shared badge class — 6px top/bottom (py-1.5), 10px left/right (px-2.5), rounded-full, 12px/600
 const BADGE = 'inline-flex items-center gap-1 py-1.5 px-2.5 rounded-full text-[12px] font-semibold leading-none transition-colors duration-150'
@@ -914,7 +915,13 @@ export default function CampaignSchedule() {
     if (!sortKey) return filtered
     return [...filtered].sort((a, b) => {
       let av, bv
-      if (DATE_SORT_KEYS.has(sortKey)) {
+      if (sortKey === 'campaignStatus') {
+        // campaignStatus isn't a real field on the row — it's derived at
+        // render time by campaignLifecycleStatus() — so it must be computed
+        // here too, or every row compares as undefined and sorting is a no-op.
+        av = CAMPAIGN_LIFECYCLE_ORDER[campaignLifecycleStatus(a)] ?? 99
+        bv = CAMPAIGN_LIFECYCLE_ORDER[campaignLifecycleStatus(b)] ?? 99
+      } else if (DATE_SORT_KEYS.has(sortKey)) {
         av = new Date(normalizeDate(a[sortKey] ?? '')).getTime() || 0
         bv = new Date(normalizeDate(b[sortKey] ?? '')).getTime() || 0
       } else if (sortKey === 'designDifficulty' || sortKey === 'motionDifficulty') {
