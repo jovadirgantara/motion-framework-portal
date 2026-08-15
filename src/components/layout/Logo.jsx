@@ -7,8 +7,8 @@ export default function Logo({ className = 'w-9 h-9' }) {
 
   if (failed) {
     return (
-      <div className={`${className} rounded-2xl bg-brand-600 flex items-center justify-center shrink-0`}>
-        <span className="text-white text-2xs font-mono font-bold leading-none">ORBIZ</span>
+      <div className={`${className} flex shrink-0 items-center justify-center rounded-2xl bg-brand-600`}>
+        <span className="font-mono text-2xs font-bold leading-none text-on-accent">ORBIZ</span>
       </div>
     )
   }
@@ -17,7 +17,7 @@ export default function Logo({ className = 'w-9 h-9' }) {
     <img
       src={`${import.meta.env.BASE_URL}logo-orbiz.png`}
       alt="ORBIZ"
-      className={`${className} rounded-2xl object-contain shrink-0`}
+      className={`${className} shrink-0 rounded-2xl object-contain`}
       onError={() => setFailed(true)}
     />
   )

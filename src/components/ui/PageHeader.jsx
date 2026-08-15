@@ -12,15 +12,15 @@ export default function PageHeader({ eyebrow, title, description, accent = 'bran
   return (
     <Reveal className="mb-10">
       {eyebrow && (
-        <p className={`font-mono text-2xs tracking-widest uppercase mb-2 ${EYEBROW[accent]}`}>
+        <p className={`mb-2 font-mono text-2xs uppercase tracking-widest ${EYEBROW[accent]}`}>
           {eyebrow}
         </p>
       )}
-      <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-slate-900 mb-3">
+      <h1 className="mb-3 font-display text-3xl font-bold tracking-tight text-ink md:text-display-sm">
         {title}
       </h1>
       {description && (
-        <p className="text-base text-slate-500 leading-relaxed max-w-2xl">{description}</p>
+        <p className="max-w-2xl text-base leading-relaxed text-ink-muted">{description}</p>
       )}
       {children}
     </Reveal>

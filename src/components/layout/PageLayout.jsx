@@ -4,18 +4,19 @@ import Footer from './Footer'
 
 export default function PageLayout({ children, sidebar = null, className = '', maxWidthClassName = 'max-w-7xl' }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col bg-surface">
+      <a href="#konten" className="skip-link">Lompat ke konten</a>
       <Header />
-      <div className={`flex-1 ${maxWidthClassName} mx-auto w-full px-4 sm:px-6 lg:px-8 py-8`}>
+      <div className={`flex-1 ${maxWidthClassName} mx-auto w-full px-4 py-8 sm:px-6 lg:px-8`}>
         {sidebar ? (
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col gap-10 lg:flex-row">
             <Sidebar section={sidebar} />
-            <main className={`flex-1 min-w-0 ${className}`}>
+            <main id="konten" className={`min-w-0 flex-1 ${className}`}>
               {children}
             </main>
           </div>
         ) : (
-          <main className={`${className}`}>
+          <main id="konten" className={className}>
             {children}
           </main>
         )}

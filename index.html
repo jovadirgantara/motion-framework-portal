@@ -11,8 +11,25 @@
         }
       })();
     </script>
+    <script>
+      // Resolve the theme before first paint so a dark-mode reload never
+      // flashes the light palette. Mirrors src/utils/theme.js — keep in sync.
+      (function() {
+        try {
+          var stored = localStorage.getItem('mfp-theme');
+          var theme = (stored === 'light' || stored === 'dark')
+            ? stored
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          if (theme === 'dark') document.documentElement.classList.add('dark');
+          document.documentElement.style.colorScheme = theme;
+        } catch (e) { /* storage blocked — fall through to the light default */ }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b10" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="Portal dokumentasi interaktif framework produksi mockup dan motion graphic untuk live commerce. Dibuat oleh Jova Dirgantara Putra, S1 Pendidikan Multimedia UPI Cibiru." />
     <title>Mockup & Motion Framework — Portal Dokumentasi Jova Dirgantara Putra</title>
 

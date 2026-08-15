@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tokens": "node tools/gen-tokens.mjs src/styles/tokens.css",
+    "check:contrast": "node tools/check-contrast.mjs src/styles/tokens.css"
   },
   "dependencies": {
     "framer-motion": "^12.42.0",

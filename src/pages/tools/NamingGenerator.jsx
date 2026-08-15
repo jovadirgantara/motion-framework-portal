@@ -11,13 +11,13 @@ import config from '../../config/naming-config.json'
 function SelectField({ label, value, onChange, options, required }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700 mb-1">
+      <label className="block text-xs font-medium text-ink-muted mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="w-full rounded border border-slate-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="w-full rounded border border-line-strong px-3 py-2 text-sm bg-elevated focus:outline-none focus:ring-2 focus:ring-brand-500"
       >
         <option value="">Pilih...</option>
         {options.map(opt => (
@@ -31,18 +31,18 @@ function SelectField({ label, value, onChange, options, required }) {
 function TextField({ label, value, onChange, placeholder, hint, required, optional }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-700 mb-1">
+      <label className="block text-xs font-medium text-ink-muted mb-1">
         {label}{required && <span className="text-red-500 ml-0.5">*</span>}
-        {optional && <span className="text-slate-400 font-normal ml-1">(opsional)</span>}
+        {optional && <span className="text-ink-subtle font-normal ml-1">(opsional)</span>}
       </label>
       <input
         type="text"
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="w-full rounded border border-line-strong px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
       />
-      {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+      {hint && <p className="text-xs text-ink-subtle mt-1">{hint}</p>}
     </div>
   )
 }
@@ -118,15 +118,15 @@ export default function NamingGenerator() {
     <PageLayout sidebar="tools">
       {/* Header */}
       <Reveal>
-        <div className="pb-6 border-b border-slate-200 mb-6">
-          <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
+        <div className="pb-6 border-b border-line mb-6">
+          <div className="flex items-center gap-2 font-mono text-2xs text-ink-subtle mb-3">
             <Link to="/tools" className="hover:text-brand-600">Tools</Link>
             <span>/</span>
             <span>Naming Generator</span>
           </div>
           <p className="eyebrow text-sun-600 mb-1">/ Tool 01 · Naming Convention Generator</p>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 mb-2">Naming Convention Generator</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-ink mb-2">Naming Convention Generator</h1>
+          <p className="text-sm text-ink-muted">
             Generate nama aset standar sesuai konvensi framework. Format:{' '}
             <span className="font-mono text-brand-600">FileType [Platform] Brand MockupType Campaign (Periode) (Jam)</span>
           </p>
@@ -136,7 +136,7 @@ export default function NamingGenerator() {
       <Reveal delay={80}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
-        <div className="border border-slate-200 rounded p-5 space-y-4">
+        <div className="border border-line rounded p-5 space-y-4">
 
           <SelectField
             label="Platform"
@@ -231,20 +231,20 @@ export default function NamingGenerator() {
 
         {/* Output */}
         <div className="space-y-4">
-          <div className="bg-slate-900 rounded p-5 min-h-[120px] flex flex-col justify-center">
-            <p className="font-mono text-2xs text-slate-500 mb-3 tracking-widest uppercase">Output — Display Name</p>
+          <div className="bg-code-bg rounded-xl p-5 min-h-[120px] flex flex-col justify-center">
+            <p className="font-mono text-2xs text-code-muted mb-3 tracking-widest uppercase">Output — Display Name</p>
             {generated && displayName ? (
               <>
-                <p className="font-mono text-sm text-green-400 break-all mb-4 leading-relaxed">{displayName}</p>
+                <p className="font-mono text-sm text-code-accent break-all mb-4 leading-relaxed">{displayName}</p>
                 <button
                   onClick={handleCopy}
-                  className="w-full py-2 text-sm font-medium rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
+                  className="w-full py-2 text-sm font-medium rounded-lg bg-white/10 text-code-ink hover:bg-white/20 transition-colors cursor-pointer"
                 >
                   {copied ? 'Tersalin ke clipboard' : 'Copy ke Clipboard'}
                 </button>
               </>
             ) : (
-              <p className="text-slate-500 text-sm italic">
+              <p className="text-code-muted text-sm italic">
                 {isReady && !generated
                   ? 'Klik "Generate Nama" untuk melihat hasil.'
                   : 'Isi semua field wajib (*) lalu klik Generate.'}
@@ -254,9 +254,9 @@ export default function NamingGenerator() {
 
           {/* Preview live */}
           {isReady && (
-            <div className="border border-slate-200 rounded p-4">
-              <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-2">Preview Format</p>
-              <p className="font-mono text-xs text-slate-600 break-all leading-relaxed">
+            <div className="border border-line rounded p-4">
+              <p className="font-mono text-2xs text-ink-subtle tracking-widest uppercase mb-2">Preview Format</p>
+              <p className="font-mono text-xs text-ink-muted break-all leading-relaxed">
                 {buildDisplayName({
                   fileType: resolvedAsset,
                   platformLabel: platform,
@@ -282,8 +282,8 @@ export default function NamingGenerator() {
       </div>
 
       {/* Feedback CTA */}
-      <div className="mt-8 p-4 border border-slate-200 rounded text-center text-sm">
-        <span className="text-slate-500">Tool ini berguna? </span>
+      <div className="mt-8 p-4 border border-line rounded text-center text-sm">
+        <span className="text-ink-muted">Tool ini berguna? </span>
         <Link
           to="/feedback"
           className="text-brand-600 font-medium hover:underline"

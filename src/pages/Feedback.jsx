@@ -26,7 +26,7 @@ export default function Feedback() {
   }, [])
 
   return (
-    <PageLayout>
+    <PageLayout sidebar="all">
       <Reveal>
         <div className="max-w-2xl mx-auto">
           <PageHeader
@@ -41,19 +41,19 @@ export default function Feedback() {
             beserta catatan terbuka.
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-6">
-            <p className="text-sm text-slate-600 leading-relaxed mb-5">
+          <div className="card p-6">
+            <p className="text-sm text-ink-muted leading-relaxed mb-5">
               Kirim feedback langsung lewat email — draf pesan sudah disiapkan dengan poin penilaian
               di bawah, tinggal isi angka dan catatannya.
             </p>
             <a
               href={MAILTO_HREF}
               onClick={() => trackEvent('feedback_submitted', { method: 'email' })}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-white text-sm font-semibold rounded-full hover:bg-brand-700 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-on-accent text-sm font-semibold rounded-full hover:bg-brand-700 transition-colors"
             >
               Kirim Feedback via Email →
             </a>
-            <p className="text-xs text-slate-400 mt-4">
+            <p className="text-xs text-ink-subtle mt-4">
               Email tidak terbuka otomatis? Kirim manual ke{' '}
               <a href={`mailto:${FEEDBACK_EMAIL}`} className="text-brand-600 hover:underline">
                 {FEEDBACK_EMAIL}

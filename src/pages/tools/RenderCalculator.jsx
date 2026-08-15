@@ -13,13 +13,13 @@ function ChoiceButton({ active, onClick, children, sub }) {
       onClick={onClick}
       className={`w-full text-left px-4 py-3 text-sm rounded border transition-colors ${
         active
-          ? 'bg-brand-600 text-white border-brand-600'
-          : 'border-slate-300 text-slate-700 hover:border-brand-400 hover:bg-brand-50'
+          ? 'bg-brand-600 text-on-accent border-brand-600'
+          : 'border-line-strong text-ink-muted hover:border-brand-400 hover:bg-brand-50'
       }`}
     >
       <span className="font-medium">{children}</span>
       {sub && (
-        <span className={`block text-xs mt-0.5 ${active ? 'text-brand-200' : 'text-slate-400'}`}>
+        <span className={`block text-xs mt-0.5 ${active ? 'text-on-accent/75' : 'text-ink-subtle'}`}>
           {sub}
         </span>
       )}
@@ -126,7 +126,7 @@ export default function RenderCalculator() {
     ['Resolusi',      preset.resolution],
     ['Frame Rate',    typeof preset.fps === 'number' ? `${preset.fps} fps` : preset.fps],
     ['Preset',        preset.preset],
-    preset.alphaChannel ? ['Alpha Channel', preset.alphaChannel, 'text-green-400'] : null,
+    preset.alphaChannel ? ['Alpha Channel', preset.alphaChannel, 'text-code-accent'] : null,
     ['Durasi',        loopDuration || preset.duration],
   ].filter(Boolean) : []
 
@@ -134,15 +134,15 @@ export default function RenderCalculator() {
     <PageLayout sidebar="tools">
       {/* Header */}
       <Reveal>
-        <div className="pb-6 border-b border-slate-200 mb-6">
-          <div className="flex items-center gap-2 font-mono text-2xs text-slate-400 mb-3">
+        <div className="pb-6 border-b border-line mb-6">
+          <div className="flex items-center gap-2 font-mono text-2xs text-ink-subtle mb-3">
             <Link to="/tools" className="hover:text-brand-600">Tools</Link>
             <span>/</span>
             <span>Render Settings Calculator</span>
           </div>
           <p className="eyebrow mb-1">/ Tool 04 · Render Settings Calculator</p>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 mb-2">Render Settings Calculator</h1>
-          <p className="text-sm text-slate-500 max-w-xl">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-ink mb-2">Render Settings Calculator</h1>
+          <p className="text-sm text-ink-muted max-w-xl">
             Pilih platform, device, jenis output, dan software — dapatkan rekomendasi render setting yang tepat.
           </p>
         </div>
@@ -151,7 +151,7 @@ export default function RenderCalculator() {
       <Reveal delay={80}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Form */}
-        <div className="border border-slate-200 rounded p-5 space-y-6">
+        <div className="border border-line rounded p-5 space-y-6">
 
           {/* Platform */}
           <div>
@@ -228,17 +228,17 @@ export default function RenderCalculator() {
           {/* Loop Duration — hanya muncul jika overlay */}
           {isOverlay && overlayFormat && (
             <div>
-              <label className="block font-mono text-2xs text-slate-500 tracking-widest uppercase mb-2">
-                / Durasi Loop <span className="text-slate-400 normal-case tracking-normal">(opsional)</span>
+              <label className="block font-mono text-2xs text-ink-muted tracking-widest uppercase mb-2">
+                / Durasi Loop <span className="text-ink-subtle normal-case tracking-normal">(opsional)</span>
               </label>
               <input
                 type="text"
                 value={loopDuration}
                 onChange={e => setLoopDuration(e.target.value)}
                 placeholder="mis. 10 detik, 00:15, 30 frame"
-                className="w-full rounded border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded border border-line-strong px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-ink-subtle mt-1">
                 Durasi ini akan tercatat di preset card yang didownload.
               </p>
             </div>
@@ -267,13 +267,13 @@ export default function RenderCalculator() {
         <div className="space-y-4">
           {preset ? (
             <>
-              <div className="bg-slate-900 rounded p-5">
-                <p className="font-mono text-2xs text-slate-500 mb-4 tracking-widest uppercase">Rekomendasi Setting</p>
+              <div className="bg-code-bg rounded-xl p-5">
+                <p className="font-mono text-2xs text-code-muted mb-4 tracking-widest uppercase">Rekomendasi Setting</p>
                 <div className="space-y-3">
                   {rows.map(([label, value, textClass]) => (
-                    <div key={label} className="flex justify-between items-start border-b border-slate-800 pb-2 last:border-0 last:pb-0 gap-4">
-                      <span className="font-mono text-2xs text-slate-400 shrink-0">{label}</span>
-                      <span className={`font-mono text-xs font-medium text-right ${textClass ?? 'text-white'}`}>
+                    <div key={label} className="flex justify-between items-start border-b border-code-line pb-2 last:border-0 last:pb-0 gap-4">
+                      <span className="font-mono text-2xs text-code-muted shrink-0">{label}</span>
+                      <span className={`font-mono text-xs font-medium text-right ${textClass ?? 'text-code-ink'}`}>
                         {value}
                       </span>
                     </div>
@@ -291,9 +291,9 @@ export default function RenderCalculator() {
               </Button>
             </>
           ) : (
-            <div className="border border-slate-200 rounded p-8 text-center min-h-[200px] flex flex-col justify-center">
-              <p className="font-mono text-2xs text-slate-400 tracking-widest uppercase mb-2">Output</p>
-              <p className="text-sm text-slate-500">
+            <div className="border border-line rounded p-8 text-center min-h-[200px] flex flex-col justify-center">
+              <p className="font-mono text-2xs text-ink-subtle tracking-widest uppercase mb-2">Output</p>
+              <p className="text-sm text-ink-muted">
                 {allSelected && !preset
                   ? 'Kombinasi ini belum tersedia di preset. Coba kombinasi lain atau lihat dokumentasi render standard.'
                   : 'Lengkapi semua pilihan di kiri untuk melihat rekomendasi.'}
@@ -312,8 +312,8 @@ export default function RenderCalculator() {
         </div>
       </div>
 
-      <div className="mt-8 p-4 border border-slate-200 rounded text-center text-sm">
-        <span className="text-slate-500">Setting rendernya membantu? </span>
+      <div className="mt-8 p-4 border border-line rounded text-center text-sm">
+        <span className="text-ink-muted">Setting rendernya membantu? </span>
         <Link
           to="/feedback"
           className="text-brand-600 font-medium hover:underline"
